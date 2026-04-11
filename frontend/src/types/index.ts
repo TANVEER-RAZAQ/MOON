@@ -1,6 +1,7 @@
 export type ProductKey =
   | 'shilajit'
   | 'kashmiriSaffron'
+  | 'kashmiriHoney'
   | 'iraniSaffron'
   | 'kashmiriAlmonds'
   | 'walnuts'

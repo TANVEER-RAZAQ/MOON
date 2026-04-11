@@ -1,23 +1,23 @@
 :root {
-    --theme-primary: #231611;
+    --theme-primary: #2C1810;
     --theme-secondary: #f4e8d4;
-    --theme-accent: #c86d2a;
+    --theme-accent: #7C4A2A;
 
-    --text-primary: #f7f1e7;
-    --text-secondary: #d4c8b4;
-    --text-light: #bcae95;
-    --text-inverse: #120f0a;
+    --text-primary: #1A0E08;
+    --text-secondary: #4A3728;
+    --text-light: #7A6258;
+    --text-inverse: #FAFAF7;
 
-    --bg-primary: #140f0b;
-    --bg-secondary: #1d1510;
-    --bg-tertiary: #2b1d14;
+    --bg-primary: #FAFAF7;
+    --bg-secondary: #F5F0EA;
+    --bg-tertiary: #EDE6DC;
 
-    --surface: rgba(255, 255, 255, 0.04);
-    --surface-strong: rgba(255, 255, 255, 0.08);
-    --border-color: rgba(255, 255, 255, 0.14);
-    --border-color-strong: rgba(255, 255, 255, 0.26);
+    --surface: rgba(0, 0, 0, 0.03);
+    --surface-strong: rgba(0, 0, 0, 0.06);
+    --border-color: rgba(0, 0, 0, 0.10);
+    --border-color-strong: rgba(0, 0, 0, 0.20);
 
-    --hero-overlay: linear-gradient(110deg, rgba(15, 10, 7, 0.62) 10%, rgba(15, 10, 7, 0.35) 45%, rgba(15, 10, 7, 0.7) 100%);
+    --hero-overlay: linear-gradient(110deg, rgba(250, 250, 247, 0.85) 10%, rgba(250, 250, 247, 0.5) 45%, rgba(250, 250, 247, 0.92) 100%);
 
     --font-display: 'Syncopate', sans-serif;
     --font-main: 'Manrope', sans-serif;
@@ -27,30 +27,30 @@
 }
 
 body[data-theme="saffron"] {
-    --theme-primary: #3a130f;
-    --theme-secondary: #fff0e4;
-    --theme-accent: #f25c2a;
-    --bg-primary: #140f0b;
-    --bg-secondary: #221610;
-    --bg-tertiary: #2d1c14;
+    --theme-primary: #C44A0C;
+    --theme-secondary: #FFF5EE;
+    --theme-accent: #E8730A;
+    --bg-primary: #FFFEF8;
+    --bg-secondary: #FFF7F0;
+    --bg-tertiary: #FFEDE0;
 }
 
 body[data-theme="honey"] {
-    --theme-primary: #533302;
-    --theme-secondary: #fff6dd;
-    --theme-accent: #f7b500;
-    --bg-primary: #191306;
-    --bg-secondary: #241a08;
-    --bg-tertiary: #34250b;
+    --theme-primary: #6B4800;
+    --theme-secondary: #FFF8E8;
+    --theme-accent: #C8960A;
+    --bg-primary: #FFFEF5;
+    --bg-secondary: #FFF9E8;
+    --bg-tertiary: #FFF0CC;
 }
 
 body[data-theme="shilajit"] {
-    --theme-primary: #0f1317;
-    --theme-secondary: #dbe9ef;
-    --theme-accent: #4fb0d3;
-    --bg-primary: #090d11;
-    --bg-secondary: #111821;
-    --bg-tertiary: #182330;
+    --theme-primary: #2C1810;
+    --theme-secondary: #F0EAE2;
+    --theme-accent: #7C4A2A;
+    --bg-primary: #FAFAF7;
+    --bg-secondary: #F5F0EA;
+    --bg-tertiary: #EDE6DC;
 }
 
 * {

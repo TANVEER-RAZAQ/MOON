@@ -12,22 +12,23 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { href: '/#sanctuary', label: 'Sanctuary' },
-    { href: '/#rituals', label: 'Rituals' },
-    { href: '/#archives', label: 'Archives' },
-    { href: '/#about', label: 'About' }
+    { href: '/#rituals', label: 'Shop' },
+    { href: '/#archives', label: 'Our Story' },
+    { href: '/#rituals', label: 'Shilajit' },
+    { href: '/#rituals', label: 'Saffron' },
+    { href: '/#about', label: 'Journal' },
   ];
 
   return (
     <nav
-      className="fixed top-0 z-50 w-full border-b border-outline-variant/20 bg-zinc-950/70 px-4 py-4 backdrop-blur-xl md:px-10"
+      className="fixed top-0 z-50 w-full border-b border-zinc-200/60 bg-white/85 px-4 py-4 backdrop-blur-xl md:px-10"
       id="navbar"
       aria-label="Primary"
     >
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
         <Link
           to="/#sanctuary"
-          className="font-headline text-xl font-bold tracking-tight text-zinc-100"
+          className="font-headline text-xl font-bold tracking-tight text-zinc-900"
           aria-label="Moon home"
         >
           MOON
@@ -38,7 +39,7 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
             <li key={item.href}>
               <Link
                 to={item.href}
-                className="font-headline text-xs font-semibold uppercase tracking-[0.1em] text-zinc-400 transition-colors duration-300 hover:text-zinc-100"
+                className="font-headline text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 transition-colors duration-300 hover:text-zinc-900"
               >
                 {item.label}
               </Link>
@@ -47,7 +48,7 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
           <li>
             <Link
               to="/admin/login"
-              className="font-headline text-xs font-semibold uppercase tracking-[0.1em] text-zinc-400 transition-colors duration-300 hover:text-zinc-100"
+              className="font-headline text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 transition-colors duration-300 hover:text-zinc-900"
             >
               Admin
             </Link>
@@ -62,11 +63,11 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
               onSearchClick();
             }}
           >
-            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">
+            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400">
               search
             </span>
             <input
-              className="w-44 border border-transparent bg-surface-container-low py-2 pl-10 pr-3 font-label text-[10px] uppercase tracking-[0.2em] text-zinc-300 outline-none transition-colors focus:border-secondary/50"
+              className="w-44 border border-transparent bg-zinc-100 py-2 pl-10 pr-3 font-label text-[10px] uppercase tracking-[0.2em] text-zinc-700 outline-none transition-colors focus:border-zinc-400/50"
               placeholder="Explore"
               type="search"
               aria-label="Search products"
@@ -74,7 +75,7 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
           </form>
 
           <button
-            className="relative rounded-full p-2 text-zinc-100 transition-opacity hover:opacity-80"
+            className="relative rounded-full p-2 text-zinc-800 transition-opacity hover:opacity-80"
             type="button"
             aria-label={`Open cart with ${cartCount} items`}
             onClick={onCartClick}
@@ -86,7 +87,7 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
           </button>
 
           <button
-            className="hidden rounded-full p-2 text-zinc-100 transition-opacity hover:opacity-80 md:inline-flex"
+            className="hidden rounded-full p-2 text-zinc-800 transition-opacity hover:opacity-80 md:inline-flex"
             type="button"
             aria-label="Owner dashboard login"
             onClick={onAccountClick}
@@ -95,9 +96,9 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
           </button>
 
           <button
-            className="rounded-full p-2 text-zinc-100 md:hidden"
+            className="rounded-full p-2 text-zinc-800 md:hidden"
             type="button"
-            aria-expanded={isMobileMenuOpen}
+            aria-expanded={isMobileMenuOpen ? 'true' : 'false'}
             aria-controls="mobile-menu"
             aria-label="Toggle mobile menu"
             onClick={() => setIsMobileMenuOpen((current) => !current)}
@@ -108,13 +109,13 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
       </div>
 
       {isMobileMenuOpen ? (
-        <div id="mobile-menu" className="mx-auto mt-4 w-full max-w-7xl border border-outline-variant/20 bg-surface-container-low p-4 md:hidden">
+        <div id="mobile-menu" className="mx-auto mt-4 w-full max-w-7xl border border-zinc-200/60 bg-white p-4 md:hidden">
           <ul className="space-y-3">
             {navItems.map((item) => (
               <li key={`mobile-${item.href}`}>
                 <Link
                   to={item.href}
-                  className="block font-headline text-xs font-semibold uppercase tracking-[0.12em] text-zinc-300"
+                  className="block font-headline text-xs font-semibold uppercase tracking-[0.12em] text-zinc-700"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.label}

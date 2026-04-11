@@ -6,7 +6,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
     title: 'Mountain Strength.',
     subtitle: 'Pure Himalayan resin for daily stamina, clarity, and recovery.',
     theme: 'shilajit',
-    color: '#4FB0D3',
+    color: '#7C4A2A',
     desc: 'Sourced from high-altitude Himalayan rocks and purified for potency. Our Shilajit is rich in fulvic acid and trace minerals.',
     price: '₹1,999',
     details: 'Gold Grade Resin<br>Third-party tested<br>Daily vitality support',
@@ -24,6 +24,18 @@ export const productStories: Record<ProductKey, ProductStory> = {
     details: 'Mongra A++ Grade<br>Deep red stigmas<br>Hand sorted threads',
     featureName: 'Kashmiri Saffron',
     featureDesc: "Hand-selected Mongra threads from Pampore's autumn harvest."
+  },
+  kashmiriHoney: {
+    key: 'kashmiriHoney',
+    title: 'Liquid Gold.',
+    subtitle: 'Raw Kashmiri honey — wild mountain harvested.',
+    theme: 'honey',
+    color: '#C8960A',
+    desc: 'Pure raw honey harvested from high-altitude Kashmir meadows. Unfiltered, enzyme-rich, and deeply nourishing.',
+    price: '₹1,150',
+    details: 'Wild mountain sourced<br>Unfiltered & raw<br>Enzyme-rich purity',
+    featureName: 'Kashmiri Honey',
+    featureDesc: 'Liquid gold from the meadows of Kashmir — raw, wild, and deeply nourishing.'
   },
   iraniSaffron: {
     key: 'iraniSaffron',
@@ -78,6 +90,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
 export const productOrder: ProductKey[] = [
   'shilajit',
   'kashmiriSaffron',
+  'kashmiriHoney',
   'iraniSaffron',
   'kashmiriAlmonds',
   'walnuts',
@@ -103,6 +116,15 @@ export const catalogItems: CatalogItem[] = [
     image: '/moon2222/ezgif-frame-120.jpg',
     alt: 'Premium saffron',
     productKey: 'kashmiriSaffron'
+  },
+  {
+    id: 'MOON-KHN-007',
+    title: 'Kashmiri Honey',
+    subtitle: 'Wild Mountain Raw Honey',
+    price: 1150,
+    image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-159.jpg',
+    alt: 'Kashmiri honey jar — liquid gold',
+    productKey: 'kashmiriHoney'
   },
   {
     id: 'MOON-IRS-003',
