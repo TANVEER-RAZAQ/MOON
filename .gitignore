@@ -3,7 +3,7 @@ node_modules/
 .claude
 .claude_flow
 .mcp.json
-
+graphify-out
 # ── Environment & secrets ─────────────────────────────────────────────────────
 .env
 .env.*
