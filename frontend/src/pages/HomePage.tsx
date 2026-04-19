@@ -3,8 +3,17 @@ import { HeroProductMedia } from '../components/HeroProductMedia';
 import { productStories } from '../data/products';
 import type { CatalogItem, ProductKey } from '../types';
 
-const CAROUSEL_PRODUCTS: ProductKey[] = ['shilajit', 'kashmiriSaffron', 'kashmiriHoney'];
-const CAROUSEL_MS = 10000;
+// 6 hero positions: each animation has a "video+CTA" slide then a "details" slide
+type SlidePos = { productKey: ProductKey; isDetails: boolean };
+const SLIDE_CONFIG: SlidePos[] = [
+  { productKey: 'shilajit',        isDetails: false },
+  { productKey: 'shilajit',        isDetails: true  },
+  { productKey: 'kashmiriSaffron', isDetails: false },
+  { productKey: 'kashmiriSaffron', isDetails: true  },
+  { productKey: 'kashmiriHoney',   isDetails: false },
+  { productKey: 'kashmiriHoney',   isDetails: true  },
+];
+const TOTAL_SLIDES = SLIDE_CONFIG.length;
 
 interface CarouselTheme {
   primary: string;
@@ -104,7 +113,8 @@ export function HomePage({
   const touchStartX = useRef<number>(0);
   const advanceRef = useRef<() => void>(() => {});
 
-  const activeKey = CAROUSEL_PRODUCTS[slideIndex];
+  const activeKey = SLIDE_CONFIG[slideIndex].productKey;
+  const isDetailSlide = SLIDE_CONFIG[slideIndex].isDetails;
   const theme = THEMES[activeKey];
   const activeStory = productStories[activeKey];
 
@@ -122,32 +132,48 @@ export function HomePage({
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
 
   const goToSlide = useCallback((index: number) => {
-    setIsTransitioning(true);
+    const newKey = SLIDE_CONFIG[index].productKey;
+    const isSameProduct = newKey === SLIDE_CONFIG[slideIndex]?.productKey;
     setHeroPhase(0);
-    setTimeout(() => {
+    if (isSameProduct) {
+      // Same video — no crossfade, just update state
       setSlideIndex(index);
       setAnimKey((k) => k + 1);
-      onSelectProduct(CAROUSEL_PRODUCTS[index]);
-      setIsTransitioning(false);
-    }, 700);
-  }, [onSelectProduct]);
+      onSelectProduct(newKey);
+    } else {
+      // New product — crossfade video out then in
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setSlideIndex(index);
+        setAnimKey((k) => k + 1);
+        onSelectProduct(newKey);
+        setIsTransitioning(false);
+      }, 700);
+    }
+  }, [slideIndex, onSelectProduct]);
 
   const advance = useCallback(() => {
-    goToSlide((slideIndex + 1) % CAROUSEL_PRODUCTS.length);
+    goToSlide((slideIndex + 1) % TOTAL_SLIDES);
   }, [slideIndex, goToSlide]);
 
   // Keep advanceRef current so phase timers can call it without stale closure
   useEffect(() => { advanceRef.current = advance; }, [advance]);
 
-  // Phase cascade per slide:
-  // 0→video (3s) → 1→CTA buttons (4s) → 2→details (12s) → auto-advance
+  // Phase cascade — different timings per slide type
   useEffect(() => {
-    setHeroPhase(0);
-    const t1 = setTimeout(() => setHeroPhase(1), 3000);   // 3s: CTA appears
-    const t2 = setTimeout(() => setHeroPhase(2), 7000);   // 7s: details appear right after CTA fades
-    const t3 = setTimeout(() => advanceRef.current(), 19000); // 19s: auto-advance (12s on details)
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [slideIndex]);
+    if (isDetailSlide) {
+      // Details slide: immediately show full content, 6s then auto-advance
+      setHeroPhase(2);
+      const t = setTimeout(() => advanceRef.current(), 6000);
+      return () => clearTimeout(t);
+    } else {
+      // Video slide: 0 → 4.5s → CTA buttons → 5s → auto-advance to details
+      setHeroPhase(0);
+      const t1 = setTimeout(() => setHeroPhase(1), 4500);
+      const t2 = setTimeout(() => advanceRef.current(), 9500);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    }
+  }, [slideIndex, isDetailSlide]);
 
   /* ── Editorial slideshow: cross-fade between slides ── */
   useEffect(() => {
@@ -184,8 +210,8 @@ export function HomePage({
         onTouchEnd={e => {
           const diff = touchStartX.current - e.changedTouches[0].clientX;
           if (Math.abs(diff) > 48) {
-            if (diff > 0) goToSlide((slideIndex + 1) % CAROUSEL_PRODUCTS.length);
-            else goToSlide((slideIndex - 1 + CAROUSEL_PRODUCTS.length) % CAROUSEL_PRODUCTS.length);
+            if (diff > 0) goToSlide((slideIndex + 1) % TOTAL_SLIDES);
+            else goToSlide((slideIndex - 1 + TOTAL_SLIDES) % TOTAL_SLIDES);
           }
         }}
       >
@@ -313,7 +339,7 @@ export function HomePage({
               className="mb-5 font-display text-[10px] uppercase tracking-[0.44em] carousel-text-enter"
               style={{ color: heroPhase >= 2 ? theme.accent : 'rgba(255,255,255,0.75)', position: 'relative', zIndex: 1, transition: 'color 0.6s ease' }}
             >
-              {String(slideIndex + 1).padStart(2, '0')}&thinsp;/&thinsp;{String(CAROUSEL_PRODUCTS.length).padStart(2, '0')}&nbsp;&nbsp;·&nbsp;&nbsp;Himalayan Origin
+              {String(Math.floor(slideIndex / 2) + 1).padStart(2, '0')}&thinsp;/&thinsp;03&nbsp;&nbsp;·&nbsp;&nbsp;Himalayan Origin
             </p>
             {/* Content panel — fades in at phase 2 */}
             <div style={{
@@ -428,25 +454,38 @@ export function HomePage({
 
         </div>
 
-        {/* ── CAROUSEL DOTS — pill style ── */}
+        {/* ── CAROUSEL DOTS — 6 positions, grouped in pairs ── */}
         <div
-          className="absolute bottom-10 left-8 flex items-center gap-3 md:left-14 lg:left-20 xl:left-24"
+          className="absolute bottom-10 left-8 flex items-center gap-1 md:left-14 lg:left-20 xl:left-24"
           style={{ zIndex: 30 }}
         >
-          {CAROUSEL_PRODUCTS.map((key, i) => (
-            <button
-              key={key}
-              type="button"
-              aria-label={`View ${productStories[key].featureName}`}
-              onClick={() => goToSlide(i)}
-              className="h-2 transition-all duration-500 hover:opacity-80"
-              style={{
-                width: i === slideIndex ? '28px' : '8px',
-                borderRadius: '4px',
-                background: i === slideIndex ? theme.primary : `rgba(${theme.glow},0.28)`,
-              }}
-            />
-          ))}
+          {SLIDE_CONFIG.map((pos, i) => {
+            const isActive = i === slideIndex;
+            const isInGroup = Math.floor(i / 2) === Math.floor(slideIndex / 2);
+            return (
+              <>
+                {i % 2 === 0 && i > 0 && (
+                  <span key={`gap-${i}`} style={{ width: 8 }} />
+                )}
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`${productStories[pos.productKey].featureName} ${pos.isDetails ? 'details' : 'video'}`}
+                  onClick={() => goToSlide(i)}
+                  className="h-1.5 transition-all duration-500 hover:opacity-80"
+                  style={{
+                    width: isActive ? '22px' : '6px',
+                    borderRadius: '3px',
+                    background: isActive
+                      ? theme.primary
+                      : isInGroup
+                        ? `rgba(${theme.glow},0.45)`
+                        : `rgba(${theme.glow},0.20)`,
+                  }}
+                />
+              </>
+            );
+          })}
         </div>
 
         {/* Progress bar */}
