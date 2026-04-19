@@ -24,8 +24,7 @@ const THEMES: Record<ProductKey, CarouselTheme> = {
 
 const EDITORIAL_SLIDES = [
   {
-    folder: '/moon333',
-    frameCount: 60,
+    image: '/moon333/ezgif-frame-162.png',
     title: 'Shilajit',
     tagline: 'Mountain Strength',
     desc: 'Purified Himalayan resin — gold grade, third-party tested.',
@@ -33,8 +32,7 @@ const EDITORIAL_SLIDES = [
     light: '#7C4A2A',
   },
   {
-    folder: '/moon2222',
-    frameCount: 60,
+    image: '/moon2222/ezgif-frame-162.png',
     title: 'Kashmiri Saffron',
     tagline: 'Crimson Ritual',
     desc: 'Mongra A++ threads from Pampore, hand-sorted and sun-dried.',
@@ -42,8 +40,7 @@ const EDITORIAL_SLIDES = [
     light: '#E8730A',
   },
   {
-    folder: '/ezgif-2fae6b36993927b6-jpg',
-    frameCount: 60,
+    image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',
     title: 'Kashmiri Honey',
     tagline: 'Liquid Gold',
     desc: 'Raw wild honey from high-altitude Kashmir meadows.',
@@ -576,7 +573,7 @@ export function HomePage({
           <div className="group relative h-[420px] overflow-hidden md:h-[640px]">
             {/* Static mid-point frame — grayscale by default, full color on hover */}
             <img
-              src={`${EDITORIAL_SLIDES[editorialSlide].folder}/ezgif-frame-096.png`}
+              src={EDITORIAL_SLIDES[editorialSlide].image}
               alt={EDITORIAL_SLIDES[editorialSlide].title}
               className="absolute inset-0 h-full w-full object-cover grayscale group-hover:grayscale-0"
               style={{

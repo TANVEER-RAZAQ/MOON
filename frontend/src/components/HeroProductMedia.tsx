@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CatalogItem, ProductKey, ProductStory } from '../types';
 import { useVideoScrubbing } from '../hooks/useStorytellingCanvas';
 import '../styles/HeroProductMedia.css';
@@ -60,6 +60,8 @@ const DESKTOP_MQ = '(min-width: 768px)';
 
 export function HeroProductMedia({ activeProduct, activeStory, activeItem, glow }: HeroProductMediaProps) {
   const [isDesktop, setIsDesktop] = useState(false);
+  const [mobileVideoReady, setMobileVideoReady] = useState(false);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const scrubRef = useVideoScrubbing(activeProduct, isDesktop);
   const media = HERO_MEDIA[activeProduct];
   const poster = activeItem?.image?.endsWith('.png') ? activeItem.image : media.poster;
@@ -77,6 +79,31 @@ export function HeroProductMedia({ activeProduct, activeStory, activeItem, glow 
     return () => mq.removeListener(sync as EventListener);
   }, []);
 
+  // Mobile: defer video load until page is idle to avoid blocking first paint
+  useEffect(() => {
+    if (isDesktop) return;
+    setMobileVideoReady(false);
+    let handle: number | ReturnType<typeof setTimeout>;
+    if ('requestIdleCallback' in window) {
+      handle = (window as Window & typeof globalThis).requestIdleCallback(
+        () => setMobileVideoReady(true),
+        { timeout: 2000 }
+      );
+      return () => (window as Window & typeof globalThis).cancelIdleCallback(handle as number);
+    }
+    handle = setTimeout(() => setMobileVideoReady(true), 1200);
+    return () => clearTimeout(handle as ReturnType<typeof setTimeout>);
+  }, [isDesktop, activeProduct]);
+
+  // Once video element exists, assign src and play
+  useEffect(() => {
+    if (!mobileVideoReady || isDesktop) return;
+    const v = mobileVideoRef.current;
+    if (!v) return;
+    v.load();
+    v.play().catch(() => {});
+  }, [mobileVideoReady, isDesktop, activeProduct]);
+
   return (
     <div className="hero-media-container absolute inset-0 overflow-hidden md:bottom-auto md:left-auto md:right-0 md:top-0 md:h-full md:w-[55%]">
       {/* Glow */}
@@ -87,23 +114,36 @@ export function HeroProductMedia({ activeProduct, activeStory, activeItem, glow 
         }}
       />
 
-      {/* Mobile: looping autoplay video — hidden on desktop */}
-      <video
-        key={`${activeProduct}-loop`}
-        aria-label={`${activeStory.featureName} product animation`}
-        autoPlay
-        className="hero-product-enter hero-media-video absolute inset-0 h-full w-full object-cover"
-        disablePictureInPicture
-        loop
-        muted
-        playsInline
-        poster={poster}
-        preload="metadata"
-        style={{ display: isDesktop ? 'none' : 'block' }}
-      >
-        <source src={media.webm} type="video/webm" />
-        <source src={media.mp4} type="video/mp4" />
-      </video>
+      {/* Mobile: poster shown instantly; video fades in after idle */}
+      {!isDesktop && (
+        <>
+          {/* Poster — visible immediately, zero network cost */}
+          <img
+            src={poster}
+            alt={activeStory.featureName}
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ opacity: mobileVideoReady ? 0 : 1, transition: 'opacity 0.6s ease' }}
+          />
+          {/* Video — src assigned after idle, fades over poster */}
+          <video
+            ref={mobileVideoRef}
+            key={`${activeProduct}-loop`}
+            aria-label={`${activeStory.featureName} product animation`}
+            className="hero-product-enter hero-media-video absolute inset-0 h-full w-full object-cover"
+            disablePictureInPicture
+            loop
+            muted
+            playsInline
+            poster={poster}
+            preload="none"
+            style={{ opacity: mobileVideoReady ? 1 : 0, transition: 'opacity 0.6s ease' }}
+          >
+            {mobileVideoReady && <source src={media.webm} type="video/webm" />}
+            {mobileVideoReady && <source src={media.mp4} type="video/mp4" />}
+          </video>
+        </>
+      )}
 
       {/* Desktop: scroll-driven video — loops at hero, scrubs on scroll */}
       {isDesktop && (
