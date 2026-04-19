@@ -16,40 +16,42 @@ interface HeroMediaAsset {
   webm: string;
 }
 
+const BLOB = 'https://kxxv61zbiojiooac.public.blob.vercel-storage.com';
+
 const HERO_MEDIA: Record<ProductKey, HeroMediaAsset> = {
   shilajit: {
-    webm: '/moon333.webm',
-    mp4: '/moon333.mp4',
+    webm: `${BLOB}/moon333.webm`,
+    mp4: `${BLOB}/moon333.mp4`,
     poster: '/moon333/ezgif-frame-162.png',
   },
   kashmiriSaffron: {
-    webm: '/moon2222.webm',
-    mp4: '/moon2222.mp4',
+    webm: `${BLOB}/moon2222.webm`,
+    mp4: `${BLOB}/moon2222.mp4`,
     poster: '/moon2222/ezgif-frame-162.png',
   },
   kashmiriHoney: {
-    webm: '/honey.webm',
-    mp4: '/honey.mp4',
+    webm: `${BLOB}/honey.webm`,
+    mp4: `${BLOB}/honey.mp4`,
     poster: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',
   },
   iraniSaffron: {
-    webm: '/honey.webm',
-    mp4: '/honey.mp4',
+    webm: `${BLOB}/honey.webm`,
+    mp4: `${BLOB}/honey.mp4`,
     poster: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',
   },
   kashmiriAlmonds: {
-    webm: '/moon2222.webm',
-    mp4: '/moon2222.mp4',
+    webm: `${BLOB}/moon2222.webm`,
+    mp4: `${BLOB}/moon2222.mp4`,
     poster: '/moon2222/ezgif-frame-162.png',
   },
   walnuts: {
-    webm: '/moon333.webm',
-    mp4: '/moon333.mp4',
+    webm: `${BLOB}/moon333.webm`,
+    mp4: `${BLOB}/moon333.mp4`,
     poster: '/moon333/ezgif-frame-162.png',
   },
   kashmiriGhee: {
-    webm: '/honey.webm',
-    mp4: '/honey.mp4',
+    webm: `${BLOB}/honey.webm`,
+    mp4: `${BLOB}/honey.mp4`,
     poster: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',
   },
 };
