@@ -36,9 +36,9 @@ export function Footer() {
           <div className="space-y-2">
             <h5 className="font-label text-[10px] uppercase tracking-[0.15em] text-zinc-500">Social</h5>
             <ul className="space-y-2">
-              <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-zinc-300 transition-colors hover:text-zinc-100">Instagram</a></li>
-              <li><a href="https://x.com" target="_blank" rel="noopener noreferrer" className="text-zinc-300 transition-colors hover:text-zinc-100">X</a></li>
-              <li><a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-zinc-300 transition-colors hover:text-zinc-100">YouTube</a></li>
+              <li><a href="https://www.instagram.com/moonnaturallyyours/" target="_blank" rel="noopener noreferrer" className="text-zinc-300 transition-colors hover:text-zinc-100">Instagram</a></li>
+              <li><a href="https://x.com/moonnaturallyyours" target="_blank" rel="noopener noreferrer" className="text-zinc-300 transition-colors hover:text-zinc-100">X</a></li>
+              <li><a href="https://www.youtube.com/@moonnaturallyyours" target="_blank" rel="noopener noreferrer" className="text-zinc-300 transition-colors hover:text-zinc-100">YouTube</a></li>
             </ul>
           </div>
         </div>
