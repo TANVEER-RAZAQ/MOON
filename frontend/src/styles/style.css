@@ -1650,3 +1650,266 @@ input {
         gap: 10px;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MOON DESIGN SYSTEM v2 — Premium Extended Components
+   ═══════════════════════════════════════════════════════════ */
+
+/* v2 Extended Color Tokens */
+:root {
+    /* Gold Luxury tier */
+    --gold-lux:       #C9A227;
+    --gold-lux-light: #E8C547;
+    --gold-lux-deep:  #8B6F1A;
+    --gold-lux-soft:  rgba(201,162,39,0.07);
+
+    /* Obsidian — premium dark surfaces */
+    --obsidian:   #08060A;
+    --obsidian-1: #100D14;
+    --obsidian-2: #1A1620;
+    --obsidian-3: #251F2E;
+
+    /* v2 Shadows — deeper, more premium */
+    --shadow-glow-warm:  0 0 24px rgba(210,87,27,0.16), 0 8px 24px rgba(42,27,16,0.14);
+    --shadow-glow-gold:  0 0 20px rgba(201,162,39,0.14), 0 4px 16px rgba(42,27,16,0.10);
+    --shadow-premium:    0 24px 64px -12px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.08);
+    --shadow-card-hover: 0 40px 80px -16px rgba(0,0,0,0.28), 0 16px 32px rgba(42,27,16,0.14);
+
+    /* v2 Glass morphism */
+    --glass-light: rgba(250,246,239,0.72);
+    --glass-warm:  rgba(250,246,239,0.48);
+    --glass-dark:  rgba(8,6,10,0.72);
+    --glass-gold:  rgba(201,162,39,0.06);
+
+    /* v2 Borders */
+    --border-gold:    rgba(201,162,39,0.24);
+    --border-premium: rgba(250,246,239,0.14);
+
+    /* v2 Radii */
+    --r-md: 8px; --r-lg: 16px; --r-xl: 28px;
+
+    /* v2 Gradient presets */
+    --gradient-saffron: linear-gradient(135deg, #B63E0F 0%, #E67336 100%);
+    --gradient-gold:    linear-gradient(135deg, #8B6F1A 0%, #E8C547 100%);
+    --gradient-dark:    linear-gradient(135deg, #0B0806 0%, #1F1811 100%);
+    --gradient-paper:   linear-gradient(135deg, #FAF6EF 0%, #ECE2D1 100%);
+}
+
+/* ── v2 Enhanced Product Cards ──────────────────────────── */
+.moon-card-v2 {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-xs, 2px);
+    transition:
+        transform var(--dur-slow) var(--ease-out),
+        box-shadow var(--dur-slow) var(--ease-out);
+}
+.moon-card-v2::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--card-accent, var(--saffron-500));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease-out);
+    z-index: 5;
+}
+.moon-card-v2:hover::after { transform: scaleX(1); }
+.moon-card-v2:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+/* Shimmer overlay on dark product image sections */
+.moon-img-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+.moon-img-shimmer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(250,246,239,0.07) 50%,
+        transparent 80%
+    );
+    transform: translateX(-120%);
+    animation: shimmer 3.5s ease-in-out infinite;
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* ── v2 Glass Morphism ──────────────────────────────────── */
+.moon-glass {
+    background: var(--glass-light);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--hairline);
+}
+.moon-glass-dark {
+    background: var(--glass-dark);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--hairline-dark);
+}
+
+/* ── v2 Glow Badge ──────────────────────────────────────── */
+.moon-glow-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border-gold);
+    background: var(--glass-gold);
+    font-family: var(--font-mark);
+    font-size: 0.5625rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--gold-lux-light);
+}
+
+/* ── v2 Responsive Design Showcase Device Frames ─────────── */
+.moon-mobile-frame {
+    width: 220px;
+    height: 440px;
+    border-radius: 36px;
+    border: 7px solid #1A1520;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 0 40px rgba(210,87,27,0.08),
+        var(--shadow-premium);
+    overflow: hidden;
+    position: relative;
+    background: var(--paper-0);
+    flex-shrink: 0;
+}
+.moon-mobile-frame::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 52px;
+    height: 4px;
+    background: #1A1520;
+    border-radius: 3px;
+    z-index: 20;
+}
+
+.moon-desktop-frame {
+    border-radius: 10px;
+    border: 6px solid #1A1520;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 0 40px rgba(201,162,39,0.06),
+        var(--shadow-premium);
+    overflow: hidden;
+    background: var(--paper-0);
+}
+.moon-desktop-topbar {
+    height: 26px;
+    background: #1A1520;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 6px;
+}
+.moon-desktop-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── v2 Showcase Feature Cards ──────────────────────────── */
+.moon-feature-card {
+    padding: 22px 24px;
+    border: 1px solid rgba(250,246,239,0.08);
+    border-radius: 8px;
+    background: rgba(250,246,239,0.03);
+    transition:
+        background var(--dur-base) var(--ease-out),
+        border-color var(--dur-base) var(--ease-out),
+        transform var(--dur-base) var(--ease-out);
+}
+.moon-feature-card:hover {
+    background: rgba(250,246,239,0.06);
+    border-color: rgba(201,162,39,0.18);
+    transform: translateY(-3px);
+}
+
+/* ── v2 Section premium background glow ────────────────── */
+.moon-section-dark {
+    background: var(--obsidian, #08060A);
+    position: relative;
+    overflow: hidden;
+}
+.moon-section-dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 0%,   rgba(210,87,27,0.04),  transparent 55%),
+        radial-gradient(ellipse 60% 50% at 80% 100%, rgba(201,162,39,0.04), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── v2 Divider accent ──────────────────────────────────── */
+.moon-divider-gold {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(201,162,39,0.3) 30%,
+        rgba(201,162,39,0.5) 50%,
+        rgba(201,162,39,0.3) 70%,
+        transparent 100%
+    );
+    border: none;
+    margin: 0;
+}
+
+/* ── v2 Stats section enhancement ──────────────────────── */
+.moon-stat-v2 {
+    position: relative;
+    padding: clamp(20px, 3vw, 32px);
+    border: 1px solid var(--hairline, rgba(11,8,6,0.12));
+    border-radius: 4px;
+    text-align: center;
+    background: var(--paper-0);
+    transition: box-shadow var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.moon-stat-v2:hover {
+    box-shadow: var(--shadow-glow-warm);
+    transform: translateY(-3px);
+}
+
+/* ── v2 Testimonial card ────────────────────────────────── */
+.moon-testimonial-v2 {
+    border: 1px solid var(--hairline, rgba(11,8,6,0.12));
+    background: var(--paper-0);
+    padding: 28px 24px;
+    margin: 0;
+    transition:
+        transform var(--dur-slow) var(--ease-out),
+        box-shadow var(--dur-slow) var(--ease-out),
+        border-color var(--dur-slow) var(--ease-out);
+}
+.moon-testimonial-v2:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-2);
+    border-color: var(--hairline-strong);
+}
+
+@media (max-width: 640px) {
+    .moon-mobile-frame {
+        width: 180px;
+        height: 360px;
+    }
+}

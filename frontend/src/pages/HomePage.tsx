@@ -5,9 +5,9 @@ import type { CatalogItem, ProductKey } from '../types';
 
 type SlidePos = { productKey: ProductKey; isDetails: boolean };
 const SLIDE_CONFIG: SlidePos[] = [
-  { productKey: 'shilajit',        isDetails: false },
+  { productKey: 'shilajit', isDetails: false },
   { productKey: 'kashmiriSaffron', isDetails: false },
-  { productKey: 'kashmiriHoney',   isDetails: false },
+  { productKey: 'kashmiriHoney', isDetails: false },
 ];
 const TOTAL_SLIDES = SLIDE_CONFIG.length; // 3
 
@@ -26,6 +26,18 @@ const THEMES: Record<ProductKey, CarouselTheme> = {
   walnuts: { primary: '#9E7A52', accent: '#7E5A32', glow: '158,122,82' },
   kashmiriGhee: { primary: '#F1B65A', accent: '#E8A040', glow: '241,182,90' },
 };
+
+/* v2 — Themed card image backgrounds & accent colors per product */
+const CARD_THEMES: Record<string, { imgBg: string; accentColor: string; starColor: string; btnBg: string }> = {
+  shilajit: { imgBg: 'linear-gradient(145deg,#0F0603,#2C1810)', accentColor: '#7C4A2A', starColor: '#9E6A42', btnBg: '#2C1810' },
+  kashmiriSaffron: { imgBg: 'linear-gradient(145deg,#1A0200,#3D1200)', accentColor: '#E8730A', starColor: '#E8730A', btnBg: '#B63E0F' },
+  kashmiriHoney: { imgBg: 'linear-gradient(145deg,#160900,#2B1800)', accentColor: '#C8960A', starColor: '#C8960A', btnBg: '#8B6000' },
+  iraniSaffron: { imgBg: 'linear-gradient(145deg,#1A1000,#3A2600)', accentColor: '#C8901F', starColor: '#C8901F', btnBg: '#8B6000' },
+  kashmiriAlmonds: { imgBg: 'linear-gradient(145deg,#120C07,#2A1C0E)', accentColor: '#CBA674', starColor: '#CBA674', btnBg: '#5A3921' },
+  walnuts: { imgBg: 'linear-gradient(145deg,#0D0803,#1E120A)', accentColor: '#9E7A52', starColor: '#9E7A52', btnBg: '#3A2810' },
+  kashmiriGhee: { imgBg: 'linear-gradient(145deg,#150F00,#2E2400)', accentColor: '#E8A040', starColor: '#E8A040', btnBg: '#6B4800' },
+};
+const DEFAULT_CARD = { imgBg: 'var(--paper-1)', accentColor: 'var(--saffron-500)', starColor: 'var(--saffron-500)', btnBg: 'var(--ink-0)' };
 
 const EDITORIAL_SLIDES = [
   {
@@ -107,7 +119,7 @@ export function HomePage({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const touchStartX = useRef<number>(0);
-  const advanceRef = useRef<() => void>(() => {});
+  const advanceRef = useRef<() => void>(() => { });
 
   const activeKey = SLIDE_CONFIG[slideIndex].productKey;
   const theme = THEMES[activeKey];
@@ -460,106 +472,106 @@ export function HomePage({
               position: 'relative', zIndex: 1,
             }}>
 
-            {/* Product name — massive */}
-            <h1
-              key={`title-${animKey}`}
-              className="font-display uppercase leading-[0.9] tracking-tighter carousel-text-enter"
-              style={{
-                fontSize: 'clamp(2rem, 8vw, 4.4rem)',
-                color: theme.primary,
-                animationDelay: '0.06s',
-                fontWeight: 900,
-              }}
-            >
-              {activeStory.featureName}
-            </h1>
-
-            {/* Tagline italic */}
-            <p
-              key={`tag-${animKey}`}
-              className="mt-3 font-headline text-base italic carousel-text-enter md:text-lg"
-              style={{ color: theme.accent, animationDelay: '0.1s' }}
-            >
-              {activeStory.title}
-            </p>
-
-            {/* Accent rule */}
-            <div
-              className="my-5 h-px w-12 carousel-text-enter"
-              style={{ background: `rgba(${theme.glow},0.45)`, animationDelay: '0.13s' }}
-            />
-
-            {/* Description */}
-            <p
-              key={`desc-${animKey}`}
-              className="max-w-sm text-sm leading-relaxed carousel-text-enter"
-              style={{ color: '#4A3A30', animationDelay: '0.16s' }}
-            >
-              {activeStory.desc}
-            </p>
-
-            {/* Feature tags */}
-            <div
-              key={`tags-${animKey}`}
-              className="mt-6 flex flex-wrap gap-2 carousel-text-enter"
-              style={{ animationDelay: '0.2s' }}
-            >
-              {bullets.slice(0, 3).map((b) => (
-                <span
-                  key={b}
-                  className="px-3 py-1.5 font-label text-[10px] uppercase tracking-[0.16em]"
-                  style={{
-                    border: `1px solid rgba(${theme.glow},0.32)`,
-                    background: `rgba(${theme.glow},0.05)`,
-                    color: theme.primary,
-                  }}
-                >
-                  {b}
-                </span>
-              ))}
-            </div>
-
-            {/* Price + CTAs */}
-            <div
-              key={`cta-${animKey}`}
-              className="mt-8 flex flex-col gap-4 carousel-text-enter sm:flex-row sm:items-center"
-              style={{ animationDelay: '0.24s' }}
-            >
-              <p
-                className="font-display text-2xl font-bold tracking-tight"
-                style={{ color: theme.primary }}
+              {/* Product name — massive */}
+              <h1
+                key={`title-${animKey}`}
+                className="font-display uppercase leading-[0.9] tracking-tighter carousel-text-enter"
+                style={{
+                  fontSize: 'clamp(2rem, 8vw, 4.4rem)',
+                  color: theme.primary,
+                  animationDelay: '0.06s',
+                  fontWeight: 900,
+                }}
               >
-                {activeItem ? fmt(activeItem.price) : activeStory.price}
+                {activeStory.featureName}
+              </h1>
+
+              {/* Tagline italic */}
+              <p
+                key={`tag-${animKey}`}
+                className="mt-3 font-headline text-base italic carousel-text-enter md:text-lg"
+                style={{ color: theme.accent, animationDelay: '0.1s' }}
+              >
+                {activeStory.title}
               </p>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={onAddDetailToCart}
-                  className="px-9 py-3.5 font-headline text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 active:scale-[0.98]"
-                  style={{
-                    background: theme.primary,
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                  }}
-                >
-                  Shop Now
-                </button>
-                <button
-                  type="button"
-                  onClick={onBrowseCollection}
-                  className="px-9 py-3.5 font-headline text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 hover:-translate-y-0.5"
-                  style={{
-                    border: `1.5px solid rgba(${theme.glow},0.45)`,
-                    color: theme.primary,
-                    background: 'rgba(250,246,239,0.25)',
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                  }}
-                >
-                  Explore
-                </button>
+
+              {/* Accent rule */}
+              <div
+                className="my-5 h-px w-12 carousel-text-enter"
+                style={{ background: `rgba(${theme.glow},0.45)`, animationDelay: '0.13s' }}
+              />
+
+              {/* Description */}
+              <p
+                key={`desc-${animKey}`}
+                className="max-w-sm text-sm leading-relaxed carousel-text-enter"
+                style={{ color: '#4A3A30', animationDelay: '0.16s' }}
+              >
+                {activeStory.desc}
+              </p>
+
+              {/* Feature tags */}
+              <div
+                key={`tags-${animKey}`}
+                className="mt-6 flex flex-wrap gap-2 carousel-text-enter"
+                style={{ animationDelay: '0.2s' }}
+              >
+                {bullets.slice(0, 3).map((b) => (
+                  <span
+                    key={b}
+                    className="px-3 py-1.5 font-label text-[10px] uppercase tracking-[0.16em]"
+                    style={{
+                      border: `1px solid rgba(${theme.glow},0.32)`,
+                      background: `rgba(${theme.glow},0.05)`,
+                      color: theme.primary,
+                    }}
+                  >
+                    {b}
+                  </span>
+                ))}
               </div>
-            </div>
+
+              {/* Price + CTAs */}
+              <div
+                key={`cta-${animKey}`}
+                className="mt-8 flex flex-col gap-4 carousel-text-enter sm:flex-row sm:items-center"
+                style={{ animationDelay: '0.24s' }}
+              >
+                <p
+                  className="font-display text-2xl font-bold tracking-tight"
+                  style={{ color: theme.primary }}
+                >
+                  {activeItem ? fmt(activeItem.price) : activeStory.price}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={onAddDetailToCart}
+                    className="px-9 py-3.5 font-headline text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 active:scale-[0.98]"
+                    style={{
+                      background: theme.primary,
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                    }}
+                  >
+                    Shop Now
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onBrowseCollection}
+                    className="px-9 py-3.5 font-headline text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 hover:-translate-y-0.5"
+                    style={{
+                      border: `1.5px solid rgba(${theme.glow},0.45)`,
+                      color: theme.primary,
+                      background: 'rgba(250,246,239,0.25)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                    }}
+                  >
+                    Explore
+                  </button>
+                </div>
+              </div>
             </div>{/* end content panel wrapper */}
           </div>
 
@@ -706,93 +718,96 @@ export function HomePage({
             gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))',
             gap: '20px',
           }}>
-            {catalogItems.map((item, idx) => (
-              <article
-                key={item.id}
-                className="group"
-                style={{
-                  border: '1px solid rgba(11,8,6,0.08)',
-                  background: 'var(--paper-0, #FAF6EF)',
-                  transition: 'transform 0.3s var(--ease-out), box-shadow 0.3s',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  borderRadius: 4,
-                  boxShadow: '0 1px 8px rgba(11,8,6,0.07), 0 4px 20px rgba(11,8,6,0.04)',
-                  overflow: 'hidden',
-                }}
-                onClick={() => onProductClick(item)}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-lift)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                }}
-              >
-                <div style={{ position: 'relative', overflow: 'hidden', background: 'var(--paper-1)' }}>
-                  <img
-                    src={item.image}
-                    alt={item.alt}
-                    className="group-hover:scale-[1.04]"
-                    style={{
-                      height: 260, width: '100%',
-                      objectFit: 'cover',
-                      transition: 'transform 700ms var(--ease-out)',
-                      display: 'block',
-                    }}
-                  />
-                  {item.featured && (
-                    <span style={{
-                      position: 'absolute', left: 12, top: 12,
-                      background: 'var(--saffron-500, #D2571B)', color: '#fff',
-                      padding: '4px 10px',
-                      fontFamily: 'var(--font-mark)', fontSize: '0.5625rem',
-                      letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700,
-                    }}>Best Seller</span>
-                  )}
-                </div>
+            {catalogItems.map((item) => {
+              const ct = item.productKey ? (CARD_THEMES[item.productKey] ?? DEFAULT_CARD) : DEFAULT_CARD;
+              return (
+                <article
+                  key={item.id}
+                  className="group moon-card-v2 stagger-up"
+                  style={{
+                    border: '1px solid rgba(11,8,6,0.08)',
+                    background: 'var(--paper-0, #FAF6EF)',
+                    cursor: 'pointer',
+                    ['--card-accent' as string]: ct.accentColor,
+                    boxShadow: '0 1px 8px rgba(11,8,6,0.07), 0 4px 20px rgba(11,8,6,0.04)',
+                  }}
+                  onClick={() => onProductClick(item)}
+                >
+                  {/* Image section — product-themed dark background */}
+                  <div className="moon-img-shimmer" style={{ position: 'relative', overflow: 'hidden', background: ct.imgBg }}>
+                    <img
+                      src={item.image}
+                      alt={item.alt}
+                      className="group-hover:scale-[1.04]"
+                      style={{
+                        height: 260, width: '100%',
+                        objectFit: 'cover',
+                        transition: 'transform 700ms var(--ease-out)',
+                        display: 'block',
+                      }}
+                    />
+                    {/* Bottom gradient in product accent color */}
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%',
+                      background: `linear-gradient(to top, ${ct.imgBg.match(/#[0-9A-Fa-f]{6}/)?.[1] ?? '#0B0806'}CC 0%, transparent 100%)`,
+                      pointerEvents: 'none', zIndex: 2,
+                    }} />
+                    {item.featured && (
+                      <span style={{
+                        position: 'absolute', left: 12, top: 12, zIndex: 3,
+                        background: ct.accentColor, color: '#fff',
+                        padding: '4px 10px',
+                        fontFamily: 'var(--font-mark)', fontSize: '0.5625rem',
+                        letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700,
+                        boxShadow: `0 2px 12px ${ct.accentColor}55`,
+                      }}>Best Seller</span>
+                    )}
+                  </div>
 
-                <div style={{ padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <div style={{
-                    fontFamily: 'var(--font-mark)', fontSize: '0.5625rem',
-                    letterSpacing: '0.22em', textTransform: 'uppercase',
-                    color: 'var(--ink-3, #8A7A66)',
-                  }}>{item.subtitle || 'Moon · Origin'}</div>
-                  <h3 style={{
-                    fontFamily: 'var(--font-serif, Fraunces, serif)',
-                    fontSize: '1.125rem', fontWeight: 500,
-                    color: 'var(--ink-0, #0B0806)', margin: 0,
-                  }}>{item.title}</h3>
-                  <span style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>★★★★★</span>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
-                    <span style={{
+                  <div style={{ padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{
+                      fontFamily: 'var(--font-mark)', fontSize: '0.5625rem',
+                      letterSpacing: '0.22em', textTransform: 'uppercase',
+                      color: 'var(--ink-3, #8A7A66)',
+                    }}>{item.subtitle || 'Moon · Origin'}</div>
+                    <h3 style={{
                       fontFamily: 'var(--font-serif, Fraunces, serif)',
                       fontSize: '1.125rem', fontWeight: 500,
-                      color: 'var(--ink-0)',
-                    }}>{fmt(item.price)}</span>
-                    <button
-                      type="button"
-                      onClick={e => { e.stopPropagation(); onAddCatalogToCart(item); }}
-                      style={{
-                        background: 'var(--ink-0, #0B0806)',
-                        color: '#fff',
-                        border: 'none',
-                        padding: '8px 16px',
-                        fontFamily: 'var(--font-mark)',
-                        fontSize: '0.5625rem',
-                        letterSpacing: '0.18em',
-                        textTransform: 'uppercase',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        borderRadius: 2,
-                        whiteSpace: 'nowrap',
-                      }}
-                    >Add to Cart</button>
+                      color: 'var(--ink-0, #0B0806)', margin: 0,
+                    }}>{item.title}</h3>
+                    <span style={{ fontSize: 11, color: ct.starColor, marginTop: 4, letterSpacing: 2 }}>★★★★★</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+                      <span style={{
+                        fontFamily: 'var(--font-serif, Fraunces, serif)',
+                        fontSize: '1.125rem', fontWeight: 500,
+                        color: ct.accentColor,
+                      }}>{fmt(item.price)}</span>
+                      <button
+                        type="button"
+                        onClick={e => { e.stopPropagation(); onAddCatalogToCart(item); }}
+                        style={{
+                          background: ct.btnBg,
+                          color: '#fff',
+                          border: 'none',
+                          padding: '8px 16px',
+                          fontFamily: 'var(--font-mark)',
+                          fontSize: '0.5625rem',
+                          letterSpacing: '0.18em',
+                          textTransform: 'uppercase',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          borderRadius: 2,
+                          whiteSpace: 'nowrap',
+                          transition: 'filter 0.2s, transform 0.2s',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.filter = 'brightness(1.15)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.filter = 'none'; (e.currentTarget as HTMLElement).style.transform = 'none'; }}
+                      >Add to Cart</button>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -918,13 +933,17 @@ export function HomePage({
         borderTop: '1px solid var(--hairline, rgba(11,8,6,0.12))',
         borderBottom: '1px solid var(--hairline, rgba(11,8,6,0.12))',
         padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,64px)',
+        position: 'relative',
+        overflow: 'hidden',
       }}>
+        {/* Subtle radial tint */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 70% 80% at 50% 50%, rgba(210,87,27,0.04), transparent 65%)' }} />
         <div style={{
-          maxWidth: 1320, margin: '0 auto',
-          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'clamp(24px,5vw,48px)',
+          maxWidth: 1320, margin: '0 auto', position: 'relative', zIndex: 1,
+          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'clamp(16px,3vw,24px)',
         }} className="md:grid-cols-4">
           {STATS.map(({ value, label }) => (
-            <div key={label} style={{ textAlign: 'center' }}>
+            <div key={label} className="moon-stat-v2">
               <p style={{
                 fontFamily: 'var(--font-serif, Fraunces, serif)',
                 fontSize: 'clamp(2rem,5vw,3.5rem)',
@@ -933,13 +952,218 @@ export function HomePage({
                 letterSpacing: '-0.02em', margin: 0,
               }}>{value}</p>
               <p style={{
-                marginTop: 10,
+                marginTop: 12,
                 fontFamily: 'var(--font-mark, Syncopate, sans-serif)',
                 fontSize: '0.625rem', letterSpacing: '0.18em',
                 textTransform: 'uppercase', color: 'var(--ink-3, #8A7A66)',
               }}>{label}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── THE MOON PROMISE ────────────────────────────────────────── */}
+      <section style={{
+        background: '#1A0E07',
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
+        {/* Ambient radial glows */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 60% 50% at 0% 50%, rgba(194,137,30,0.06), transparent 60%), radial-gradient(ellipse 50% 60% at 100% 50%, rgba(194,137,30,0.04), transparent 60%)',
+        }} />
+
+        <div style={{ maxWidth: 1320, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+
+          {/* Section header — editorial two-column */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,80px)',
+            alignItems: 'end', padding: 'clamp(56px,9vw,100px) clamp(16px,4vw,64px) 0',
+          }} className="promise-header">
+            <div>
+              <div style={{
+                fontFamily: 'var(--font-mark)', fontSize: '1rem',
+                letterSpacing: '0.28em', textTransform: 'uppercase',
+                color: '#C2891E', marginBottom: 20,
+              }}>Why Moon</div>
+              <h2 style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 'clamp(2.2rem,5vw,3.8rem)',
+                fontWeight: 300, lineHeight: 1.04, letterSpacing: '-0.01em',
+                color: '#F5EEE3', margin: 0,
+              }}>
+                We stake our name<br /><em style={{ color: '#C2891E', fontStyle: 'italic' }}>on every jar.</em>
+              </h2>
+            </div>
+            <div style={{ paddingBottom: 8 }}>
+              <p style={{
+                fontFamily: 'var(--font-sans)', fontSize: '1rem',
+                lineHeight: 1.75, color: 'rgba(245,238,227,0.5)',
+                maxWidth: '40ch',
+              }}>
+                Four commitments, made before a single product leaves Kashmir — the same ones we make to every customer, every order.
+              </p>
+            </div>
+          </div>
+
+          {/* Promise pillars grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))',
+            gap: '20px',
+            borderTop: '1px solid rgba(245,238,227,0.06)',
+            paddingTop: 'clamp(40px,6vw,64px)',
+            marginTop: 'clamp(40px,6vw,64px)',
+          }}>
+            {[
+              {
+                num: '01',
+                title: 'Single-Origin Sourced',
+                desc: 'Every product traces to one geography — no blending, no dilution. Kashmir Valley, Himalayan highlands, Kashmiri orchards. The provenance is on the label because we stand behind it.',
+                bgImage: '/pillars/saffron.png',
+              },
+              {
+                num: '02',
+                title: 'Third-Party Lab Tested',
+                desc: 'Each batch is verified by an independent laboratory for purity, potency and the absence of adulterants before it leaves our facility. You see the report, not just our word.',
+                bgImage: '/pillars/honey.png',
+              },
+              {
+                num: '03',
+                title: 'Direct from Farmers',
+                desc: 'No brokers, no aggregators, no middlemen. We work directly with growers, paying fair prices at farm gate and maintaining year-round relationships beyond the harvest.',
+                bgImage: '/pillars/shilajit.png',
+              },
+              {
+                num: '04',
+                title: 'Small Seasonal Batches',
+                desc: 'We harvest with the season, not against it. Limited runs mean every jar is fresh. When a batch sells out, it\'s gone until the next harvest cycle — we don\'t restock with old stock.',
+                bgImage: '/pillars/moon.png',
+                bgPos: '85% center',
+              },
+            ].map(({ num, title, desc, bgImage, bgPos }, i) => (
+              <div
+                key={num}
+                style={{
+                  position: 'relative',
+                  padding: 'clamp(32px,4vw,48px) clamp(20px,3vw,36px)',
+                  border: '1px solid rgba(245,238,227,0.06)',
+                  borderRadius: '12px',
+                  transition: 'border-color 0.4s ease, transform 0.4s ease',
+                  overflow: 'hidden',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,238,227,0.2)';
+                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
+                  const bg = e.currentTarget.querySelector('.promise-bg') as HTMLElement;
+                  if (bg) {
+                    bg.style.opacity = '0.6';
+                    bg.style.transform = 'scale(1.05)';
+                  }
+                  const titleEl = e.currentTarget.querySelector('h3') as HTMLElement;
+                  if (titleEl) {
+                    titleEl.style.fontWeight = '700';
+                    titleEl.style.textShadow = '0 2px 10px rgba(0,0,0,0.5)';
+                  }
+                  const descEl = e.currentTarget.querySelector('p') as HTMLElement;
+                  if (descEl) {
+                    descEl.style.color = 'rgba(255,255,255,0.7)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,238,227,0.06)';
+                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                  const bg = e.currentTarget.querySelector('.promise-bg') as HTMLElement;
+                  if (bg) {
+                    bg.style.opacity = '0.15';
+                    bg.style.transform = 'scale(1)';
+                  }
+                  const titleEl = e.currentTarget.querySelector('h3') as HTMLElement;
+                  if (titleEl) {
+                    titleEl.style.fontWeight = '400';
+                    titleEl.style.textShadow = 'none';
+                  }
+                  const descEl = e.currentTarget.querySelector('p') as HTMLElement;
+                  if (descEl) {
+                    descEl.style.color = 'rgba(245,238,227,0.42)';
+                  }
+                }}
+              >
+                {/* Background Image Layer */}
+                <div
+                  className="promise-bg"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundImage: `url(${bgImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: bgPos || 'center',
+                    opacity: 0.15,
+                    transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                    zIndex: 0,
+                  }}
+                />
+
+                {/* Content Layer */}
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: 'clamp(3rem,5vw,4.5rem)',
+                    fontWeight: 300, lineHeight: 1, letterSpacing: '-0.02em',
+                    color: 'rgba(194,137,30,0.15)',
+                    marginBottom: 28,
+                    userSelect: 'none',
+                    transition: 'color 0.4s ease',
+                  }}>{num}</div>
+                  <h3 style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: 'clamp(1.1rem,1.6vw,1.4rem)',
+                    fontWeight: 400, lineHeight: 1.22,
+                    color: '#F5EEE3',
+                    marginBottom: 16,
+                    transition: 'font-weight 0.4s ease, text-shadow 0.4s ease',
+                  }}>{title}</h3>
+                  <p style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '0.875rem', lineHeight: 1.72,
+                    color: 'rgba(245,238,227,0.42)',
+                    transition: 'color 0.4s ease',
+                  }}>{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom CTA strip */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            flexWrap: 'wrap', gap: 20,
+            padding: 'clamp(28px,4vw,40px) clamp(16px,4vw,64px)',
+            borderTop: '1px solid rgba(245,238,227,0.06)',
+          }}>
+            <p style={{
+              fontFamily: 'var(--font-sans)', fontSize: '0.875rem',
+              color: 'rgba(245,238,227,0.35)', maxWidth: '50ch',
+            }}>
+              Every claim on this page is backed by documentation available on request.
+            </p>
+            <button
+              type="button"
+              onClick={onBrowseCollection}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontFamily: 'var(--font-mark)', fontSize: '0.5625rem',
+                letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700,
+                color: '#C2891E', borderBottom: '1px solid #C2891E',
+                padding: '4px 0', transition: 'color 0.2s, border-color 0.2s',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4A83A'; (e.currentTarget as HTMLElement).style.borderBottomColor = '#D4A83A'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#C2891E'; (e.currentTarget as HTMLElement).style.borderBottomColor = '#C2891E'; }}
+            >
+              Shop the Collection →
+            </button>
+          </div>
         </div>
       </section>
 
@@ -971,22 +1195,8 @@ export function HomePage({
             {TESTIMONIALS.map(({ name, role, quote, rating }) => (
               <figure
                 key={name}
-                style={{
-                  border: '1px solid var(--hairline, rgba(11,8,6,0.12))',
-                  background: 'var(--paper-0)',
-                  padding: '28px 24px',
-                  margin: 0,
-                  boxShadow: 'var(--shadow-1)',
-                  transition: 'transform 0.3s, box-shadow 0.3s',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-2)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-1)';
-                }}
+                className="moon-testimonial-v2 stagger-up"
+                style={{ boxShadow: 'var(--shadow-1)', margin: 0 }}
               >
                 <div style={{ marginBottom: 16 }} aria-label={`${rating} stars`}>
                   {Array.from({ length: rating }).map((_, i) => (

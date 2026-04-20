@@ -111,3 +111,64 @@
 .hero-product-enter {
     animation: hero-product-enter 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
 }
+
+/* ─── MOON Design System v2 — Premium Animations ─────────── */
+
+/* Shimmer sweep for dark product cards */
+@keyframes shimmer {
+    0%   { transform: translateX(-120%); }
+    60%  { transform: translateX(220%); }
+    100% { transform: translateX(220%); }
+}
+
+/* Warm glow pulse for featured/hero elements */
+@keyframes glow-warm {
+    0%, 100% { box-shadow: 0 0 0 transparent; }
+    50%       { box-shadow: 0 0 28px rgba(210,87,27,0.18), 0 0 12px rgba(210,87,27,0.09); }
+}
+.glow-warm { animation: glow-warm 3.5s ease-in-out infinite; }
+
+/* Gold glow for luxury accent elements */
+@keyframes glow-gold {
+    0%, 100% { box-shadow: 0 0 0 transparent; }
+    50%       { box-shadow: 0 0 24px rgba(201,162,39,0.22), 0 0 10px rgba(201,162,39,0.10); }
+}
+.glow-gold { animation: glow-gold 4s ease-in-out infinite; }
+
+/* Stagger fade-up entrance for grids */
+@keyframes stagger-up {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.stagger-up { animation: stagger-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger-up:nth-child(1) { animation-delay: 0ms; }
+.stagger-up:nth-child(2) { animation-delay: 80ms; }
+.stagger-up:nth-child(3) { animation-delay: 160ms; }
+.stagger-up:nth-child(4) { animation-delay: 240ms; }
+.stagger-up:nth-child(5) { animation-delay: 320ms; }
+.stagger-up:nth-child(6) { animation-delay: 400ms; }
+.stagger-up:nth-child(7) { animation-delay: 480ms; }
+
+/* Gradient position shift (animated gradient text/bg) */
+@keyframes gradient-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.gradient-animated {
+    background-size: 200% 200%;
+    animation: gradient-shift 5s ease infinite;
+}
+
+/* Border shimmer — card top accent reveal */
+@keyframes border-sweep {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0% 0 0); }
+}
+
+/* Soft breathe — for device frame glow rings */
+@keyframes breathe {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50%       { opacity: 0.7; transform: scale(1.04); }
+}
+.breathe { animation: breathe 4s ease-in-out infinite; }
