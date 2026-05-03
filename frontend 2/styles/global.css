@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@import './style.css';
+@import './animations.css';
+@import './storytelling.css';
+
+@theme {
+  /* ── MOON Design System v2 — Full Palette ── */
+  --color-paper-0: #FAF6EF;
+  --color-paper-1: #F4EDE2;
+  --color-paper-2: #ECE2D1;
+  --color-paper-3: #E0D3BC;
+
+  --color-ink-0: #0B0806;
+  --color-ink-1: #1F1811;
+  --color-ink-2: #4A3E31;
+  --color-ink-3: #8A7A66;
+
+  --color-saffron-600: #B63E0F;
+  --color-saffron-500: #D2571B;
+  --color-saffron-400: #E67336;
+  --color-saffron-100: #FCE4D3;
+
+  --color-amber-500: #C58A1E;
+  --color-amber-100: #F6E5BE;
+  --color-resin-500: #5A3921;
+  --color-moss-500: #6B855A;
+  --color-moss-100: #DCE4D4;
+
+  --color-gold-lux: #C9A227;
+  --color-gold-lux-light: #E8C547;
+  --color-gold-lux-deep: #8B6F1A;
+  --color-gold-lux-soft: rgba(201, 162, 39, 0.08);
+
+  --color-obsidian: #08060A;
+  --color-obsidian-1: #100D14;
+  --color-obsidian-2: #1A1620;
+  --color-obsidian-3: #251F2E;
+
+  --color-card-shilajit: #2C1810;
+  --color-card-saffron: #3D1200;
+  --color-card-honey: #2B1800;
+  --color-card-irani: #3A2600;
+  --color-card-almond: #2A1C0E;
+  --color-card-walnut: #1E120A;
+  --color-card-ghee: #2E2400;
+
+  /* Legacy tokens */
+  --color-background: #131313;
+  --color-surface: #131313;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-variant: #353534;
+  --color-secondary: #ffb68b;
+  --color-secondary-container: #994702;
+  --color-primary: #bcc2ff;
+  --color-primary-container: #5e67aa;
+  --color-on-background: #e5e2e1;
+  --color-on-surface-variant: #c6c5d2;
+  --color-on-primary-container: #eeedff;
+  --color-on-secondary-fixed: #321300;
+  --color-outline-variant: #464650;
+
+  /* Fonts */
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-label: 'Manrope', sans-serif;
+  --font-display: 'Syncopate', sans-serif;
+  --font-serif: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-mark: 'Syncopate', 'Manrope', sans-serif;
+
+  /* Shadows */
+  --shadow-premium: 0 24px 64px -12px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.08);
+  --shadow-card-hover: 0 40px 80px -16px rgba(0,0,0,0.28), 0 16px 32px rgba(42,27,16,0.14);
+  --shadow-glow-saffron: 0 0 24px rgba(210,87,27,0.16), 0 8px 24px rgba(42,27,16,0.14);
+  --shadow-glow-gold: 0 0 20px rgba(201,162,39,0.14), 0 4px 16px rgba(42,27,16,0.10);
+}
