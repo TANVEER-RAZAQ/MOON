@@ -9,6 +9,7 @@ const notificationsRoutes = require('./notifications/notifications.routes');
 const ordersRoutes = require('./orders/orders.routes');
 const paymentsRoutes = require('./payments/payments.routes');
 const productsRoutes = require('./products/products.routes');
+const productsAdminRoutes = require('./products/products.admin.routes');
 const shippingRoutes = require('./shipping/shipping.routes');
 
 const router = express.Router();
@@ -23,5 +24,6 @@ router.use('/shipping', shippingRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/inventory', inventoryRoutes);
 router.use('/admin/analytics', analyticsRoutes);
+router.use('/admin/products', productsAdminRoutes);
 
 module.exports = router;
