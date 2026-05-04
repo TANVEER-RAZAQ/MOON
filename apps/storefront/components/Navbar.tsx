@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import '@/styles/Navbar.css';
 
@@ -12,40 +12,60 @@ interface NavbarProps {
   heroTheme?: 'light' | 'dark';
 }
 
-export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick, heroTheme = 'dark' }: NavbarProps) {
+const NAV_SECTIONS = [
+  { href: '/#shop',     label: 'Shop' },
+  { href: '/#rituals',  label: 'Rituals' },
+  { href: '/#archives', label: 'The Archive' },
+  { href: '/#journal',  label: 'Journal' },
+  { href: '/#contact',  label: 'Contact' },
+];
+
+export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const heroLight = heroTheme === 'light' && !scrolled;
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [menuOpen]);
 
-  const navItems = [
-    { href: '/#shop', label: 'Shop' },
-    { href: '/#rituals', label: 'Rituals' },
-    { href: '/#archives', label: 'The Archive' },
-    { href: '/#journal', label: 'Journal' },
-    { href: '/#contact', label: 'Contact' },
-  ];
+  // Close dropdown on scroll
+  useEffect(() => {
+    if (menuOpen) setMenuOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrolled]);
 
   return (
     <nav
       id="navbar"
       aria-label="Primary"
-      className={`moon-nav ${scrolled ? 'moon-nav--scrolled' : ''} ${heroLight ? 'moon-nav--hero-light' : ''}`}
+      className={`moon-nav${scrolled ? ' moon-nav--scrolled' : ''}`}
     >
       <div className="moon-nav-inner">
+        {/* Brand — leftmost */}
         <Link href="/" aria-label="Moon home" className="moon-wordmark">
-          <span className="moon-wordmark-text">moon.</span>
+          <span className="moon-wordmark-text">MOON.</span>
           <span className="moon-wordmark-tagline">Naturally yours</span>
         </Link>
 
-        <ul className="moon-nav-links hidden md:flex">
-          {navItems.map((item) => (
+        {/* Nav links — right of brand, desktop only */}
+        <ul className="moon-nav-links">
+          {NAV_SECTIONS.map((item) => (
             <li key={item.href}>
               <Link href={item.href} className="moon-nav-link">
                 {item.label}
@@ -54,6 +74,7 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick, 
           ))}
         </ul>
 
+        {/* Actions — far right */}
         <div className="moon-nav-actions">
           <button type="button" aria-label="Search" onClick={onSearchClick} className="moon-nav-action-btn">
             <span className="material-symbols-outlined moon-nav-icon">search</span>
@@ -61,27 +82,43 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick, 
           <button type="button" aria-label="Account" onClick={onAccountClick} className="moon-nav-action-btn hidden md:flex">
             <span className="material-symbols-outlined moon-nav-icon">person</span>
           </button>
-          <button type="button" aria-label={`Open cart, ${cartCount} items`} onClick={onCartClick} className="moon-nav-action-btn moon-nav-cart-btn">
+          <button type="button" aria-label={`Cart, ${cartCount} items`} onClick={onCartClick} className="moon-nav-action-btn moon-nav-cart-btn">
             <span className="material-symbols-outlined moon-nav-icon">shopping_bag</span>
             {cartCount > 0 && <span className="moon-cart-badge">{cartCount}</span>}
           </button>
-          <button type="button" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} onClick={() => setMobileOpen(o => !o)} className="moon-nav-action-btn md:hidden">
-            <span className="material-symbols-outlined moon-nav-icon">{mobileOpen ? 'close' : 'menu'}</span>
-          </button>
+
+          {/* Hamburger — only visible when scrolled, opens section navigator */}
+          <div ref={menuRef} className="moon-nav-menu-wrap">
+            <button
+              type="button"
+              aria-label={menuOpen ? 'Close navigation' : 'Open section navigation'}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(o => !o)}
+              className="moon-nav-action-btn moon-nav-hamburger"
+            >
+              <span className="material-symbols-outlined moon-nav-icon">
+                {menuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
+
+            {/* Section nav dropdown */}
+            {menuOpen && (
+              <div className="moon-nav-dropdown" role="menu">
+                {NAV_SECTIONS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    role="menuitem"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {mobileOpen && (
-        <div className="moon-mobile-menu">
-          <ul className="moon-mobile-menu-list">
-            {navItems.map(item => (
-              <li key={`m-${item.href}`}>
-                <Link href={item.href} onClick={() => setMobileOpen(false)} className="moon-mobile-link">{item.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </nav>
   );
 }

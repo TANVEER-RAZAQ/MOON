@@ -17,6 +17,8 @@ export interface BackendProduct {
   images?: Array<{ url: string; alt: string; order: number; blurDataUrl: string | null }>;
   category?: string | null;
   theme?: string | null;
+  in_stock?: boolean | null;
+  inventory?: { quantity: number; reserved: number; sku: string } | null;
 }
 
 export interface BackendCartItem {

@@ -1,10 +1,39 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import { catalogItems as staticCatalog } from '@/lib/data/product-statics';
 
 export const revalidate = 3600;
 
 const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/+$/, '');
+
+const slugToStaticProduct: Record<string, BackendProduct> = (() => {
+  const slugMap: Record<string, string> = {
+    shilajit: 'shilajit',
+    'kashmiri-saffron': 'kashmiriSaffron',
+    'kashmiri-honey': 'kashmiriHoney',
+    'irani-saffron': 'iraniSaffron',
+    'kashmiri-almonds': 'kashmiriAlmonds',
+    'kashmiri-walnuts': 'walnuts',
+    walnuts: 'walnuts',
+    'kashmiri-ghee': 'kashmiriGhee',
+  };
+  const result: Record<string, BackendProduct> = {};
+  for (const [slug, key] of Object.entries(slugMap)) {
+    const item = staticCatalog.find(c => c.productKey === key);
+    if (item) {
+      result[slug] = {
+        id: item.id,
+        name: item.title,
+        slug,
+        description: item.subtitle,
+        price: item.price,
+        image_url: item.image,
+      };
+    }
+  }
+  return result;
+})();
 
 interface ProductImage {
   url: string;
@@ -54,7 +83,7 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await fetchProduct(slug);
+  const product = (await fetchProduct(slug)) ?? slugToStaticProduct[slug] ?? null;
   if (!product) return { title: 'Product Not Found | MOON Naturally Yours' };
 
   const title = product.meta_title || `${product.name} | MOON Naturally Yours`;
@@ -89,7 +118,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = await fetchProduct(slug);
+  const product = (await fetchProduct(slug)) ?? slugToStaticProduct[slug] ?? null;
   if (!product) notFound();
 
   const sortedImages = [...(product.images ?? [])].sort((a, b) => a.order - b.order);

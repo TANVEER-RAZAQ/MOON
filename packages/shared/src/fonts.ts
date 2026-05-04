@@ -1,4 +1,4 @@
-import { Space_Grotesk, Manrope, Fraunces } from 'next/font/google';
+import { Space_Grotesk, Manrope, Fraunces, Syncopate, Plus_Jakarta_Sans, Inter } from 'next/font/google';
 
 export const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -22,8 +22,38 @@ export const fraunces = Fraunces({
   axes: ['opsz'],
 });
 
+export const syncopate = Syncopate({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['400', '700'],
+});
+
 export const allFontVars = [
   spaceGrotesk.variable,
   manrope.variable,
   fraunces.variable,
+  syncopate.variable,
+].join(' ');
+
+export const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800'],
+});
+
+export const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
+
+export const adminFontVars = [
+  spaceGrotesk.variable,
+  manrope.variable,
+  fraunces.variable,
+  plusJakartaSans.variable,
+  inter.variable,
 ].join(' ');

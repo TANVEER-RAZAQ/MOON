@@ -2,6 +2,15 @@
 
 import { useMemo, useState } from 'react';
 import { useGetInventoryQuery, useUpdateInventoryMutation } from '@/lib/store/services/admin-api';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Btn } from '@/components/ui/Btn';
+import { Card, cardStyle } from '@/components/ui/Card';
+import { Pill } from '@/components/ui/Pill';
+import { Icon } from '@/components/ui/Icon';
+import { StatCard } from '@/components/ui/StatCard';
+import { Bars } from '@/components/ui/Bars';
+import { Placeholder } from '@/components/ui/Placeholder';
+import type { CSSProperties } from 'react';
 
 type InventoryStatus = 'In Stock' | 'Low Stock' | 'Out of Stock';
 
@@ -10,16 +19,11 @@ interface InventoryRow {
   name: string;
   subtitle: string;
   sku: string;
+  slug: string;
   stock: number;
   reserved: number;
   available: number;
   status: InventoryStatus;
-}
-
-function statusClass(status: InventoryStatus) {
-  if (status === 'In Stock') return 'bg-green-100 text-green-700';
-  if (status === 'Low Stock') return 'bg-[#DA7937]/10 text-[#DA7937]';
-  return 'bg-red-100 text-red-700';
 }
 
 function inferStatus(quantity: number): InventoryStatus {
@@ -32,7 +36,6 @@ function exportInventoryCsv(rows: InventoryRow[]) {
   const headers = ['product_name', 'sku', 'quantity', 'reserved', 'available', 'status'];
   const csvRows = rows.map((row) => [row.name, row.sku, String(row.stock), String(row.reserved), String(row.available), row.status].join(','));
   const csv = [headers.join(','), ...csvRows].join('\n');
-
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -46,13 +49,7 @@ export function InventoryPage() {
   const [filter, setFilter] = useState<'all' | 'critical'>('all');
   const [rowError, setRowError] = useState('');
 
-  const {
-    data: inventory,
-    isLoading,
-    isError,
-    refetch
-  } = useGetInventoryQuery();
-
+  const { data: inventory, isLoading, isError, refetch } = useGetInventoryQuery();
   const [updateInventory, { isLoading: isUpdating }] = useUpdateInventoryMutation();
 
   const rows = useMemo<InventoryRow[]>(() => {
@@ -64,10 +61,11 @@ export function InventoryPage() {
         name: item.products?.name ?? 'Unknown Product',
         subtitle: item.products?.category ?? 'No category',
         sku: item.sku,
+        slug: item.products?.slug ?? '',
         stock: quantity,
         reserved,
         available: Math.max(quantity - reserved, 0),
-        status: inferStatus(quantity)
+        status: inferStatus(quantity),
       };
     });
   }, [inventory]);
@@ -81,177 +79,152 @@ export function InventoryPage() {
     const total = rows.length;
     const lowOrOut = rows.filter((row) => row.status !== 'In Stock').length;
     const totalQty = rows.reduce((sum, row) => sum + row.stock, 0);
-    return { total, lowOrOut, totalQty };
+    const outOfStock = rows.filter((row) => row.stock === 0).length;
+    return { total, lowOrOut, totalQty, outOfStock };
+  }, [rows]);
+
+  const velocitySeries = useMemo(() => {
+    return rows.map((r) => r.stock).slice(0, 30);
   }, [rows]);
 
   const updateStock = async (row: InventoryRow, nextQty: number) => {
     setRowError('');
-
     try {
-      await updateInventory({
-        id: row.id,
-        quantity: Math.max(nextQty, 0)
-      }).unwrap();
+      await updateInventory({ id: row.id, quantity: Math.max(nextQty, 0) }).unwrap();
       await refetch();
     } catch {
       setRowError(`Could not update inventory for ${row.name}.`);
     }
   };
 
-  return (
-    <section className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 max-w-[1600px] mx-auto w-full" data-module="inventory-layout">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-['Plus_Jakarta_Sans'] text-slate-900 tracking-tight">Inventory Management</h2>
-          <p className="text-slate-500 mt-1">Live stock visibility from backend inventory API.</p>
-        </div>
-        <div className="flex gap-3 flex-wrap">
-          <button className="px-5 py-2.5 bg-slate-100 text-slate-900 rounded-full font-semibold text-sm hover:bg-slate-200" type="button" onClick={() => exportInventoryCsv(visibleRows)}>
-            Export Report
-          </button>
-          <button
-            className="px-5 py-2.5 bg-gradient-to-br from-[#454e90] to-[#5e67aa] text-white rounded-full font-semibold text-sm shadow-md hover:shadow-lg"
-            type="button"
-            onClick={() => refetch()}
-          >
-            Refresh Inventory
-          </button>
-        </div>
-      </div>
+  const lowStockRows = rows.filter((r) => r.stock <= 10 && r.stock >= 0);
 
-      {isError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+  return (
+    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <PageHeader
+        eyebrow="Catalog"
+        title="Inventory"
+        subtitle="Stock levels across the catalog. We will alert you when items dip below their reorder threshold."
+        actions={[
+          <Btn key="a" variant="secondary" icon="download" size="sm" onClick={() => exportInventoryCsv(visibleRows)}>Export</Btn>,
+          <Btn key="b" variant="primary" icon="add_box" size="sm" onClick={() => refetch()}>Refresh</Btn>,
+        ]}
+      />
+
+      {isError && (
+        <div style={{
+          ...(cardStyle as CSSProperties), padding: '14px 18px',
+          borderColor: 'var(--terracotta)', fontSize: 13, color: 'var(--terracotta)',
+        }}>
           Unable to load inventory from backend.
         </div>
-      ) : null}
+      )}
 
-      {rowError ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      {rowError && (
+        <div style={{
+          ...(cardStyle as CSSProperties), padding: '14px 18px',
+          borderColor: 'var(--gold)', fontSize: 13, color: 'var(--gold)',
+        }}>
           {rowError}
         </div>
-      ) : null}
+      )}
 
-      <div className="flex gap-3 flex-wrap">
-        <button
-          type="button"
-          className={`px-4 py-2 rounded-full text-sm font-semibold ${filter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`}
-          onClick={() => setFilter('all')}
-        >
-          All Items
-        </button>
-        <button
-          type="button"
-          className={`px-4 py-2 rounded-full text-sm font-semibold ${filter === 'critical' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`}
-          onClick={() => setFilter('critical')}
-        >
-          Low/Out of Stock
-        </button>
+      {/* Stat cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        <StatCard label="Total units" value={isLoading ? '...' : stats.totalQty.toLocaleString()} sub={`across ${stats.total} SKUs`} tone="ink" />
+        <StatCard label="Low stock" value={isLoading ? '...' : String(stats.lowOrOut)} sub="≤ 10 units left" tone="gold" />
+        <StatCard label="Out of stock" value={isLoading ? '...' : String(stats.outOfStock)} sub="reorder needed" tone="terracotta" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 bg-white rounded-2xl shadow-[0_10px_30px_-15px_rgba(26,28,30,0.25)] overflow-hidden border border-slate-200/60">
-          <div className="p-6 border-b border-slate-100">
-            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-lg">Product Registry</h3>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-100/60 text-slate-500 text-xs uppercase tracking-wider">
-                  <th className="px-4 sm:px-6 py-4 whitespace-nowrap">Product Details</th>
-                  <th className="hidden md:table-cell px-4 sm:px-6 py-4 whitespace-nowrap">SKU</th>
-                  <th className="px-4 sm:px-6 py-4 text-center whitespace-nowrap">Quantity</th>
-                  <th className="px-4 sm:px-6 py-4 text-center whitespace-nowrap">Available</th>
-                  <th className="px-4 sm:px-6 py-4 whitespace-nowrap">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-sm">
-                {visibleRows.map((row) => (
-                  <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-4 sm:px-6 py-4 sm:py-5">
-                      <div className="font-semibold text-slate-900">{row.name}</div>
-                      <div className="text-xs text-slate-400">{row.subtitle}</div>
-                    </td>
-                    <td className="hidden md:table-cell px-4 sm:px-6 py-4 sm:py-5 text-slate-500 font-mono whitespace-nowrap">{row.sku}</td>
-                    <td className="px-4 sm:px-6 py-4 sm:py-5 text-center font-semibold whitespace-nowrap">
-                      <div className="inline-flex items-center gap-2">
-                        <button
-                          type="button"
-                          className="w-7 h-7 rounded-md border border-slate-300 text-slate-700"
-                          onClick={() => updateStock(row, row.stock - 1)}
-                          disabled={isUpdating}
-                          aria-label={`Decrease stock for ${row.name}`}
-                        >
-                          -
-                        </button>
-                        <span className="min-w-[2ch]">{row.stock}</span>
-                        <button
-                          type="button"
-                          className="w-7 h-7 rounded-md border border-slate-300 text-slate-700"
-                          onClick={() => updateStock(row, row.stock + 1)}
-                          disabled={isUpdating}
-                          aria-label={`Increase stock for ${row.name}`}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-4 sm:px-6 py-4 sm:py-5 text-center font-semibold whitespace-nowrap">{row.available}</td>
-                    <td className="px-4 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusClass(row.status)}`}>{row.status}</span>
-                    </td>
-                  </tr>
-                ))}
-                {!isLoading && visibleRows.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-4 sm:px-6 py-6 text-sm text-slate-500">No inventory rows for this filter.</td>
-                  </tr>
-                ) : null}
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={5} className="px-4 sm:px-6 py-6 text-sm text-slate-500">Loading inventory...</td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
+      {/* Stock alerts */}
+      <Card title="Stock alerts" subtitle="Items at or below their reorder threshold" action={
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button onClick={() => setFilter('all')} style={{
+            fontFamily: 'var(--font-mono)', fontSize: 11,
+            padding: '4px 10px', borderRadius: 999,
+            border: '1px solid ' + (filter === 'all' ? 'var(--saffron)' : 'var(--line)'),
+            background: filter === 'all' ? 'var(--saffron-soft)' : 'transparent',
+            color: filter === 'all' ? 'var(--saffron-ink)' : 'var(--ink-3)',
+            cursor: 'pointer',
+          }}>All</button>
+          <button onClick={() => setFilter('critical')} style={{
+            fontFamily: 'var(--font-mono)', fontSize: 11,
+            padding: '4px 10px', borderRadius: 999,
+            border: '1px solid ' + (filter === 'critical' ? 'var(--terracotta)' : 'var(--line)'),
+            background: filter === 'critical' ? 'rgba(181,87,58,0.1)' : 'transparent',
+            color: filter === 'critical' ? 'var(--terracotta)' : 'var(--ink-3)',
+            cursor: 'pointer',
+          }}>Low/Out</button>
         </div>
-
-        <div className="lg:col-span-4 space-y-6">
-          <article className="bg-white rounded-2xl shadow-[0_10px_30px_-15px_rgba(26,28,30,0.25)] p-5 sm:p-6 border border-slate-200/60">
-            <div className="flex justify-between items-start mb-8">
+      }>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {visibleRows.map((row, i) => (
+            <div key={row.id} style={{
+              display: 'grid', gridTemplateColumns: '50px 1fr 100px 140px 120px',
+              alignItems: 'center', gap: 16,
+              padding: '12px 0',
+              borderTop: i === 0 ? 'none' : '1px solid var(--line)',
+            }}>
+              <Placeholder label="" w={42} h={42} />
               <div>
-                <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-lg">Inventory Snapshot</h3>
-                <p className="text-xs text-slate-400">Real-time totals</p>
+                <div style={{ fontSize: 14, fontWeight: 500 }}>{row.name}</div>
+                <div className="mono" style={{ fontSize: 11.5, color: 'var(--ink-3)' }}>{row.sku}</div>
               </div>
-              <span className="material-symbols-outlined text-slate-300">monitoring</span>
+              <Pill tone="neutral">{row.subtitle}</Pill>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  onClick={() => updateStock(row, row.stock - 1)}
+                  disabled={isUpdating}
+                  style={{
+                    width: 26, height: 26, borderRadius: 6,
+                    border: '1px solid var(--line-strong)', background: 'var(--bg-elev)',
+                    color: 'var(--ink-2)', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14, fontWeight: 500,
+                  }}
+                >−</button>
+                <span className="mono" style={{
+                  fontSize: 13, minWidth: 32, textAlign: 'center',
+                  color: row.stock === 0 ? 'var(--terracotta)' : row.stock <= 10 ? 'var(--gold)' : 'var(--ink)',
+                }}>
+                  {row.stock}
+                </span>
+                <button
+                  onClick={() => updateStock(row, row.stock + 1)}
+                  disabled={isUpdating}
+                  style={{
+                    width: 26, height: 26, borderRadius: 6,
+                    border: '1px solid var(--line-strong)', background: 'var(--bg-elev)',
+                    color: 'var(--ink-2)', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14, fontWeight: 500,
+                  }}
+                >+</button>
+              </div>
+              <Pill tone={row.status === 'In Stock' ? 'sage' : row.status === 'Low Stock' ? 'gold' : 'terracotta'}>
+                {row.status}
+              </Pill>
             </div>
-
-            <div className="grid grid-cols-1 gap-4 text-sm">
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-[10px] text-slate-400 uppercase">Tracked Products</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-[10px] text-slate-400 uppercase">Low/Out of Stock</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.lowOrOut}</p>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-[10px] text-slate-400 uppercase">Total Units in Stock</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.totalQty}</p>
-              </div>
+          ))}
+          {!isLoading && visibleRows.length === 0 && (
+            <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+              No inventory items match this filter.
             </div>
-          </article>
-
-          <article className="bg-gradient-to-br from-[#5e67aa] to-[#454e90] rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden">
-            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-lg mb-1">Operational Note</h3>
-            <p className="text-xs text-white/70 mb-5">Use +/- controls in the table to update quantities. Changes are persisted via `/api/inventory/:id`.</p>
-            <p className="text-sm leading-relaxed text-white/90">
-              This page is now backend-driven. Any stock update here reflects directly in inventory records used for checkout validation.
-            </p>
-          </article>
+          )}
+          {isLoading && (
+            <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+              Loading inventory…
+            </div>
+          )}
         </div>
-      </div>
-    </section>
+      </Card>
+
+      {/* Velocity */}
+      {velocitySeries.length > 1 && (
+        <Card title="Stock distribution" subtitle="Current stock levels across products">
+          <Bars data={velocitySeries} height={140} />
+        </Card>
+      )}
+    </div>
   );
 }

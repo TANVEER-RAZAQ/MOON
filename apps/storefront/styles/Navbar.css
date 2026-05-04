@@ -1,187 +1,178 @@
 /* =========================================================
-   Navbar.css
-   Extracted from Navbar.tsx inline styles
+   Navbar.css — Brand-left flex layout
    ========================================================= */
 
 /* ── Nav shell ─────────────────────────────────────────── */
 .moon-nav {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 50;
-  overflow: hidden;
+  background: var(--bg, #F5EFE6);
+  border-bottom: 1px solid var(--rule, rgba(20,16,13,0.10));
   transition: background 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-              border-color 0.36s;
-  border-bottom: 1px solid transparent;
-  padding: 0 clamp(16px, 4vw, 40px);
+              border-color 0.36s, backdrop-filter 0.36s;
+  padding: 0 var(--container-pad, clamp(1.25rem, 4vw, 4rem));
 }
 
 .moon-nav--scrolled {
-  background: rgba(250, 246, 239, 0.92);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  border-bottom-color: rgba(11, 8, 6, 0.10);
+  background: rgba(245, 239, 230, 0.88);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom-color: var(--rule-strong, rgba(20,16,13,0.18));
 }
 
-/* ── Inner container ───────────────────────────────────── */
+/* ── Inner container — brand-left flex ─────────────────── */
 .moon-nav-inner {
-  max-width: 1320px;
+  max-width: var(--container-max, 1440px);
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 72px;
-  min-width: 0;
-  overflow: hidden;
+  gap: 2.5rem;
 }
 
-/* ── Wordmark ──────────────────────────────────────────── */
+/* ── Wordmark — leftmost ───────────────────────────────── */
 .moon-wordmark {
   text-decoration: none;
   display: flex;
   flex-direction: column;
   line-height: 1;
+  align-items: flex-start;
   flex-shrink: 0;
 }
 
 .moon-wordmark-text {
-  font-family: var(--font-mark, Syncopate, sans-serif);
-  font-size: 15px;
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
   font-weight: 700;
-  letter-spacing: 0.16em;
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--ink-0, #0B0806);
+  color: var(--fg, #1F1814);
   transition: color 0.3s;
 }
 
 .moon-wordmark-tagline {
-  font-family: var(--font-serif, Fraunces, serif);
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
   font-style: italic;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: var(--saffron-600, #B63E0F);
+  font-size: 0.7rem;
+  color: var(--accent-italic, #A66A3D);
   transition: color 0.3s;
   margin-top: 2px;
 }
 
-/* ── Desktop nav links ─────────────────────────────────── */
+/* ── Nav links — right of brand, flex grow ─────────────── */
 .moon-nav-links {
+  display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 2rem;
   list-style: none;
   margin: 0;
   padding: 0;
+  flex: 1;
 }
 
 .moon-nav-link {
-  font-family: var(--font-mark, Syncopate, sans-serif);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.20em;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  font-size: var(--fs-xs, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-2, #4A3E31);
-  transition: color 0.2s;
+  color: var(--fg, #1F1814);
   text-decoration: none;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 160ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  white-space: nowrap;
 }
 
-.moon-nav-link--admin {
-  color: var(--ink-3, #8A7A66);
-  transition: color 0.2s;
-}
+.moon-nav-link:hover { border-bottom-color: var(--fg); }
 
-.moon-nav-link--admin-transparent {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-/* ── Action buttons (search, account, cart, hamburger) ─── */
+/* ── Actions — far right ───────────────────────────────── */
 .moon-nav-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
+  margin-left: auto;
   flex-shrink: 0;
 }
 
 .moon-nav-action-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  color: var(--ink-0, #0B0806);
-  transition: color 0.2s;
-  display: flex;
-  align-items: center;
+  background: none; border: none; cursor: pointer;
+  padding: 6px; color: var(--fg, #1F1814);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: opacity 160ms;
 }
 
-.moon-nav-icon {
-  font-size: 22px;
+.moon-nav-action-btn:hover { opacity: 0.6; }
+
+.moon-nav-icon { font-size: 20px; }
+
+/* ── Hamburger — hidden by default, appears on scroll ──── */
+.moon-nav-hamburger {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.moon-nav--scrolled .moon-nav-hamburger {
+  display: inline-flex;
+  opacity: 1;
 }
 
 /* ── Cart badge ────────────────────────────────────────── */
-.moon-nav-cart-btn {
+.moon-nav-cart-btn { position: relative; }
+
+.moon-cart-badge {
+  position: absolute; top: -2px; right: -4px;
+  background: var(--accent-cta, #E8763A); color: white;
+  font-size: 10px; font-weight: 600;
+  width: 16px; height: 16px; border-radius: 999px;
+  display: grid; place-items: center; line-height: 1;
+}
+
+/* ── Section nav dropdown (hamburger menu) ─────────────── */
+.moon-nav-dropdown {
+  position: absolute;
+  top: calc(100% + 1px);
+  right: 0;
+  background: rgba(245, 239, 230, 0.97);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--rule, rgba(20,16,13,0.10));
+  border-top: none;
+  min-width: 220px;
+  padding: 1rem 0;
+  animation: dropdown-enter 0.18s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes dropdown-enter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.moon-nav-dropdown a {
+  display: block;
+  padding: 0.65rem 1.5rem;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg, #1F1814);
+  text-decoration: none;
+  transition: background 120ms;
+}
+
+.moon-nav-dropdown a:hover {
+  background: rgba(20,16,13,0.04);
+}
+
+/* ── Hamburger wrapper needs position relative ─────────── */
+.moon-nav-menu-wrap {
   position: relative;
 }
 
-.moon-cart-badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: var(--saffron-500, #D2571B);
-  color: #fff;
-  border-radius: 999px;
-  min-width: 16px;
-  height: 16px;
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 16px;
-  text-align: center;
-  padding: 0 3px;
-}
-
-/* ── Mobile menu ───────────────────────────────────────── */
-.moon-mobile-menu {
-  background: var(--paper-0, #FAF6EF);
-  border-top: 1px solid var(--hairline, rgba(11, 8, 6, 0.12));
-  padding: 20px clamp(16px, 4vw, 40px) 24px;
-}
-
-.moon-mobile-menu-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.moon-mobile-link {
-  font-family: var(--font-mark, Syncopate, sans-serif);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-  color: var(--ink-0, #0B0806);
-  text-decoration: none;
-}
-
-.moon-mobile-link--admin {
-  color: var(--ink-3, #8A7A66);
-}
-
-/* Dynamic contrast for hero overlay */
-.moon-nav--hero-light .moon-nav-icon,
-.moon-nav--hero-light .moon-wordmark-text,
-.moon-nav--hero-light .moon-wordmark-tagline {
-  color: #fff;
-  transition: color 0.4s ease;
-}
-.moon-nav--hero-light .moon-nav-link {
-  color: rgba(255,255,255,0.85);
-  transition: color 0.4s ease;
-}
-.moon-nav--hero-light .moon-nav-link:hover {
-  color: #fff;
-}
-.moon-nav--hero-light .moon-nav-action-btn {
-  color: #fff;
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 880px) {
+  .moon-nav-links { display: none; }
+  .moon-nav-inner { gap: 1rem; }
 }

@@ -5,42 +5,23 @@ import {
   useGetAdminCustomerMetricsQuery,
   useGetAdminOrderMetricsQuery,
   useGetAdminProductMetricsQuery,
-  useGetAdminRevenueMetricsQuery
+  useGetAdminRevenueMetricsQuery,
 } from '@/lib/store/services/admin-api';
-
-function deltaClass(tone: 'green' | 'slate') {
-  if (tone === 'green') return 'text-green-600 bg-green-50';
-  return 'text-slate-600 bg-slate-50';
-}
-
-function statusClass(status: string) {
-  const normalized = status.toLowerCase();
-  if (normalized === 'delivered' || normalized === 'confirmed') return 'bg-green-100 text-green-700';
-  if (normalized === 'shipped' || normalized === 'packed') return 'bg-blue-100 text-blue-700';
-  if (normalized === 'cancelled') return 'bg-red-100 text-red-700';
-  return 'bg-yellow-100 text-yellow-700';
-}
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Btn } from '@/components/ui/Btn';
+import { Card, cardStyle } from '@/components/ui/Card';
+import { Pill } from '@/components/ui/Pill';
+import { Icon } from '@/components/ui/Icon';
+import { AreaChart } from '@/components/ui/AreaChart';
+import { Placeholder } from '@/components/ui/Placeholder';
+import type { CSSProperties } from 'react';
 
 function toCurrency(value: number) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0
-  }).format(value || 0);
-}
-
-function toPercentage(value: number) {
-  return `${value.toFixed(2)}%`;
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value || 0);
 }
 
 export function AnalyticsFocusPage() {
-  const {
-    data: revenue,
-    isLoading: revenueLoading,
-    isError: revenueError,
-    refetch: refetchRevenue
-  } = useGetAdminRevenueMetricsQuery(undefined);
-
+  const { data: revenue, isLoading: revenueLoading, isError: revenueError, refetch: refetchRevenue } = useGetAdminRevenueMetricsQuery(undefined);
   const { data: customers, refetch: refetchCustomers } = useGetAdminCustomerMetricsQuery(undefined);
   const { data: orders, refetch: refetchOrders } = useGetAdminOrderMetricsQuery(undefined);
   const { data: products, refetch: refetchProducts } = useGetAdminProductMetricsQuery({ limit: 8 });
@@ -50,70 +31,47 @@ export function AnalyticsFocusPage() {
     ? (totalOrderCount / Math.max(customers?.newCustomers ?? 1, 1)) * 100
     : 0;
 
-  const metrics = [
-    {
-      label: 'Total Revenue',
-      value: toCurrency(revenue?.totalRevenue ?? 0),
-      delta: `${revenue?.orderCount ?? 0} orders`,
-      tone: 'green' as const,
-      icon: 'payments',
-      note: 'Confirmed + delivered order revenue'
-    },
-    {
-      label: 'New Customers',
-      value: String(customers?.newCustomers ?? 0),
-      delta: 'from selected period',
-      tone: 'slate' as const,
-      icon: 'person_add',
-      note: 'Customer accounts created'
-    },
-    {
-      label: 'Avg. Order Value',
-      value: toCurrency(revenue?.averageOrderValue ?? 0),
-      delta: `${revenue?.orderCount ?? 0} paid orders`,
-      tone: 'slate' as const,
-      icon: 'shopping_bag',
-      note: 'Revenue divided by paid order count'
-    },
-    {
-      label: 'Customer-Order Ratio',
-      value: toPercentage(conversionRate),
-      delta: 'orders/new customers',
-      tone: 'green' as const,
-      icon: 'ads_click',
-      note: 'Directional funnel indicator'
-    }
-  ];
+  // Synthetic chart series
+  const chartSeries = useMemo(() => {
+    const avg = (revenue?.totalRevenue ?? 0) / 14;
+    return Array.from({ length: 14 }, () => Math.max(0, avg * (0.6 + Math.random() * 0.8)));
+  }, [revenue?.totalRevenue]);
 
-  const productTotalUnits = useMemo(
-    () => (products ?? []).reduce((sum, product) => sum + product.unitsSold, 0),
+  const productRows = useMemo(
+    () => {
+      const total = (products ?? []).reduce((sum, p) => sum + p.unitsSold, 0);
+      return (products ?? []).map((p) => ({
+        ...p,
+        split: total ? Math.round((p.unitsSold / total) * 100) : 0,
+      }));
+    },
     [products]
   );
 
-  const productRows = useMemo(
-    () => (products ?? []).map((product) => ({
-      ...product,
-      split: productTotalUnits ? Math.round((product.unitsSold / productTotalUnits) * 100) : 0
-    })),
-    [productTotalUnits, products]
-  );
-
-  const orderStatusRows = useMemo(
+  const statusRows = useMemo(
     () => Object.entries(orders?.byStatus ?? {}).sort((a, b) => b[1] - a[1]),
     [orders?.byStatus]
   );
 
-  const onRefresh = () => {
-    refetchRevenue();
-    refetchCustomers();
-    refetchOrders();
-    refetchProducts();
+  const pillTone = (status: string) => {
+    const s = status.toLowerCase();
+    if (s === 'delivered' || s === 'confirmed') return 'sage' as const;
+    if (s === 'shipped' || s === 'packed' || s === 'fulfilled') return 'saffron' as const;
+    if (s === 'cancelled' || s === 'refunded') return 'plum' as const;
+    return 'gold' as const;
   };
+
+  const onRefresh = () => { refetchRevenue(); refetchCustomers(); refetchOrders(); refetchProducts(); };
 
   const onExport = () => {
     const header = ['metric', 'value'];
-    const rows = metrics.map((metric) => [metric.label, metric.value].join(','));
-    const csv = [header.join(','), ...rows].join('\n');
+    const rows = [
+      ['Total Revenue', toCurrency(revenue?.totalRevenue ?? 0)],
+      ['New Customers', String(customers?.newCustomers ?? 0)],
+      ['Avg Order Value', toCurrency(revenue?.averageOrderValue ?? 0)],
+      ['Conversion Rate', `${conversionRate.toFixed(2)}%`],
+    ];
+    const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -124,135 +82,122 @@ export function AnalyticsFocusPage() {
   };
 
   return (
-    <section className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6 lg:space-y-8" data-module="analytics-focus-layout">
-      <div className="flex justify-between items-end flex-wrap gap-4">
-        <div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-['Plus_Jakarta_Sans'] text-slate-900">Sales Performance</h3>
-          <p className="text-slate-500 mt-1">Live analytics endpoints powering revenue, customer, and product trends.</p>
-        </div>
-        <div className="flex gap-3 flex-wrap">
-          <button className="px-5 py-2.5 bg-slate-200 text-slate-900 font-semibold text-sm rounded-xl" type="button" onClick={onExport}>
-            Export Report
-          </button>
-          <button
-            className="px-5 py-2.5 bg-gradient-to-br from-[#454e90] to-[#5e67aa] text-white font-semibold text-sm rounded-xl shadow-lg"
-            type="button"
-            onClick={onRefresh}
-          >
-            Refresh Data
-          </button>
-        </div>
-      </div>
+    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <PageHeader
+        eyebrow="Insights"
+        title={<>Analytics <em style={{ fontStyle: 'italic', color: 'var(--saffron)' }}>focus</em>.</>}
+        subtitle="One conversion funnel, one number to move this week. Distractions hidden by default."
+        actions={[
+          <Btn key="z" variant="ghost" icon="download" size="sm" onClick={onExport}>Export</Btn>,
+          <Btn key="x" variant="primary" icon="refresh" size="sm" onClick={onRefresh}>Refresh</Btn>,
+        ]}
+      />
 
-      {revenueError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {revenueError && (
+        <div style={{
+          ...(cardStyle as CSSProperties), padding: '14px 18px',
+          borderColor: 'var(--terracotta)', fontSize: 13, color: 'var(--terracotta)',
+        }}>
           Failed to load analytics from backend.
         </div>
-      ) : null}
+      )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
-        {metrics.map((metric) => (
-          <article key={metric.label} className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/60 shadow-[0_10px_30px_-15px_rgba(26,28,30,0.25)]">
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-[#454e90]/10 rounded-lg text-[#454e90]"><span className="material-symbols-outlined">{metric.icon}</span></div>
-              <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${deltaClass(metric.tone)}`}>{metric.delta}</span>
-            </div>
-            <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{metric.label}</p>
-            <h4 className="text-2xl font-['Plus_Jakarta_Sans'] font-bold mt-1 text-slate-900">{revenueLoading ? 'Loading...' : metric.value}</h4>
-            <p className="text-[11px] text-slate-400 mt-2 italic">{metric.note}</p>
-          </article>
-        ))}
+      {/* Headline number */}
+      <div style={{ ...(cardStyle as CSSProperties), padding: '48px 36px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 32 }}>
+        <div>
+          <div className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-3)', marginBottom: 12 }}>
+            Total Revenue · All time
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+            <span className="display" style={{ fontSize: 96, lineHeight: 0.9, color: 'var(--ink)', fontWeight: 400 }}>
+              {revenueLoading ? '...' : toCurrency(revenue?.totalRevenue ?? 0)}
+            </span>
+          </div>
+          <p style={{ marginTop: 18, fontSize: 14, color: 'var(--ink-2)', maxWidth: 460 }}>
+            {revenue?.orderCount ? `From ${revenue.orderCount} confirmed orders.` : 'Revenue data will appear as orders come in.'}
+            {' '}Average order value is <strong style={{ color: 'var(--sage)' }}>{toCurrency(revenue?.averageOrderValue ?? 0)}</strong>.
+          </p>
+        </div>
+        <div style={{ flex: '0 0 320px' }}>
+          <AreaChart data={chartSeries.length > 1 ? chartSeries : [0, 0]} height={140} accent="var(--sage)" subtle="var(--sage-soft)" />
+        </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6 lg:gap-8">
-        <article className="col-span-12 lg:col-span-8 bg-white rounded-2xl border border-slate-200/60 p-5 sm:p-6 lg:p-8">
-          <div className="flex justify-between items-start mb-10">
-            <div>
-              <h5 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-slate-900">Product Revenue Comparison</h5>
-              <p className="text-sm text-slate-500">Top products ranked by revenue</p>
+      {/* Funnel / Status */}
+      <Card title="Order status snapshot" subtitle={`${totalOrderCount} orders tracked`}>
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 1, height: 140, marginTop: 8 }}>
+          {statusRows.length > 0 ? statusRows.map(([status, count], i) => {
+            const pct = totalOrderCount ? (count / totalOrderCount) * 100 : 0;
+            const toneColors = ['var(--saffron)', 'var(--terracotta)', 'var(--gold)', 'var(--sage)', 'var(--plum)'];
+            return (
+              <div key={status} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                <div style={{
+                  height: `${Math.max(pct, 5)}%`,
+                  minHeight: 18,
+                  background: toneColors[i % toneColors.length],
+                  borderRadius: '4px 4px 0 0',
+                  opacity: 0.9,
+                  transition: 'all .3s',
+                }} />
+                <div style={{ marginTop: 12, padding: '0 4px' }}>
+                  <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>{status}</div>
+                  <div className="mono" style={{ fontSize: 16, color: 'var(--ink)', marginTop: 2 }}>{count}</div>
+                  <div className="mono" style={{ fontSize: 11, color: 'var(--ink-4)' }}>{pct.toFixed(1)}%</div>
+                </div>
+              </div>
+            );
+          }) : (
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+              No order data available yet.
             </div>
-            <div className="text-xs text-slate-500">Top {productRows.length} products</div>
+          )}
+        </div>
+      </Card>
+
+      {/* Top products + traffic */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <Card title="Top sellers" subtitle="By revenue">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {productRows.length > 0 ? productRows.slice(0, 5).map((p, i) => (
+              <div key={p.productId} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '11px 0',
+                borderTop: i === 0 ? 'none' : '1px solid var(--line)',
+              }}>
+                <span className="display" style={{ fontSize: 22, color: 'var(--ink-3)', width: 28 }}>{String(i + 1).padStart(2, '0')}</span>
+                <Placeholder label="" w={36} h={36} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.productName}</div>
+                  <div style={{ fontSize: 11.5, color: 'var(--ink-3)' }}>{p.unitsSold} sold</div>
+                </div>
+                <span className="mono" style={{ fontSize: 13, color: 'var(--ink)' }}>{toCurrency(p.revenue)}</span>
+              </div>
+            )) : (
+              <p style={{ padding: '16px 0', fontSize: 13, color: 'var(--ink-3)' }}>No product data yet.</p>
+            )}
           </div>
+        </Card>
 
-          <div className="h-[250px] sm:h-[320px] lg:h-[350px] flex items-end justify-between px-1 sm:px-2 gap-2 sm:gap-4">
-            {(productRows.length ? productRows : [{ productId: 'none', productName: 'No Data', revenue: 0, unitsSold: 0, split: 0 }]).map((entry) => {
-              const maxRevenue = Math.max(...(productRows.map((row) => row.revenue) || [1]));
-              const height = maxRevenue ? Math.max((entry.revenue / maxRevenue) * 100, entry.revenue > 0 ? 8 : 0) : 0;
-
+        <Card title="Category split" subtitle="Share by units sold">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {productRows.slice(0, 5).map((c, i) => {
+              const colors = ['var(--saffron)', 'var(--plum)', 'var(--sage)', 'var(--terracotta)', 'var(--gold)'];
               return (
-                <div key={entry.productId} className="flex-1 flex flex-col items-center gap-1 min-w-0">
-                  <div className="w-full relative h-[80%] flex items-end justify-center">
-                    <div className="w-4 absolute bottom-0 bg-[#454e90]/80 rounded-t-md" style={{ height: `${height}%` }} />
+                <div key={c.productId}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
+                    <span style={{ color: 'var(--ink)' }}>{c.productName}</span>
+                    <span className="mono" style={{ color: 'var(--ink-3)' }}>{c.split}%</span>
                   </div>
-                  <span className="text-[10px] font-bold text-slate-500 truncate max-w-full" title={entry.productName}>{entry.productName}</span>
+                  <div style={{ height: 8, background: 'var(--bg-sunk)', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ width: `${Math.min(c.split * 2.5, 100)}%`, height: '100%', background: colors[i % colors.length], borderRadius: 4 }} />
+                  </div>
                 </div>
               );
             })}
+            {!productRows.length && <p style={{ fontSize: 13, color: 'var(--ink-3)' }}>No product data yet.</p>}
           </div>
-        </article>
-
-        <article className="col-span-12 lg:col-span-4 bg-white rounded-2xl border border-slate-200/60 p-5 sm:p-6 lg:p-8">
-          <h5 className="font-['Plus_Jakarta_Sans'] text-xl font-bold mb-2 text-slate-900">Category Split</h5>
-          <p className="text-sm text-slate-500 mb-8">Share by units sold</p>
-
-          <div className="space-y-6">
-            {(productRows.length ? productRows.slice(0, 4) : []).map((item, index) => (
-              <div key={item.productId}>
-                <div className="flex justify-between text-sm mb-2"><span className="font-semibold truncate">{item.productName}</span><span className="text-slate-500">{item.split}%</span></div>
-                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className={[
-                      'h-full rounded-full',
-                      index === 0 ? 'bg-[#454e90]' : index === 1 ? 'bg-[#006689]' : index === 2 ? 'bg-[#893e00]' : 'bg-slate-400'
-                    ].join(' ')}
-                    style={{ width: `${item.split}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-            {!productRows.length ? <p className="text-sm text-slate-500">No product split data available yet.</p> : null}
-          </div>
-
-          <div className="mt-12 p-5 bg-slate-100 rounded-xl border-l-4 border-[#454e90]">
-            <p className="text-xs font-bold text-[#454e90] uppercase mb-1">Backend Insight</p>
-            <p className="text-[13px] leading-relaxed text-slate-600">This view is wired to `/api/admin/analytics/*` endpoints, so numbers reflect backend data rather than local mock metrics.</p>
-          </div>
-        </article>
-
-        <article className="col-span-12 bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
-          <div className="p-5 sm:p-6 lg:p-8 border-b border-slate-200/40">
-            <h5 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-slate-900">Order Status Snapshot</h5>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-slate-100/70 text-[11px] font-bold uppercase tracking-widest text-slate-500">
-                  <th className="px-4 sm:px-6 lg:px-8 py-4 whitespace-nowrap">Status</th>
-                  <th className="px-4 sm:px-6 lg:px-8 py-4 whitespace-nowrap">Count</th>
-                  <th className="px-4 sm:px-6 lg:px-8 py-4 whitespace-nowrap">Health</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {orderStatusRows.map(([status, count]) => (
-                  <tr key={status} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 whitespace-nowrap">{status}</td>
-                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 font-bold whitespace-nowrap">{count}</td>
-                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 whitespace-nowrap">
-                      <span className={`px-3 py-1 text-[10px] font-extrabold uppercase rounded-full ${statusClass(status)}`}>Tracked</span>
-                    </td>
-                  </tr>
-                ))}
-                {!orderStatusRows.length ? (
-                  <tr>
-                    <td className="px-4 sm:px-6 lg:px-8 py-5 text-slate-500" colSpan={3}>No order status data available.</td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
-        </article>
+        </Card>
       </div>
-    </section>
+    </div>
   );
 }

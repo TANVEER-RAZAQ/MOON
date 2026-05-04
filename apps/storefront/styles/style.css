@@ -191,7 +191,7 @@ body[data-theme="shilajit"] {
 
 html {
     scroll-behavior: smooth;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 body {
@@ -203,7 +203,7 @@ body {
     color: var(--fg-primary, #0B0806);
     line-height: 1.5;
     transition: background-color 600ms ease, color var(--transition);
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 a {
@@ -1650,6 +1650,452 @@ input {
         gap: 10px;
     }
 }
+
+/* ============================================================
+   MOON Design System — New Tokens (handoff bundle 4FxueE4obXKYVFmzPqHTuw)
+   ============================================================ */
+:root {
+  /* Surface — warm cream */
+  --moon-cream-50:  #FBF7F0;
+  --moon-cream-100: #F5EFE6;
+  --moon-cream-200: #ECE3D2;
+  --moon-cream-300: #DDD0BA;
+
+  /* Ink — dark chocolate */
+  --moon-ink-900: #14100D;
+  --moon-ink-800: #1F1814;
+  --moon-ink-700: #2B2018;
+  --moon-ink-600: #3A2C20;
+  --moon-ink-500: #5A4634;
+  --moon-ink-400: #8A7460;
+  --moon-ink-300: #B5A28A;
+
+  /* Saffron — primary CTA */
+  --moon-saffron-600: #C95A1F;
+  --moon-saffron-500: #E8763A;
+  --moon-saffron-400: #F08A52;
+
+  /* Honey — gold accent */
+  --moon-honey-700: #8C6420;
+  --moon-honey-600: #B8862F;
+  --moon-honey-500: #D4A24A;
+  --moon-honey-300: #E8C778;
+
+  /* Earth — italic tagline */
+  --moon-amber-600: #A66A3D;
+  --moon-amber-500: #C2825A;
+
+  /* Semantic — bridge to new system */
+  --bg:               var(--moon-cream-100);
+  --bg-elevated-new:  var(--moon-cream-50);
+  --bg-dark:          var(--moon-ink-900);
+  --fg:               var(--moon-ink-800);
+  --fg-muted:         var(--moon-ink-500);
+  --fg-subtle:        var(--moon-ink-400);
+  --fg-on-dark:       var(--moon-cream-100);
+  --label:            var(--moon-ink-300);
+  --rule:             rgba(20,16,13,0.10);
+  --rule-strong:      rgba(20,16,13,0.18);
+  --accent-cta:       var(--moon-saffron-500);
+  --accent-cta-hover: var(--moon-saffron-600);
+  --accent-price:     var(--moon-honey-600);
+  --accent-italic:    var(--moon-amber-600);
+
+  /* New font aliases */
+  --font-display-moon: 'MoonSerif', 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body-inter:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Fluid type scale */
+  --fs-xs:  0.75rem;
+  --fs-sm:  0.8125rem;
+  --fs-base:0.9375rem;
+  --fs-md:  1.0625rem;
+  --fs-lg:  1.25rem;
+  --fs-xl:  1.5rem;
+  --fs-2xl: 2rem;
+  --fs-3xl: clamp(2.5rem, 4vw, 3.5rem);
+  --fs-4xl: clamp(3.5rem, 6vw, 5.5rem);
+  --fs-5xl: clamp(4.5rem, 8vw, 7.5rem);
+
+  /* Line heights */
+  --lh-tight:   1.05;
+  --lh-snug:    1.2;
+  --lh-normal-new: 1.5;
+  --lh-relaxed-new:1.7;
+
+  /* Letter spacing */
+  --tracking-label: 0.18em;
+  --tracking-tight: -0.02em;
+
+  /* Layout */
+  --container-max: 1440px;
+  --container-pad: clamp(1.25rem, 4vw, 4rem);
+
+  /* Radii */
+  --r-pill: 999px;
+
+  /* Shadows */
+  --shadow-card-new:  0 1px 2px rgba(20,16,13,0.04), 0 8px 24px rgba(20,16,13,0.06);
+  --shadow-hover-new: 0 4px 12px rgba(20,16,13,0.08), 0 16px 40px rgba(20,16,13,0.10);
+
+  /* Motion */
+  --ease-out-new:    cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out-new: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast-new:    160ms;
+  --dur-normal-new:  280ms;
+  --dur-slow-new:    480ms;
+}
+
+/* ── Typography utilities ───────────────────────────────── */
+.t-display {
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
+  font-weight: 400;
+  font-feature-settings: 'ss01', 'ss02';
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.t-display-italic {
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+.t-display-bold {
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.t-label {
+  font-family: var(--font-sans, 'Manrope', sans-serif);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--label);
+}
+.t-eyebrow {
+  font-family: var(--font-sans, 'Manrope', sans-serif);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--moon-honey-700);
+}
+.t-body     { font-size: var(--fs-base); line-height: var(--lh-relaxed-new); color: var(--fg-muted); }
+.t-body-lg  { font-size: var(--fs-md);   line-height: var(--lh-relaxed-new); color: var(--fg-muted); }
+.t-meta     { font-size: var(--fs-xs); color: var(--fg-subtle); letter-spacing: 0.04em; }
+.t-price    { font-family: var(--font-sans, 'Manrope', sans-serif); font-weight: 500; font-size: var(--fs-md); color: var(--accent-price); font-variant-numeric: tabular-nums; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans, 'Manrope', sans-serif);
+  font-size: var(--fs-xs); font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid transparent; border-radius: 0;
+  cursor: pointer;
+  transition: all 160ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  white-space: nowrap;
+}
+.btn--primary { background: var(--accent-cta); color: white; }
+.btn--primary:hover { background: var(--accent-cta-hover); }
+.btn--ghost {
+  background: transparent; color: var(--fg);
+  border-color: var(--rule-strong);
+}
+.btn--ghost:hover {
+  background: var(--moon-ink-900); color: var(--fg-on-dark);
+  border-color: var(--moon-ink-900);
+}
+.btn--small, .btn--sm {
+  padding: 0.5rem 0.75rem; font-size: 10px; letter-spacing: 0.14em;
+}
+.btn--dark { background: var(--moon-ink-900); color: var(--fg-on-dark); }
+
+/* ── Chip ─────────────────────────────────────────────────── */
+.moon-chip {
+  font-family: var(--font-sans, 'Manrope', sans-serif);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--moon-ink-500);
+  border: 1px solid var(--rule-strong);
+  padding: 6px 10px;
+  display: inline-block;
+}
+
+/* ── Sections ─────────────────────────────────────────────── */
+.moon-section {
+  padding: clamp(4rem, 9vw, 8rem) var(--container-pad);
+  max-width: var(--container-max); margin: 0 auto;
+}
+.moon-section--narrow { max-width: 1200px; }
+.moon-section__head {
+  display: grid;
+  grid-template-columns: 240px 1fr 1fr;
+  gap: 3rem; align-items: end;
+  margin-bottom: 4rem; padding-bottom: 2rem;
+  border-bottom: 1px solid var(--rule);
+}
+.moon-section__head--centred {
+  grid-template-columns: 1fr;
+  text-align: center; justify-items: center; border-bottom: none;
+}
+.moon-section__title {
+  font-size: var(--fs-3xl); margin: 0;
+  letter-spacing: -0.02em; line-height: 1.05; font-weight: 500;
+}
+.moon-section__desc {
+  font-size: var(--fs-md); line-height: var(--lh-relaxed-new);
+  color: var(--fg-muted); max-width: 50ch; margin: 0;
+}
+@media (max-width: 880px) {
+  .moon-section__head { grid-template-columns: 1fr; gap: 1rem; }
+}
+
+/* ── Product Grid ─────────────────────────────────────────── */
+.moon-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+@media (max-width: 1100px) { .moon-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px)  { .moon-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .moon-grid { grid-template-columns: 1fr; } }
+
+.moon-card {
+  background: var(--bg-elevated-new);
+  border: 1px solid var(--rule);
+  display: flex; flex-direction: column;
+  transition: all var(--dur-normal-new) var(--ease-out-new);
+  cursor: pointer;
+}
+.moon-card:hover {
+  border-color: var(--rule-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover-new);
+}
+.moon-card__media {
+  aspect-ratio: 1 / 1; width: 100%;
+  position: relative; overflow: hidden;
+}
+.moon-card__media img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 700ms var(--ease-out-new);
+}
+.moon-card:hover .moon-card__media img { transform: scale(1.04); }
+.moon-card__body {
+  padding: 1.25rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  flex: 1;
+}
+.moon-card__eyebrow { font-size: 10px; display: block; min-height: 2.6em; }
+.moon-card__name {
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
+  font-weight: 500; font-size: var(--fs-lg);
+  margin: 0; letter-spacing: -0.01em; line-height: 1.1;
+}
+.moon-card__rating { display: flex; gap: 2px; }
+.moon-card__foot {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+/* ── Archive ─────────────────────────────────────────────── */
+.moon-archive {
+  background: var(--bg-elevated-new);
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  min-height: 620px;
+}
+.moon-archive__media { position: relative; overflow: hidden; }
+.moon-archive__media img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: filter 0.8s ease;
+}
+.moon-archive__media:hover img { filter: grayscale(0); }
+.moon-archive__caption {
+  position: absolute; bottom: 2rem; left: 2rem;
+  font-family: var(--font-sans, 'Manrope', sans-serif);
+  font-size: 10px; letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.85); text-transform: uppercase; z-index: 2;
+}
+.moon-archive__copy {
+  padding: clamp(3rem, 6vw, 6rem) clamp(2rem, 5vw, 5rem);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: 640px;
+}
+.moon-archive__title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 500; margin: 0.75rem 0 0;
+  letter-spacing: -0.02em; line-height: 1;
+}
+.moon-archive__italic {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  color: var(--accent-italic);
+  margin: 4px 0 0; line-height: 1.05;
+}
+.moon-archive__rule {
+  width: 64px; height: 1px;
+  background: var(--moon-ink-300);
+  margin: 1.5rem 0;
+}
+.moon-archive__lead {
+  font-size: var(--fs-md); color: var(--fg);
+  margin: 0 0 0.75rem; font-weight: 500;
+}
+.moon-archive__body {
+  font-size: var(--fs-base); line-height: var(--lh-relaxed-new);
+  color: var(--fg-muted); margin: 0; max-width: 52ch;
+}
+.moon-archive__foot {
+  margin-top: 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+}
+.moon-archive__pager { display: flex; gap: 0.5rem; }
+.moon-archive__pager-dot {
+  width: 28px; height: 4px; background: var(--rule-strong);
+  border: 0; padding: 0; cursor: pointer;
+  transition: background var(--dur-fast-new) var(--ease-out-new);
+}
+.moon-archive__pager-dot.is-active { background: var(--fg); }
+@media (max-width: 880px) {
+  .moon-archive { grid-template-columns: 1fr; }
+  .moon-archive__media { min-height: 360px; }
+}
+
+/* ── Rituals ─────────────────────────────────────────────── */
+.moon-rituals {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin-top: 3rem;
+}
+@media (max-width: 800px) { .moon-rituals { grid-template-columns: 1fr; } }
+.moon-ritual {
+  background: var(--bg);
+  padding: 2.5rem 2rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+  position: relative; min-height: 280px;
+}
+.moon-ritual__num {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
+  font-style: italic; color: var(--moon-honey-600);
+  font-size: var(--fs-lg); opacity: 0.7;
+}
+.moon-ritual__title {
+  font-size: var(--fs-2xl); font-weight: 500;
+  margin: 0.25rem 0 0.75rem; letter-spacing: -0.01em;
+}
+.moon-ritual__body {
+  font-size: var(--fs-base); line-height: var(--lh-relaxed-new);
+  color: var(--fg-muted); margin: 0;
+}
+
+/* ── Newsletter ──────────────────────────────────────────── */
+.moon-newsletter {
+  background: var(--moon-cream-50);
+  border-top: 1px solid var(--rule);
+}
+.moon-newsletter__inner {
+  max-width: var(--container-max); margin: 0 auto;
+  padding: clamp(4rem, 8vw, 7rem) var(--container-pad);
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+}
+.moon-newsletter__title {
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-weight: 500; letter-spacing: -0.02em; line-height: 1;
+  margin: 1rem 0 1.25rem;
+}
+.moon-newsletter__body {
+  font-size: var(--fs-md); line-height: var(--lh-relaxed-new);
+  color: var(--fg-muted); max-width: 44ch; margin: 0;
+}
+.moon-newsletter__form { width: 100%; }
+.moon-newsletter__field {
+  display: flex; align-items: stretch;
+  background: white; border: 1px solid var(--rule-strong);
+}
+.moon-newsletter__field input {
+  flex: 1; border: 0;
+  padding: 1rem 1.25rem;
+  font-family: var(--font-sans, 'Manrope', sans-serif);
+  font-size: var(--fs-base); color: var(--fg);
+  background: transparent; outline: 0;
+}
+.moon-newsletter__field input::placeholder { color: var(--fg-subtle); }
+.moon-newsletter__field .btn { border-radius: 0; padding: 1rem 1.5rem; }
+.moon-newsletter__note {
+  font-size: var(--fs-xs); color: var(--fg-subtle); margin: 0.75rem 0 0;
+}
+@media (max-width: 880px) {
+  .moon-newsletter__inner { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+/* ── Footer redesign ─────────────────────────────────────── */
+.moon-footer-new { background: var(--bg-dark); color: var(--fg-on-dark); }
+.moon-footer-new__inner {
+  max-width: var(--container-max); margin: 0 auto;
+  padding: clamp(3rem, 6vw, 5rem) var(--container-pad);
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem;
+}
+@media (max-width: 880px) { .moon-footer-new__inner { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .moon-footer-new__inner { grid-template-columns: 1fr; } }
+.moon-footer-new__col { display: flex; flex-direction: column; gap: 0.75rem; }
+.moon-footer-new__col ul {
+  list-style: none; padding: 0; margin: 0.5rem 0 0;
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+.moon-footer-new__col li {
+  font-size: var(--fs-sm); color: rgba(245,239,230,0.7); cursor: pointer;
+  transition: color var(--dur-fast-new);
+}
+.moon-footer-new__col li:hover { color: var(--moon-honey-500); }
+.moon-footer-new__brand {
+  font-family: var(--font-serif, 'Fraunces', Georgia, serif);
+  font-weight: 700; font-size: var(--fs-2xl); letter-spacing: 0.04em;
+}
+.moon-footer-new__brand-tag {
+  font-size: var(--fs-md); color: var(--moon-saffron-500); margin-bottom: 1rem;
+}
+.moon-footer-new__addr {
+  font-style: normal; font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed-new); color: rgba(245,239,230,0.7);
+}
+.moon-footer-new__addr a { color: var(--moon-honey-500); }
+.moon-footer-new__social { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+.moon-footer-new__social a {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(245,239,230,0.18);
+  display: grid; place-items: center; cursor: pointer;
+  color: rgba(245,239,230,0.7);
+  transition: all var(--dur-fast-new) var(--ease-out-new);
+}
+.moon-footer-new__social a:hover {
+  color: var(--moon-honey-500); border-color: var(--moon-honey-500);
+}
+.moon-footer-new__base {
+  border-top: 1px solid rgba(245,239,230,0.1);
+  padding: 1.25rem var(--container-pad);
+  max-width: var(--container-max); margin: 0 auto;
+  display: flex; justify-content: space-between; gap: 1.5rem;
+  font-size: var(--fs-xs); color: rgba(245,239,230,0.5);
+}
+.moon-footer-new__base ul {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; gap: 1.5rem;
+}
+.moon-footer-new__base li { cursor: pointer; }
+.moon-footer-new__base li:hover { color: var(--moon-honey-500); }
+@media (max-width: 880px) { .moon-footer-new__base { flex-direction: column; gap: 0.75rem; } }
 
 /* ═══════════════════════════════════════════════════════════
    MOON DESIGN SYSTEM v2 — Premium Extended Components

@@ -151,6 +151,13 @@ export function HeroProductMedia({ activeProduct, activeStory, activeItem, glow,
       {/* Desktop: scroll-driven video — loops at hero, scrubs on scroll */}
       {isDesktop && (
         <>
+          {/* Poster always visible — ensures image shows even when blob video is unavailable */}
+          <img
+            src={poster}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
           <video
             ref={scrubRef}
             key={`${activeProduct}-scrub`}

@@ -61,17 +61,117 @@
   --color-on-secondary-fixed: #321300;
   --color-outline-variant: #464650;
 
-  /* Fonts */
-  --font-headline: 'Space Grotesk', sans-serif;
-  --font-body: 'Manrope', sans-serif;
-  --font-label: 'Manrope', sans-serif;
-  --font-display: 'Syncopate', sans-serif;
-  --font-serif: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
-  --font-mark: 'Syncopate', 'Manrope', sans-serif;
-
   /* Shadows */
   --shadow-premium: 0 24px 64px -12px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.08);
   --shadow-card-hover: 0 40px 80px -16px rgba(0,0,0,0.28), 0 16px 32px rgba(42,27,16,0.14);
   --shadow-glow-saffron: 0 0 24px rgba(210,87,27,0.16), 0 8px 24px rgba(42,27,16,0.14);
   --shadow-glow-gold: 0 0 20px rgba(201,162,39,0.14), 0 4px 16px rgba(42,27,16,0.10);
+}
+
+/*
+ * Bridge next/font CSS variables (injected on <html> by allFontVars) to the
+ * semantic aliases used throughout style.css and component CSS files.
+ * The --font-headline, --font-sans, --font-serif, --font-display variables
+ * are set by next/font as class-scoped CSS custom properties on <html>.
+ * We re-export them here so @theme utilities and style.css rules all resolve.
+ */
+:root {
+  --font-main: var(--font-sans, 'Manrope', ui-sans-serif, sans-serif);
+  --font-mark: var(--font-display, 'Syncopate', sans-serif);
+
+  /* ── Design-system bridge tokens (exact values from Moon/tokens.css) ── */
+  /* Colors — exact values, not aliased to old paper/ink vars which are wrong shades */
+  --moon-cream-50:  #FBF7F0;
+  --moon-cream-100: #F5EFE6;
+  --moon-cream-200: #ECE3D2;
+  --moon-cream-300: #DDD0BA;
+  --moon-ink-900: #14100D;
+  --moon-ink-800: #1F1814;
+  --moon-ink-700: #2B2018;
+  --moon-ink-600: #3A2C20;
+  --moon-ink-500: #5A4634;
+  --moon-ink-400: #8A7460;
+  --moon-ink-300: #B5A28A;
+  --moon-saffron-600: #C95A1F;
+  --moon-saffron-500: #E8763A;
+  --moon-saffron-400: #F08A52;
+  --moon-honey-700: #8C6420;
+  --moon-honey-600: #B8862F;
+  --moon-honey-500: #D4A24A;
+  --moon-honey-300: #E8C778;
+  --moon-amber-600: #A66A3D;
+  --moon-amber-500: #C2825A;
+  /* Semantic aliases — design system values */
+  --bg:           #F5EFE6;
+  --bg-elevated:  #FBF7F0;
+  --bg-dark:      #14100D;
+  --fg:           #1F1814;
+  --fg-muted:     #5A4634;
+  --fg-subtle:    #8A7460;
+  --fg-on-dark:   #F5EFE6;
+  --label:        #B5A28A;
+  --rule:         rgba(20,16,13,0.10);
+  --rule-strong:  rgba(20,16,13,0.18);
+  --accent-cta:   #E8763A;
+  --accent-cta-hover: #C95A1F;
+  --accent-price: #B8862F;
+  --accent-italic: #A66A3D;
+  /* Font bridge — design uses --font-display for Fraunces serif headings */
+  /* Project has --font-serif = Fraunces, so we alias --font-display to it */
+  --font-heading: var(--font-serif, 'Fraunces', Georgia, serif);
+  --font-body:    var(--font-sans, 'Manrope', ui-sans-serif, sans-serif);
+  /* Spacing tokens */
+  --sp-1: 0.25rem;  --sp-2: 0.5rem;   --sp-3: 0.75rem;
+  --sp-4: 1rem;     --sp-5: 1.25rem;  --sp-6: 1.5rem;
+  --sp-8: 2rem;     --sp-10: 2.5rem;  --sp-12: 3rem;
+  --sp-16: 4rem;    --sp-20: 5rem;    --sp-24: 6rem;
+  --container-max: 1440px;
+  --container-pad: clamp(1.25rem, 4vw, 4rem);
+  --fs-xs: 0.75rem;  --fs-sm: 0.8125rem;  --fs-base: 0.9375rem;
+  --fs-md: 1.0625rem; --fs-lg: 1.25rem;   --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;    --fs-3xl: clamp(2.5rem, 4vw, 3.5rem);
+  --fs-4xl: clamp(3.5rem, 6vw, 5.5rem);
+  --fs-5xl: clamp(4.5rem, 8vw, 7.5rem);
+  --lh-tight: 1.05;  --lh-snug: 1.2;    --lh-relaxed: 1.7;
+  --tracking-label: 0.18em; --tracking-tight: -0.02em;
+  --fw-regular: 400; --fw-medium: 500;  --fw-semibold: 600;
+  --fw-display-regular: 400; --fw-display-medium: 500; --fw-display-bold: 700;
+  --r-none: 0; --r-xs: 2px; --r-sm: 4px; --r-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(20,16,13,0.04), 0 8px 24px rgba(20,16,13,0.06);
+  --shadow-hover: 0 4px 12px rgba(20,16,13,0.08), 0 16px 40px rgba(20,16,13,0.10);
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms; --dur-normal: 280ms; --dur-slow: 480ms;
+  --grid-gutter: 1.5rem;
+}
+
+/*
+ * Tailwind v4 custom font utility classes.
+ * @theme --font-* tokens generate font-family utilities, but next/font injects
+ * vars at runtime on <html> so the @theme values are fallbacks only.
+ * These @utility rules ensure className="font-display" etc. always apply
+ * the correct font-family regardless of @theme resolution.
+ */
+@utility font-display {
+  font-family: var(--font-display, 'Syncopate', sans-serif);
+}
+
+@utility font-headline {
+  font-family: var(--font-headline, 'Space Grotesk', ui-sans-serif, sans-serif);
+}
+
+@utility font-serif {
+  font-family: var(--font-serif, 'Fraunces', 'Cormorant Garamond', Georgia, serif);
+}
+
+@utility font-sans {
+  font-family: var(--font-sans, 'Manrope', ui-sans-serif, system-ui, sans-serif);
+}
+
+@utility font-mark {
+  font-family: var(--font-display, 'Syncopate', sans-serif);
+}
+
+@utility font-label {
+  font-family: var(--font-headline, 'Space Grotesk', ui-sans-serif, sans-serif);
 }

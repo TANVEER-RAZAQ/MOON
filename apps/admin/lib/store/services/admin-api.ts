@@ -98,6 +98,89 @@ export interface ProductImage {
   blurDataUrl: string | null;
 }
 
+/* ─── Orders ───────────────────────────────────────────────────────── */
+export interface AdminOrderItem {
+  id: string;
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  unit_price: number;
+  subtotal: number;
+}
+
+export interface AdminOrderPayment {
+  status: string;
+  method: string;
+  razorpay_order_id?: string | null;
+  razorpay_payment_id?: string | null;
+  amount?: number;
+}
+
+export interface AdminOrder {
+  id: string;
+  order_number: string;
+  status: string;
+  subtotal: number;
+  shipping_cost: number;
+  tax: number;
+  total: number;
+  customer_email: string;
+  customer_phone: string;
+  tracking_number?: string | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  order_items: AdminOrderItem[];
+  payments: AdminOrderPayment[];
+}
+
+export interface AdminOrderDetail extends AdminOrder {
+  shipping_address?: {
+    full_name: string; phone: string;
+    line_1: string; line_2?: string | null;
+    city: string; state: string; postal_code: string; country: string;
+  } | null;
+  billing_address?: {
+    full_name: string; phone: string;
+    line_1: string; line_2?: string | null;
+    city: string; state: string; postal_code: string; country: string;
+  } | null;
+}
+
+/* ─── Customers ────────────────────────────────────────────────────── */
+export interface AdminCustomer {
+  id: string;
+  email: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  phone?: string | null;
+  avatar_url?: string | null;
+  role: string;
+  created_at: string;
+  orderCount: number;
+  totalSpent: number;
+}
+
+export interface AdminCustomerDetail extends AdminCustomer {
+  updated_at: string;
+  orders: Array<{
+    id: string;
+    order_number: string;
+    status: string;
+    total: number;
+    created_at: string;
+    order_items: Array<{ product_name: string; quantity: number }>;
+  }>;
+}
+
+/* ─── Categories ───────────────────────────────────────────────────── */
+export interface AdminCategory {
+  name: string;
+  productCount: number;
+  activeCount: number;
+  themes: string[];
+}
+
 const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/+$/, '');
 
 const unwrap = <T>(response: ApiEnvelope<T>) => response.data;
@@ -114,7 +197,7 @@ export const adminApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Inventory', 'Analytics', 'AdminSession', 'AdminProducts'],
+  tagTypes: ['Inventory', 'Analytics', 'AdminSession', 'AdminProducts', 'AdminOrders', 'AdminCustomers', 'AdminCategories'],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, { email: string; password: string }>({
       query: (body) => ({
@@ -189,6 +272,16 @@ export const adminApi = createApi({
       providesTags: ['AdminProducts'],
     }),
 
+    createAdminProduct: builder.mutation<BackendProduct, Omit<UpdateProductPayload, 'is_active'> & { name: string; price: number; is_active?: boolean }>({
+      query: (body) => ({
+        url: '/admin/products',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: { product: BackendProduct }) => response.product,
+      invalidatesTags: ['AdminProducts'],
+    }),
+
     updateAdminProduct: builder.mutation<BackendProduct, { id: string; patch: UpdateProductPayload }>({
       query: ({ id, patch }) => ({
         url: `/admin/products/${id}`,
@@ -217,6 +310,53 @@ export const adminApi = createApi({
       transformResponse: unwrap,
       invalidatesTags: ['AdminProducts'],
     }),
+
+    /* ─── Admin Orders ────────────────────────────────────────────── */
+    getAdminOrders: builder.query<AdminOrder[], { status?: string } | void>({
+      query: (params) =>
+        params && params.status ? { url: '/admin/orders', params: { status: params.status } } : '/admin/orders',
+      transformResponse: unwrap,
+      providesTags: ['AdminOrders'],
+    }),
+
+    getAdminOrderById: builder.query<AdminOrderDetail, string>({
+      query: (id) => `/admin/orders/${id}`,
+      transformResponse: unwrap,
+      providesTags: ['AdminOrders'],
+    }),
+
+    updateAdminOrderStatus: builder.mutation<
+      { id: string; order_number: string; status: string; tracking_number?: string; notes?: string; updated_at: string },
+      { id: string; status: string; trackingNumber?: string; notes?: string }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/admin/orders/${id}/status`,
+        method: 'PUT',
+        body,
+      }),
+      transformResponse: unwrap,
+      invalidatesTags: ['AdminOrders'],
+    }),
+
+    /* ─── Admin Customers ─────────────────────────────────────────── */
+    getAdminCustomers: builder.query<AdminCustomer[], void>({
+      query: () => '/admin/customers',
+      transformResponse: unwrap,
+      providesTags: ['AdminCustomers'],
+    }),
+
+    getAdminCustomerById: builder.query<AdminCustomerDetail, string>({
+      query: (id) => `/admin/customers/${id}`,
+      transformResponse: unwrap,
+      providesTags: ['AdminCustomers'],
+    }),
+
+    /* ─── Admin Categories ────────────────────────────────────────── */
+    getAdminCategories: builder.query<AdminCategory[], void>({
+      query: () => '/admin/categories',
+      transformResponse: unwrap,
+      providesTags: ['AdminCategories'],
+    }),
   }),
 });
 
@@ -231,7 +371,14 @@ export const {
   useGetAdminCustomerMetricsQuery,
   useGetAdminProductMetricsQuery,
   useGetAdminProductsQuery,
+  useCreateAdminProductMutation,
   useUpdateAdminProductMutation,
   useUploadProductImagesMutation,
   useUpdateProductImagesArrayMutation,
+  useGetAdminOrdersQuery,
+  useGetAdminOrderByIdQuery,
+  useUpdateAdminOrderStatusMutation,
+  useGetAdminCustomersQuery,
+  useGetAdminCustomerByIdQuery,
+  useGetAdminCategoriesQuery,
 } = adminApi;

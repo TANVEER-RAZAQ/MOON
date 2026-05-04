@@ -8,21 +8,32 @@ import {
   useUpdateAdminProductMutation,
   useUploadProductImagesMutation,
   useUpdateProductImagesArrayMutation,
+  useCreateAdminProductMutation,
 } from '@/lib/store/services/admin-api';
 import type { ProductImage } from '@/lib/store/services/admin-api';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Btn } from '@/components/ui/Btn';
+import { Card } from '@/components/ui/Card';
+import { Field } from '@/components/ui/Field';
+import { MoonInput } from '@/components/ui/Input';
+import { MoonTextarea } from '@/components/ui/Textarea';
+import { Toggle } from '@/components/ui/Toggle';
+import { Icon } from '@/components/ui/Icon';
 
 type Props = { params: Promise<{ id: string }> };
 
 export default function ProductEditPage({ params }: Props) {
   const { id } = use(params);
+  const isNew = id === 'new';
   const router = useRouter();
 
   const { data: products } = useGetAdminProductsQuery();
   const [updateProduct, { isLoading: isSaving }] = useUpdateAdminProductMutation();
   const [uploadImages, { isLoading: isUploading }] = useUploadProductImagesMutation();
   const [updateImagesArray] = useUpdateProductImagesArrayMutation();
+  const [createProduct, { isLoading: isCreating }] = useCreateAdminProductMutation();
 
-  const product = products?.find((p) => p.id === id);
+  const product = isNew ? null : products?.find((p) => p.id === id);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -35,13 +46,13 @@ export default function ProductEditPage({ params }: Props) {
   const [isActive, setIsActive] = useState(true);
   const [images, setImages] = useState<ProductImage[]>([]);
   const [uploadError, setUploadError] = useState('');
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const dropZoneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!product) return;
+    if (isNew || !product) return;
     setName(product.name);
     setDescription(product.description ?? '');
     setPrice(String(product.price));
@@ -52,31 +63,70 @@ export default function ProductEditPage({ params }: Props) {
     setMetaDescription(product.meta_description ?? '');
     setIsActive(product.is_active ?? true);
     setImages([...(product.images ?? [])].sort((a, b) => a.order - b.order));
-  }, [product]);
+  }, [product, isNew]);
 
   const handleSave = async () => {
-    setSaveSuccess(false);
-    await updateProduct({
-      id,
-      patch: {
-        name: name.trim() || undefined,
-        description: description.trim() || undefined,
-        price: price ? Number(price) : undefined,
-        discount_price: discountPrice ? Number(discountPrice) : null,
-        category: category.trim() || undefined,
-        theme: theme.trim() || undefined,
-        meta_title: metaTitle.trim() || undefined,
-        meta_description: metaDescription.trim() || undefined,
-        is_active: isActive,
-      },
-    }).unwrap();
-    await updateImagesArray({ id, images }).unwrap();
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+    setSaveError('');
+    setSaveSuccess('');
+
+    if (!name.trim()) {
+      setSaveError('Product name is required.');
+      return;
+    }
+    if (!price || Number(price) <= 0) {
+      setSaveError('Price must be greater than 0.');
+      return;
+    }
+
+    try {
+      if (isNew) {
+        // Create new product
+        const result = await createProduct({
+          name: name.trim(),
+          description: description.trim() || undefined,
+          price: Number(price),
+          discount_price: discountPrice ? Number(discountPrice) : null,
+          category: category.trim() || undefined,
+          theme: theme.trim() || undefined,
+          meta_title: metaTitle.trim() || undefined,
+          meta_description: metaDescription.trim() || undefined,
+          is_active: isActive,
+        }).unwrap();
+        setSaveSuccess('Product created successfully!');
+        // Navigate to the edit page of the newly created product
+        setTimeout(() => router.push(`/products/${result.id}`), 800);
+      } else {
+        // Update existing product
+        await updateProduct({
+          id,
+          patch: {
+            name: name.trim() || undefined,
+            description: description.trim() || undefined,
+            price: price ? Number(price) : undefined,
+            discount_price: discountPrice ? Number(discountPrice) : null,
+            category: category.trim() || undefined,
+            theme: theme.trim() || undefined,
+            meta_title: metaTitle.trim() || undefined,
+            meta_description: metaDescription.trim() || undefined,
+            is_active: isActive,
+          },
+        }).unwrap();
+        await updateImagesArray({ id, images }).unwrap();
+        setSaveSuccess('Changes saved!');
+        setTimeout(() => setSaveSuccess(''), 3000);
+      }
+    } catch (err) {
+      const msg = (err as { data?: { message?: string } })?.data?.message ?? 'Save failed.';
+      setSaveError(msg);
+    }
   };
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
+    if (isNew) {
+      setUploadError('Save the product first, then upload images.');
+      return;
+    }
     setUploadError('');
     const formData = new FormData();
     Array.from(files).forEach((file) => formData.append('images', file));
@@ -88,12 +138,6 @@ export default function ProductEditPage({ params }: Props) {
     } catch {
       setUploadError('Upload failed. Check file size (max 5 MB per image, max 5 images).');
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    dropZoneRef.current?.classList.remove('border-[#454e90]', 'bg-[#454e90]/5');
-    handleFiles(e.dataTransfer.files);
   };
 
   const moveImage = (index: number, direction: -1 | 1) => {
@@ -108,255 +152,156 @@ export default function ProductEditPage({ params }: Props) {
     setImages((prev) => prev.filter((_, i) => i !== index).map((img, i) => ({ ...img, order: i })));
   };
 
-  const updateImageAlt = (index: number, alt: string) => {
-    setImages((prev) => prev.map((img, i) => (i === index ? { ...img, alt } : img)));
-  };
+  if (!isNew && !product) return <div style={{ padding: 40, color: 'var(--ink-3)' }}>Loading...</div>;
 
-  if (!product) {
-    return (
-      <div className="p-8 animate-pulse space-y-4">
-        <div className="h-8 w-48 rounded bg-slate-100" />
-        <div className="h-40 rounded-xl bg-slate-100" />
-      </div>
-    );
-  }
+  const isBusy = isSaving || isCreating;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl">
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          type="button"
-          onClick={() => router.push('/products')}
-          className="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-100 transition-colors"
-          aria-label="Back to products"
-        >
-          <span className="material-symbols-outlined text-base">arrow_back</span>
-        </button>
-        <h1 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-slate-900 truncate">{product.name}</h1>
-      </div>
+    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1000 }}>
+      <PageHeader
+        eyebrow={isNew ? 'New Product' : 'Editing Product'}
+        title={isNew ? 'Create product' : product!.name}
+        actions={[
+          <Btn key="cancel" variant="secondary" onClick={() => router.push('/products')}>Cancel</Btn>,
+          <Btn key="save" variant="primary" icon="check" onClick={handleSave} disabled={isBusy}>
+            {isBusy ? 'Saving...' : isNew ? 'Create product' : 'Save changes'}
+          </Btn>,
+        ]}
+      />
 
-      <div className="space-y-6">
-        {/* Basic Info */}
-        <section className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-          <h2 className="font-semibold text-slate-700 text-sm uppercase tracking-wider">Basic Info</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Description</label>
-              <textarea
-                rows={4}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none resize-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Price (₹)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Discount Price (₹) — optional</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={discountPrice}
-                onChange={(e) => setDiscountPrice(e.target.value)}
-                placeholder="Leave empty to remove"
-                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none placeholder-slate-300"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Category</label>
-              <input
-                type="text"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">Theme</label>
-              <input
-                type="text"
-                value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              type="button"
-              role="switch"
-              aria-checked={isActive}
-              onClick={() => setIsActive((v) => !v)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#454e90]/20 ${
-                isActive ? 'bg-[#454e90]' : 'bg-slate-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
-                  isActive ? 'translate-x-4.5' : 'translate-x-0.5'
-                }`}
-              />
-            </button>
-            <span className="text-sm text-slate-600 font-medium">{isActive ? 'Active' : 'Inactive'}</span>
-          </div>
-        </section>
+      {/* Status messages */}
+      {saveError && (
+        <div style={{
+          padding: '12px 18px', borderRadius: 10,
+          background: 'rgba(181,87,58,0.08)', border: '1px solid var(--terracotta)',
+          color: 'var(--terracotta)', fontSize: 13,
+        }}>{saveError}</div>
+      )}
+      {saveSuccess && (
+        <div style={{
+          padding: '12px 18px', borderRadius: 10,
+          background: 'var(--sage-soft)', border: '1px solid var(--sage)',
+          color: 'var(--sage)', fontSize: 13,
+        }}>{saveSuccess}</div>
+      )}
 
-        {/* SEO */}
-        <section className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-          <h2 className="font-semibold text-slate-700 text-sm uppercase tracking-wider">SEO</h2>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5">Meta Title</label>
-            <input
-              type="text"
-              value={metaTitle}
-              onChange={(e) => setMetaTitle(e.target.value)}
-              maxLength={255}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5">Meta Description</label>
-            <textarea
-              rows={3}
-              value={metaDescription}
-              onChange={(e) => setMetaDescription(e.target.value)}
-              maxLength={500}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#454e90]/20 focus:border-[#454e90]/50 outline-none resize-none"
-            />
-            <p className="text-xs text-slate-400 mt-1">{metaDescription.length}/500</p>
-          </div>
-        </section>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
+        {/* Left Col - Main details */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <Card title="Basic Info">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 16 }}>
+              <Field label="Product Title" hint="Used everywhere. Keep it clear and concise.">
+                <MoonInput value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Pure Saffron Elixir" />
+              </Field>
+              <Field label="Description" hint="Appears on the product detail page. Supports markdown.">
+                <MoonTextarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe your product..." />
+              </Field>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <Field label="Price (₹)">
+                  <MoonInput type="number" step="0.01" value={price} onChange={e => setPrice(e.target.value)} placeholder="0.00" />
+                </Field>
+                <Field label="Compare-at price" hint="Shows a strikethrough price">
+                  <MoonInput type="number" step="0.01" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} placeholder="Optional" />
+                </Field>
+              </div>
+            </div>
+          </Card>
 
-        {/* Images */}
-        <section className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-          <h2 className="font-semibold text-slate-700 text-sm uppercase tracking-wider">Images</h2>
-
-          <div
-            ref={dropZoneRef}
-            onDrop={handleDrop}
-            onDragOver={(e) => { e.preventDefault(); dropZoneRef.current?.classList.add('border-[#454e90]', 'bg-[#454e90]/5'); }}
-            onDragLeave={() => dropZoneRef.current?.classList.remove('border-[#454e90]', 'bg-[#454e90]/5')}
-            onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-200 rounded-xl py-10 px-6 text-center cursor-pointer hover:border-[#454e90]/40 hover:bg-slate-50 transition-colors"
-          >
-            <span className="material-symbols-outlined text-3xl text-slate-300 block mb-2">cloud_upload</span>
-            <p className="text-sm font-medium text-slate-500">
-              {isUploading ? 'Uploading…' : 'Drop images here or click to select'}
-            </p>
-            <p className="text-xs text-slate-400 mt-1">Up to 5 images · 5 MB each · JPEG / PNG / WebP</p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => handleFiles(e.target.files)}
-            />
-          </div>
-
-          {uploadError && (
-            <p className="text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2">{uploadError}</p>
-          )}
-
-          {images.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {images.map((img, index) => (
-                <div key={img.url} className="group relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                  <div className="aspect-square">
-                    <Image
-                      src={img.url}
-                      alt={img.alt || 'Product image'}
-                      fill
-                      sizes="200px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      type="button"
-                      onClick={() => moveImage(index, -1)}
-                      disabled={index === 0}
-                      className="w-6 h-6 rounded-md bg-white/90 shadow text-slate-600 flex items-center justify-center disabled:opacity-30"
-                      aria-label="Move left"
-                    >
-                      <span className="material-symbols-outlined text-xs">chevron_left</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveImage(index, 1)}
-                      disabled={index === images.length - 1}
-                      className="w-6 h-6 rounded-md bg-white/90 shadow text-slate-600 flex items-center justify-center disabled:opacity-30"
-                      aria-label="Move right"
-                    >
-                      <span className="material-symbols-outlined text-xs">chevron_right</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="w-6 h-6 rounded-md bg-white/90 shadow text-red-500 flex items-center justify-center"
-                      aria-label="Remove image"
-                    >
-                      <span className="material-symbols-outlined text-xs">close</span>
-                    </button>
-                  </div>
-                  {index === 0 && (
-                    <span className="absolute bottom-1.5 left-1.5 text-[10px] font-bold bg-[#454e90] text-white px-1.5 py-0.5 rounded-md">
-                      Primary
-                    </span>
-                  )}
-                  <div className="p-1.5">
-                    <input
-                      type="text"
-                      value={img.alt}
-                      onChange={(e) => updateImageAlt(index, e.target.value)}
-                      placeholder="Alt text"
-                      className="w-full text-xs border-0 bg-transparent outline-none text-slate-500 placeholder-slate-300"
-                    />
-                  </div>
+          <Card title="Media" subtitle={isNew ? 'Save the product first, then upload images.' : 'Product imagery. First image is the hero.'}>
+            <div style={{ marginTop: 16 }}>
+              {images.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12, marginBottom: 16 }}>
+                  {images.map((img, idx) => {
+                    const validSrc = (() => { try { new URL(img.url); return img.url; } catch { return null; } })();
+                    return (
+                      <div key={img.url || idx} style={{ position: 'relative', aspectRatio: '1', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--line)' }} className="group">
+                        {validSrc ? (
+                          <Image src={validSrc} alt={img.alt || 'img'} fill style={{ objectFit: 'cover' }} />
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', background: 'var(--bg-sunk)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="broken_image" /></div>
+                        )}
+                        <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', gap: 4, background: 'var(--bg-elev)', borderRadius: 6, padding: 2, opacity: 0, transition: 'opacity .2s' }} className="group-hover:opacity-100">
+                          <button title="Move left" onClick={() => moveImage(idx, -1)} disabled={idx===0} style={{ padding: 4, cursor: 'pointer', border: 'none', background: 'transparent' }}><Icon name="chevron_left" size={14} /></button>
+                          <button title="Move right" onClick={() => moveImage(idx, 1)} disabled={idx===images.length-1} style={{ padding: 4, cursor: 'pointer', border: 'none', background: 'transparent' }}><Icon name="chevron_right" size={14} /></button>
+                          <button title="Remove image" onClick={() => removeImage(idx)} style={{ padding: 4, cursor: 'pointer', border: 'none', background: 'transparent', color: 'var(--terracotta)' }}><Icon name="close" size={14} /></button>
+                        </div>
+                        {idx === 0 && <div style={{ position: 'absolute', bottom: 6, left: 6, background: 'var(--saffron)', color: '#fff', fontSize: 10, padding: '2px 6px', borderRadius: 4, fontWeight: 500 }}>Primary</div>}
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+              )}
+              
+              <button
+                type="button"
+                onClick={() => isNew ? setSaveError('Save the product first before uploading images.') : fileInputRef.current?.click()}
+                style={{
+                  width: '100%', border: '1px dashed var(--line-strong)', borderRadius: 10,
+                  padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                  background: 'var(--bg-sunk)', cursor: isNew ? 'not-allowed' : 'pointer',
+                  color: 'var(--ink-2)',
+                  opacity: isNew ? 0.5 : 1,
+                }}
+              >
+                <Icon name="add_photo_alternate" size={24} />
+                <span style={{ fontSize: 13, fontWeight: 500 }}>{isUploading ? 'Uploading...' : 'Add images'}</span>
+              </button>
+              <input aria-label="Upload image" ref={fileInputRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={e => handleFiles(e.target.files)} />
+              {uploadError && <div style={{ marginTop: 8, color: 'var(--terracotta)', fontSize: 12 }}>{uploadError}</div>}
             </div>
-          )}
-        </section>
+          </Card>
 
-        {/* Save */}
-        <div className="flex items-center gap-3 pb-8">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#454e90] text-white text-sm font-semibold hover:bg-[#3a4280] disabled:opacity-60 transition-colors"
-          >
-            <span className="material-symbols-outlined text-base">{isSaving ? 'hourglass_empty' : 'save'}</span>
-            {isSaving ? 'Saving…' : 'Save Changes'}
-          </button>
-          {saveSuccess && (
-            <span className="flex items-center gap-1.5 text-sm font-medium text-green-600">
-              <span className="material-symbols-outlined text-base">check_circle</span>
-              Saved
-            </span>
+          <Card title="Search engine optimization">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 16 }}>
+              <Field label="Meta Title" suffix={`${metaTitle.length}/60`}>
+                <MoonInput value={metaTitle} onChange={e => setMetaTitle(e.target.value)} maxLength={60} placeholder="Page title for search engines" />
+              </Field>
+              <Field label="Meta Description" suffix={`${metaDescription.length}/160`}>
+                <MoonTextarea value={metaDescription} onChange={e => setMetaDescription(e.target.value)} maxLength={160} placeholder="Brief summary for search results" />
+              </Field>
+            </div>
+          </Card>
+        </div>
+
+        {/* Right Col - Metadata */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <Card title="Status">
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Toggle checked={isActive} onChange={setIsActive} />
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{isActive ? 'Active on store' : 'Draft mode'}</div>
+            </div>
+          </Card>
+
+          <Card title="Organization">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 16 }}>
+              <Field label="Category" hint="Assign to a collection taxonomy.">
+                <MoonInput value={category} onChange={e => setCategory(e.target.value)} placeholder="e.g. Skincare" />
+              </Field>
+              <Field label="Theme / Collection" hint="Visual grouping for the storefront.">
+                <MoonInput value={theme} onChange={e => setTheme(e.target.value)} placeholder="e.g. Saffron" />
+              </Field>
+            </div>
+          </Card>
+
+          {!isNew && product && (
+            <Card title="Activity">
+              <div style={{ marginTop: 16, fontSize: 13, color: 'var(--ink-3)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Created</span> <span className="mono">{product.updated_at ? new Date(product.updated_at).toLocaleDateString() : '—'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Last updated</span> <span className="mono">{product.updated_at ? new Date(product.updated_at).toLocaleDateString() : '—'}</span>
+                </div>
+              </div>
+            </Card>
           )}
         </div>
       </div>
+      
+      {/* Tailwind utility mapping for group-hover */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .group:hover .group-hover\\:opacity-100 { opacity: 1 !important; }
+      `}} />
     </div>
   );
 }

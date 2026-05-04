@@ -128,6 +128,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         alt: fallback.alt,
         featured: fallback.featured,
         productKey: key,
+        inStock: product.in_stock != null
+          ? Boolean(product.in_stock)
+          : product.inventory
+            ? (product.inventory.quantity - product.inventory.reserved) > 0
+            : true,
       };
     });
     return productOrder.map((key) => fromBackend[key] ?? fallbackCatalogByKey[key]).filter(Boolean);
@@ -322,7 +327,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           onCartClick={openCartDrawer}
           onSearchClick={openShopSection}
           onAccountClick={() => {}}
-          heroTheme="light"
+          heroTheme="dark"
         />
       ) : null}
 

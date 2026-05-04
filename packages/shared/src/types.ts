@@ -38,6 +38,7 @@ export interface CatalogItem {
   alt: string;
   featured?: boolean;
   productKey?: ProductKey;
+  inStock?: boolean;
 }
 
 export interface CartItem {

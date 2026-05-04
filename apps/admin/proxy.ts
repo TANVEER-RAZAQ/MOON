@@ -1,28 +1,14 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-const COOKIE = '__admin_gate';
-
-function gateToken(user: string, pass: string) {
-  return Buffer.from(`${user}:${pass}`).toString('base64');
+// Auth is handled by the in-app JWT login page.
+// proxy.ts only adds noindex headers so search engines never index the admin.
+export function proxy(_request: NextRequest) {
+  const res = NextResponse.next();
+  res.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  return res;
 }
 
-function isConfigured() {
-  const pass = process.env.ADMIN_BASIC_AUTH_PASS ?? '';
-  return !!(process.env.ADMIN_BASIC_AUTH_USER && pass && pass !== 'change-me-in-production');
-}
-
-export async function proxyGuard() {
-  if (!isConfigured()) return;
-
-  const store = await cookies();
-  const token = store.get(COOKIE)?.value;
-  const expected = gateToken(
-    process.env.ADMIN_BASIC_AUTH_USER!,
-    process.env.ADMIN_BASIC_AUTH_PASS!
-  );
-
-  if (token === expected) return;
-
-  redirect('/api/basic-auth');
-}
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt).*)'],
+};

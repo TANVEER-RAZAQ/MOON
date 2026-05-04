@@ -34,7 +34,7 @@ const imageSchema = z.array(
 router.get('/', async (_req, res, next) => {
   try {
     const products = await repo.adminListProducts();
-    res.json({ products });
+    res.json({ success: true, message: 'Products fetched', data: products });
   } catch (err) {
     next(err);
   }
