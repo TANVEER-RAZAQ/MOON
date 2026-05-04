@@ -1,0 +1,9 @@
+{
+  "name": "moon",
+  "private": true,
+  "scripts": {
+    "dev:storefront": "pnpm --filter @moon/storefront dev",
+    "dev:admin": "pnpm --filter @moon/admin dev",
+    "build": "pnpm -r build"
+  }
+}
