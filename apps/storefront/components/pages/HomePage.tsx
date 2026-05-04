@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { HeroProductMedia } from '@/components/HeroProductMedia';
-import { productStories } from '@/lib/data/products';
+import { productStories } from '@/lib/data/product-statics';
 import type { CatalogItem, ProductKey } from '@/lib/types';
 import '@/styles/HomePage.css';
 

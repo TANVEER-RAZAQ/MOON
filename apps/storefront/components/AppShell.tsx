@@ -7,7 +7,7 @@ import { Footer } from './Footer';
 import { CartDrawer } from './CartDrawer';
 import { ProductDetailModal } from './ProductDetailModal';
 import { AppContext } from './AppContext';
-import { catalogItems as staticCatalogItems, productOrder, productStories } from '@/lib/data/products';
+import { catalogItems as staticCatalogItems, productOrder, productStories } from '@/lib/data/product-statics';
 import { useRevealAnimation } from '@/hooks/useRevealAnimation';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import {

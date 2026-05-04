@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { shippingStateOptions } from '@/lib/data/products';
+import { shippingStateOptions } from '@/lib/data/product-statics';
 import { useCalculateShippingMutation, useCreateOrderMutation } from '@/lib/store/services/storefront-api';
 import type { CartItem } from '@/lib/types';
 

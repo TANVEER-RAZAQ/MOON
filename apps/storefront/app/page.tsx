@@ -1,26 +1,23 @@
-'use client';
+import { HomepageClient } from '@/components/HomepageClient';
+import type { BackendProduct } from '@/lib/store/services/storefront-api';
 
-import { useAppShell } from '@/components/AppContext';
-import { HomePage } from '@/components/pages/HomePage';
+export const revalidate = 3600;
 
-export default function Page() {
-  const {
-    catalogItems,
-    setActiveProduct,
-    handleAddCurrentStory,
-    handleAddCatalogItem,
-    openShopSection,
-    handleProductClick,
-  } = useAppShell();
+const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/+$/, '');
 
-  return (
-    <HomePage
-      catalogItems={catalogItems}
-      onSelectProduct={setActiveProduct}
-      onAddDetailToCart={handleAddCurrentStory}
-      onAddCatalogToCart={handleAddCatalogItem}
-      onBrowseCollection={openShopSection}
-      onProductClick={handleProductClick}
-    />
-  );
+export default async function Page() {
+  let initialProducts: BackendProduct[] = [];
+  try {
+    const res = await fetch(`${apiBase}/products`, {
+      next: { tags: ['products'] },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      initialProducts = json.data ?? [];
+    }
+  } catch {
+    // Backend unavailable — AppShell falls back to static catalog
+  }
+
+  return <HomepageClient initialProducts={initialProducts} />;
 }

@@ -1,4 +1,4 @@
-import type { CatalogItem, ProductStory, ProductKey, ShippingZone } from '@/lib/types';
+import type { CatalogItem, ProductKey, ProductStory } from '@/lib/types';
 
 export const productStories: Record<ProductKey, ProductStory> = {
   shilajit: {
@@ -11,7 +11,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
     price: '₹1,999',
     details: 'Gold Grade Resin<br>Third-party lab tested<br>Daily vitality & clarity',
     featureName: 'Shilajit',
-    featureDesc: 'The primary ritual product of MOON — built for consistent focus and recovery from the heights of the Himalaya.'
+    featureDesc: 'The primary ritual product of MOON — built for consistent focus and recovery from the heights of the Himalaya.',
   },
   kashmiriSaffron: {
     key: 'kashmiriSaffron',
@@ -23,7 +23,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
     price: '₹1,250',
     details: 'Mongra A++ Grade<br>Deep crimson stigmas<br>Hand-sorted & sun-dried',
     featureName: 'Kashmiri Saffron',
-    featureDesc: "Hand-selected Mongra threads from Pampore's autumn harvest — the rarest saffron grown on Indian soil."
+    featureDesc: "Hand-selected Mongra threads from Pampore's autumn harvest — the rarest saffron grown on Indian soil.",
   },
   kashmiriHoney: {
     key: 'kashmiriHoney',
@@ -35,7 +35,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
     price: '₹1,150',
     details: 'Wild alpine harvested<br>Unfiltered & raw<br>Enzyme-rich purity',
     featureName: 'Kashmiri Honey',
-    featureDesc: 'Liquid gold from the high meadows of Kashmir — raw, wild, and bottled close to where the bees live.'
+    featureDesc: 'Liquid gold from the high meadows of Kashmir — raw, wild, and bottled close to where the bees live.',
   },
   iraniSaffron: {
     key: 'iraniSaffron',
@@ -47,7 +47,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
     price: '₹1,050',
     details: 'Negin Grade Threads<br>Strong colour release<br>Everyday premium use',
     featureName: 'Irani Saffron',
-    featureDesc: 'Balanced saffron for daily rituals — desserts, teas, and the morning cup.'
+    featureDesc: 'Balanced saffron for daily rituals — desserts, teas, and the morning cup.',
   },
   kashmiriAlmonds: {
     key: 'kashmiriAlmonds',
@@ -59,7 +59,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
     price: '₹899',
     details: 'Premium whole kernels<br>Unroasted & unsalted<br>Protein & vitamin E rich',
     featureName: 'Kashmiri Almonds',
-    featureDesc: 'Daily nutrition from Kashmir orchards — a clean snacking staple.'
+    featureDesc: 'Daily nutrition from Kashmir orchards — a clean snacking staple.',
   },
   walnuts: {
     key: 'walnuts',
@@ -71,7 +71,7 @@ export const productStories: Record<ProductKey, ProductStory> = {
     price: '₹950',
     details: 'Half & whole kernels<br>Fresh seasonal harvest<br>High omega-3 content',
     featureName: 'Walnuts',
-    featureDesc: 'Classic wellness staple from Lolab Valley — for long-term heart and brain support.'
+    featureDesc: 'Classic wellness staple from Lolab Valley — for long-term heart and brain support.',
   },
   kashmiriGhee: {
     key: 'kashmiriGhee',
@@ -83,8 +83,8 @@ export const productStories: Record<ProductKey, ProductStory> = {
     price: '₹1,350',
     details: 'Bilona process<br>Small-batch prepared<br>Deep aromatic finish',
     featureName: 'Kashmiri Ghee',
-    featureDesc: 'Small-batch clarified butter from Bangus Valley — traditional method, premium taste.'
-  }
+    featureDesc: 'Small-batch clarified butter from Bangus Valley — traditional method, premium taste.',
+  },
 };
 
 export const productOrder: ProductKey[] = [
@@ -94,130 +94,25 @@ export const productOrder: ProductKey[] = [
   'iraniSaffron',
   'kashmiriAlmonds',
   'walnuts',
-  'kashmiriGhee'
+  'kashmiriGhee',
 ];
 
 export const catalogItems: CatalogItem[] = [
-  {
-    id: 'MOON-SHL-001',
-    title: 'Shilajit',
-    subtitle: 'Himalayan Gold Grade Resin',
-    price: 1999,
-    image: '/moon333/ezgif-frame-162.png',
-    alt: 'Pure Shilajit resin jar',
-    featured: true,
-    productKey: 'shilajit'
-  },
-  {
-    id: 'MOON-KSF-002',
-    title: 'Kashmiri Saffron',
-    subtitle: 'Mongra A++ Grade',
-    price: 1250,
-    image: '/moon2222/ezgif-frame-162.png',
-    alt: 'Premium saffron',
-    productKey: 'kashmiriSaffron'
-  },
-  {
-    id: 'MOON-KHN-007',
-    title: 'Kashmiri Honey',
-    subtitle: 'Wild Mountain Raw Honey',
-    price: 1150,
-    image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',
-    alt: 'Kashmiri honey jar — liquid gold',
-    productKey: 'kashmiriHoney'
-  },
-  {
-    id: 'MOON-IRS-003',
-    title: 'Irani Saffron',
-    subtitle: 'Negin Grade Threads',
-    price: 1050,
-    image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',
-    alt: 'Irani saffron threads',
-    productKey: 'iraniSaffron'
-  },
-  {
-    id: 'MOON-KAL-004',
-    title: 'Kashmiri Almonds',
-    subtitle: 'Premium Whole Kernels',
-    price: 899,
-    image: '/moon2222/ezgif-frame-162.png',
-    alt: 'Kashmiri almonds',
-    productKey: 'kashmiriAlmonds'
-  },
-  {
-    id: 'MOON-WAL-005',
-    title: 'Walnuts',
-    subtitle: 'Kashmir Orchard Select',
-    price: 950,
-    image: '/moon333/ezgif-frame-162.png',
-    alt: 'Walnuts premium pack',
-    productKey: 'walnuts'
-  },
-  {
-    id: 'MOON-KGH-006',
-    title: 'Kashmiri Ghee',
-    subtitle: 'Bilona Crafted',
-    price: 1350,
-    image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',
-    alt: 'Kashmiri ghee jar',
-    productKey: 'kashmiriGhee'
-  }
+  { id: 'MOON-SHL-001', title: 'Shilajit',         subtitle: 'Himalayan Gold Grade Resin',  price: 1999, image: '/moon333/ezgif-frame-162.png',                       alt: 'Pure Shilajit resin jar',         featured: true, productKey: 'shilajit' },
+  { id: 'MOON-KSF-002', title: 'Kashmiri Saffron', subtitle: 'Mongra A++ Grade',             price: 1250, image: '/moon2222/ezgif-frame-162.png',                      alt: 'Premium saffron',                               productKey: 'kashmiriSaffron' },
+  { id: 'MOON-KHN-007', title: 'Kashmiri Honey',   subtitle: 'Wild Mountain Raw Honey',      price: 1150, image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',   alt: 'Kashmiri honey jar — liquid gold',              productKey: 'kashmiriHoney' },
+  { id: 'MOON-IRS-003', title: 'Irani Saffron',    subtitle: 'Negin Grade Threads',          price: 1050, image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',   alt: 'Irani saffron threads',                         productKey: 'iraniSaffron' },
+  { id: 'MOON-KAL-004', title: 'Kashmiri Almonds', subtitle: 'Premium Whole Kernels',        price:  899, image: '/moon2222/ezgif-frame-162.png',                      alt: 'Kashmiri almonds',                              productKey: 'kashmiriAlmonds' },
+  { id: 'MOON-WAL-005', title: 'Walnuts',          subtitle: 'Kashmir Orchard Select',       price:  950, image: '/moon333/ezgif-frame-162.png',                       alt: 'Walnuts premium pack',                          productKey: 'walnuts' },
+  { id: 'MOON-KGH-006', title: 'Kashmiri Ghee',    subtitle: 'Bilona Crafted',               price: 1350, image: '/ezgif-2fae6b36993927b6-jpg/ezgif-frame-146.png',   alt: 'Kashmiri ghee jar',                             productKey: 'kashmiriGhee' },
 ];
 
-export const shippingZones: ShippingZone[] = [
-  {
-    zone: 'North',
-    states: ['Delhi', 'Punjab', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir'],
-    cost: 50,
-    eta: '2-3 days'
-  },
-  {
-    zone: 'South',
-    states: ['Karnataka', 'Tamil Nadu', 'Telangana', 'Andhra Pradesh'],
-    cost: 60,
-    eta: '3-4 days'
-  },
-  {
-    zone: 'West',
-    states: ['Maharashtra', 'Gujarat', 'Goa', 'Rajasthan'],
-    cost: 50,
-    eta: '2-3 days'
-  },
-  {
-    zone: 'East',
-    states: ['West Bengal', 'Odisha', 'Bihar', 'Jharkhand'],
-    cost: 80,
-    eta: '4-5 days'
-  },
-  {
-    zone: 'Northeast',
-    states: ['Assam', 'Manipur', 'Mizoram', 'Tripura'],
-    cost: 100,
-    eta: '5-7 days'
-  }
-];
-
-export const shippingStateOptions = [
+export const shippingStateOptions: string[] = [
   '',
-  'Delhi',
-  'Punjab',
-  'Haryana',
-  'Himachal Pradesh',
-  'Jammu and Kashmir',
-  'Karnataka',
-  'Tamil Nadu',
-  'Telangana',
-  'Andhra Pradesh',
-  'Maharashtra',
-  'Gujarat',
-  'Goa',
-  'Rajasthan',
-  'West Bengal',
-  'Odisha',
-  'Bihar',
-  'Jharkhand',
-  'Assam',
-  'Manipur',
-  'Mizoram',
-  'Tripura'
+  'Delhi', 'Punjab', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Uttarakhand', 'Uttar Pradesh',
+  'Karnataka', 'Tamil Nadu', 'Telangana', 'Andhra Pradesh', 'Kerala',
+  'Maharashtra', 'Gujarat', 'Goa', 'Rajasthan',
+  'West Bengal', 'Odisha', 'Bihar', 'Jharkhand', 'Chhattisgarh',
+  'Assam', 'Manipur', 'Mizoram', 'Tripura', 'Meghalaya', 'Nagaland', 'Arunachal Pradesh', 'Sikkim',
+  'Madhya Pradesh',
 ];

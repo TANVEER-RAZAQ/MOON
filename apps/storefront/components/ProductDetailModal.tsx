@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import type { CatalogItem, ProductKey } from '@/lib/types';
-import { productStories } from '@/lib/data/products';
+import { productStories } from '@/lib/data/product-statics';
 
 interface Review {
   name: string;
