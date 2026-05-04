@@ -66,4 +66,54 @@ async function findProductsByIds(ids) {
   return data ?? [];
 }
 
-module.exports = { findProductById, findProductsByIds, listProducts, searchProducts };
+async function adminListProducts({ limit = 100, offset = 0 } = {}) {
+  const db = getSupabaseAdminClient();
+  const { data, error } = await db
+    .from('products')
+    .select('id, name, slug, description, price, discount_price, image_url, images, category, theme, meta_title, meta_description, is_active, created_at, updated_at')
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+  if (error) throw new ApiError(500, error.message);
+  return data ?? [];
+}
+
+async function adminCreateProduct(fields) {
+  const db = getSupabaseAdminClient();
+  const { data, error } = await db
+    .from('products')
+    .insert(fields)
+    .select()
+    .single();
+  if (error) throw new ApiError(500, error.message);
+  return data;
+}
+
+async function adminUpdateProduct(id, fields) {
+  const db = getSupabaseAdminClient();
+  const { data, error } = await db
+    .from('products')
+    .update({ ...fields, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw new ApiError(500, error.message);
+  if (!data) throw new ApiError(404, 'Product not found.');
+  return data;
+}
+
+async function adminDeleteProduct(id) {
+  const db = getSupabaseAdminClient();
+  const { error } = await db.from('products').delete().eq('id', id);
+  if (error) throw new ApiError(500, error.message);
+}
+
+module.exports = {
+  adminCreateProduct,
+  adminDeleteProduct,
+  adminListProducts,
+  adminUpdateProduct,
+  findProductById,
+  findProductsByIds,
+  listProducts,
+  searchProducts,
+};

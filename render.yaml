@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: moon-backend
+    runtime: node
+    repo: https://github.com/Technolity/MOON
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: RAZORPAY_KEY
+        sync: false
+      - key: RAZORPAY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: orders@moonnaturallyyours.com
+      - key: FRONTEND_URL
+        value: https://moonnaturallyyours.com,https://admin.moonnaturallyyours.com
+      - key: STOREFRONT_URL
+        value: https://moonnaturallyyours.com
+      - key: REVALIDATE_SECRET
+        sync: false
