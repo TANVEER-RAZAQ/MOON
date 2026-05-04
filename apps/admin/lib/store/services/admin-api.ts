@@ -199,14 +199,13 @@ export const adminApi = createApi({
       invalidatesTags: ['AdminProducts'],
     }),
 
-    uploadProductImages: builder.mutation<BackendProduct, { id: string; formData: FormData }>({
-      query: ({ id, formData }) => ({
-        url: `/admin/products/${id}/images/upload`,
+    uploadProductImages: builder.mutation<{ images: ProductImage[] }, { productId: string; formData: FormData }>({
+      query: ({ productId, formData }) => ({
+        url: `/admin/products/${productId}/upload`,
         method: 'POST',
         body: formData,
       }),
       transformResponse: unwrap,
-      invalidatesTags: ['AdminProducts'],
     }),
 
     updateProductImagesArray: builder.mutation<BackendProduct, { id: string; images: ProductImage[] }>({

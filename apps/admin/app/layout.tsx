@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Providers } from '@/components/Providers';
 import { allFontVars } from '@moon/shared/fonts';
+import { proxyGuard } from '@/proxy';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -8,7 +9,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false, noimageindex: true } },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  await proxyGuard();
   return (
     <html lang="en" className={allFontVars}>
       <head>
