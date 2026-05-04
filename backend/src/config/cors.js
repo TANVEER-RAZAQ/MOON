@@ -1,7 +1,12 @@
 const env = require('./env');
 
+// FRONTEND_URL supports comma-separated values for monorepo multi-origin:
+// e.g. "https://www.moonnaturallyyours.com,https://admin.moonnaturallyyours.com"
 const allowedOrigins = new Set(
-  [env.app.frontendUrl].filter(Boolean)
+  env.app.frontendUrl
+    .split(',')
+    .map((u) => u.trim())
+    .filter(Boolean)
 );
 
 // Any localhost or 127.0.0.1 origin is allowed in development regardless of port
