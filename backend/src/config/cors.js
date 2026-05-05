@@ -22,12 +22,9 @@ function isLocalOrigin(origin) {
 const corsOptions = {
   credentials: true,
   origin(origin, callback) {
-    // In production, block all no-origin requests (e.g. direct curl calls)
+    // Allow requests with no origin (e.g., Render health checks, server-to-server webhooks, mobile apps)
+    // CORS is a browser security mechanism; blocking no-origin requests breaks non-browser clients.
     if (!origin) {
-      if (env.app.isProduction) {
-        return callback(new Error('CORS: direct server-to-server requests are not allowed.'));
-      }
-      // Allow no-origin in development for local testing tools
       return callback(null, true);
     }
 
