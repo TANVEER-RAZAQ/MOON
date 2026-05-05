@@ -181,6 +181,87 @@ export interface AdminCategory {
   themes: string[];
 }
 
+/* ─── Detailed Analytics ───────────────────────────────────────────── */
+export interface BuyerProductSummary {
+  productId: string;
+  productName: string;
+  totalQuantity: number;
+  totalSpent: number;
+}
+
+export interface BuyerSummary {
+  email: string;
+  name: string;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  totalOrders: number;
+  totalSpent: number;
+  productsBought: BuyerProductSummary[];
+  firstOrderDate: string;
+  lastOrderDate: string;
+  orderStatuses: Record<string, number>;
+}
+
+export interface BuyersSummaryResponse {
+  buyers: BuyerSummary[];
+  total: number;
+}
+
+export interface BuyerDetailResponse {
+  email: string;
+  totalOrders: number;
+  totalSpent: number;
+  productsSummary: Array<BuyerProductSummary & { orderCount: number }>;
+  orders: AdminOrderDetail[];
+}
+
+export interface ProductBuyersResponse {
+  productId: string;
+  productName: string;
+  totalBuyers: number;
+  buyers: Array<{
+    email: string;
+    name: string;
+    phone: string | null;
+    city: string | null;
+    state: string | null;
+    totalQuantity: number;
+    totalSpent: number;
+    orderCount: number;
+    lastPurchaseDate: string;
+  }>;
+}
+
+export interface TimelineBucket {
+  period: string;
+  revenue: number;
+  orders: number;
+}
+
+export interface TimelineResponse {
+  granularity: 'day' | 'week' | 'month';
+  timeline: TimelineBucket[];
+}
+
+export interface GeoStateEntry {
+  state: string;
+  orders: number;
+  revenue: number;
+}
+
+export interface GeoCityEntry {
+  city: string;
+  state: string;
+  orders: number;
+  revenue: number;
+}
+
+export interface GeoResponse {
+  byState: GeoStateEntry[];
+  byCity: GeoCityEntry[];
+}
+
 const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/+$/, '');
 
 const unwrap = <T>(response: ApiEnvelope<T>) => response.data;
@@ -197,7 +278,7 @@ export const adminApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Inventory', 'Analytics', 'AdminSession', 'AdminProducts', 'AdminOrders', 'AdminCustomers', 'AdminCategories'],
+  tagTypes: ['Inventory', 'Analytics', 'AdminSession', 'AdminProducts', 'AdminOrders', 'AdminCustomers', 'AdminCategories', 'DetailedAnalytics'],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, { email: string; password: string }>({
       query: (body) => ({
@@ -357,6 +438,43 @@ export const adminApi = createApi({
       transformResponse: unwrap,
       providesTags: ['AdminCategories'],
     }),
+
+    /* ─── Detailed Analytics ──────────────────────────────────────── */
+    getBuyersSummary: builder.query<BuyersSummaryResponse, { dateFrom?: string; dateTo?: string; limit?: number; offset?: number } | undefined>({
+      query: (params) =>
+        params ? { url: '/admin/analytics/buyers', params } : '/admin/analytics/buyers',
+      transformResponse: unwrap,
+      providesTags: ['DetailedAnalytics'],
+    }),
+
+    getBuyerDetail: builder.query<BuyerDetailResponse, string>({
+      query: (email) => `/admin/analytics/buyers/${encodeURIComponent(email)}`,
+      transformResponse: unwrap,
+      providesTags: ['DetailedAnalytics'],
+    }),
+
+    getProductBuyers: builder.query<ProductBuyersResponse, { productId: string; dateFrom?: string; dateTo?: string }>({
+      query: ({ productId, ...params }) => ({
+        url: `/admin/analytics/products/${productId}/buyers`,
+        params,
+      }),
+      transformResponse: unwrap,
+      providesTags: ['DetailedAnalytics'],
+    }),
+
+    getAnalyticsTimeline: builder.query<TimelineResponse, { dateFrom?: string; dateTo?: string; granularity?: 'day' | 'week' | 'month' } | undefined>({
+      query: (params) =>
+        params ? { url: '/admin/analytics/timeline', params } : '/admin/analytics/timeline',
+      transformResponse: unwrap,
+      providesTags: ['DetailedAnalytics'],
+    }),
+
+    getGeoBreakdown: builder.query<GeoResponse, { dateFrom?: string; dateTo?: string } | undefined>({
+      query: (params) =>
+        params ? { url: '/admin/analytics/geo', params } : '/admin/analytics/geo',
+      transformResponse: unwrap,
+      providesTags: ['DetailedAnalytics'],
+    }),
   }),
 });
 
@@ -381,4 +499,9 @@ export const {
   useGetAdminCustomersQuery,
   useGetAdminCustomerByIdQuery,
   useGetAdminCategoriesQuery,
+  useGetBuyersSummaryQuery,
+  useGetBuyerDetailQuery,
+  useGetProductBuyersQuery,
+  useGetAnalyticsTimelineQuery,
+  useGetGeoBreakdownQuery,
 } = adminApi;

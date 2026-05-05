@@ -8,7 +8,6 @@ interface NavbarProps {
   cartCount: number;
   onCartClick: () => void;
   onSearchClick: () => void;
-  onAccountClick: () => void;
   heroTheme?: 'light' | 'dark';
 }
 
@@ -20,7 +19,7 @@ const NAV_SECTIONS = [
   { href: '/#contact',  label: 'Contact' },
 ];
 
-export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }: NavbarProps) {
+export function Navbar({ cartCount, onCartClick, onSearchClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -79,9 +78,6 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
           <button type="button" aria-label="Search" onClick={onSearchClick} className="moon-nav-action-btn">
             <span className="material-symbols-outlined moon-nav-icon">search</span>
           </button>
-          <button type="button" aria-label="Account" onClick={onAccountClick} className="moon-nav-action-btn hidden md:flex">
-            <span className="material-symbols-outlined moon-nav-icon">person</span>
-          </button>
           <button type="button" aria-label={`Cart, ${cartCount} items`} onClick={onCartClick} className="moon-nav-action-btn moon-nav-cart-btn">
             <span className="material-symbols-outlined moon-nav-icon">shopping_bag</span>
             {cartCount > 0 && <span className="moon-cart-badge">{cartCount}</span>}
@@ -92,7 +88,8 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
             <button
               type="button"
               aria-label={menuOpen ? 'Close navigation' : 'Open section navigation'}
-              aria-expanded={menuOpen}
+              aria-expanded={menuOpen ? "true" : "false"}
+              aria-haspopup="true"
               onClick={() => setMenuOpen(o => !o)}
               className="moon-nav-action-btn moon-nav-hamburger"
             >
@@ -103,18 +100,17 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, onAccountClick }
 
             {/* Section nav dropdown */}
             {menuOpen && (
-              <div className="moon-nav-dropdown" role="menu">
+              <nav className="moon-nav-dropdown" aria-label="Section navigation">
                 {NAV_SECTIONS.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    role="menuitem"
                     onClick={() => setMenuOpen(false)}
                   >
                     {item.label}
                   </Link>
                 ))}
-              </div>
+              </nav>
             )}
           </div>
         </div>

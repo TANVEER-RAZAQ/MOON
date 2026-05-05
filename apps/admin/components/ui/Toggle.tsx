@@ -11,7 +11,7 @@ export function Toggle({ checked, onChange, label }: ToggleProps) {
     <button
       type="button"
       role="switch"
-      aria-checked={!!checked}
+      aria-checked={checked ? "true" : "false"}
       onClick={() => onChange(!checked)}
       style={{
         position: 'relative',

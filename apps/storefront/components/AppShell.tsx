@@ -326,7 +326,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           cartCount={cartCount}
           onCartClick={openCartDrawer}
           onSearchClick={openShopSection}
-          onAccountClick={() => {}}
           heroTheme="dark"
         />
       ) : null}

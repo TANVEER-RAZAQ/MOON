@@ -1,6 +1,7 @@
 const express = require('express');
 
 const analyticsRoutes = require('./analytics/analytics.routes');
+const analyticsDetailedRoutes = require('./analytics/analytics.detailed.routes');
 const authRoutes = require('./auth/auth.routes');
 const cartRoutes = require('./cart/cart.routes');
 const categoriesAdminRoutes = require('./categories/categories.admin.routes');
@@ -28,6 +29,7 @@ router.use('/shipping', shippingRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/inventory', inventoryRoutes);
 router.use('/admin/analytics', analyticsRoutes);
+router.use('/admin/analytics', analyticsDetailedRoutes);
 router.use('/admin/products', productsAdminRoutes);
 router.use('/admin/products', productsUploadRoutes);
 router.use('/admin/orders', ordersAdminRoutes);

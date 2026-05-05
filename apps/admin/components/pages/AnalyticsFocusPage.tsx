@@ -1,11 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   useGetAdminCustomerMetricsQuery,
   useGetAdminOrderMetricsQuery,
   useGetAdminProductMetricsQuery,
   useGetAdminRevenueMetricsQuery,
+  useGetAnalyticsTimelineQuery,
+  useGetBuyersSummaryQuery,
+  useGetGeoBreakdownQuery,
 } from '@/lib/store/services/admin-api';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Btn } from '@/components/ui/Btn';
@@ -21,21 +24,25 @@ function toCurrency(value: number) {
 }
 
 export function AnalyticsFocusPage() {
+  const [granularity, setGranularity] = useState<'day'|'week'|'month'>('day');
+
   const { data: revenue, isLoading: revenueLoading, isError: revenueError, refetch: refetchRevenue } = useGetAdminRevenueMetricsQuery(undefined);
   const { data: customers, refetch: refetchCustomers } = useGetAdminCustomerMetricsQuery(undefined);
   const { data: orders, refetch: refetchOrders } = useGetAdminOrderMetricsQuery(undefined);
   const { data: products, refetch: refetchProducts } = useGetAdminProductMetricsQuery({ limit: 8 });
+  const { data: timelineData, refetch: refetchTimeline } = useGetAnalyticsTimelineQuery({ granularity });
+  const { data: buyersData, refetch: refetchBuyers } = useGetBuyersSummaryQuery({ limit: 10 });
+  const { data: geoData, refetch: refetchGeo } = useGetGeoBreakdownQuery(undefined);
 
   const totalOrderCount = orders?.total ?? 0;
   const conversionRate = totalOrderCount && (customers?.newCustomers ?? 0)
     ? (totalOrderCount / Math.max(customers?.newCustomers ?? 1, 1)) * 100
     : 0;
 
-  // Synthetic chart series
   const chartSeries = useMemo(() => {
-    const avg = (revenue?.totalRevenue ?? 0) / 14;
-    return Array.from({ length: 14 }, () => Math.max(0, avg * (0.6 + Math.random() * 0.8)));
-  }, [revenue?.totalRevenue]);
+    if (!timelineData?.timeline?.length) return [0, 0];
+    return timelineData.timeline.map(t => t.revenue);
+  }, [timelineData]);
 
   const productRows = useMemo(
     () => {
@@ -61,7 +68,10 @@ export function AnalyticsFocusPage() {
     return 'gold' as const;
   };
 
-  const onRefresh = () => { refetchRevenue(); refetchCustomers(); refetchOrders(); refetchProducts(); };
+  const onRefresh = () => { 
+    refetchRevenue(); refetchCustomers(); refetchOrders(); refetchProducts(); 
+    refetchTimeline(); refetchBuyers(); refetchGeo();
+  };
 
   const onExport = () => {
     const header = ['metric', 'value'];
@@ -119,7 +129,12 @@ export function AnalyticsFocusPage() {
           </p>
         </div>
         <div style={{ flex: '0 0 320px' }}>
-          <AreaChart data={chartSeries.length > 1 ? chartSeries : [0, 0]} height={140} accent="var(--sage)" subtle="var(--sage-soft)" />
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12, justifyContent: 'flex-end' }}>
+            <Btn size="sm" variant={granularity === 'day' ? 'primary' : 'ghost'} onClick={() => setGranularity('day')}>D</Btn>
+            <Btn size="sm" variant={granularity === 'week' ? 'primary' : 'ghost'} onClick={() => setGranularity('week')}>W</Btn>
+            <Btn size="sm" variant={granularity === 'month' ? 'primary' : 'ghost'} onClick={() => setGranularity('month')}>M</Btn>
+          </div>
+          <AreaChart data={chartSeries} height={140} accent="var(--sage)" subtle="var(--sage-soft)" />
         </div>
       </div>
 
@@ -154,7 +169,6 @@ export function AnalyticsFocusPage() {
         </div>
       </Card>
 
-      {/* Top products + traffic */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <Card title="Top sellers" subtitle="By revenue">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -195,6 +209,65 @@ export function AnalyticsFocusPage() {
               );
             })}
             {!productRows.length && <p style={{ fontSize: 13, color: 'var(--ink-3)' }}>No product data yet.</p>}
+          </div>
+        </Card>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14 }}>
+        <Card title="Recent Buyers" subtitle="High-value customers">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', marginTop: 12 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--line)', color: 'var(--ink-3)', fontSize: 12 }}>
+                  <th style={{ padding: '8px 4px', fontWeight: 500 }}>Customer</th>
+                  <th style={{ padding: '8px 4px', fontWeight: 500 }}>Location</th>
+                  <th style={{ padding: '8px 4px', fontWeight: 500 }}>Orders</th>
+                  <th style={{ padding: '8px 4px', fontWeight: 500, textAlign: 'right' }}>LTV</th>
+                </tr>
+              </thead>
+              <tbody>
+                {buyersData?.buyers?.map(b => (
+                  <tr key={b.email} style={{ borderBottom: '1px solid var(--line)' }}>
+                    <td style={{ padding: '12px 4px' }}>
+                      <div style={{ fontSize: 13, color: 'var(--ink)', fontWeight: 500 }}>{b.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>{b.email}</div>
+                    </td>
+                    <td style={{ padding: '12px 4px', fontSize: 12, color: 'var(--ink-2)' }}>
+                      {b.city ? `${b.city}, ${b.state}` : '—'}
+                    </td>
+                    <td style={{ padding: '12px 4px', fontSize: 13, color: 'var(--ink-2)' }}>{b.totalOrders}</td>
+                    <td style={{ padding: '12px 4px', fontSize: 13, color: 'var(--ink)', textAlign: 'right' }}>
+                      {toCurrency(b.totalSpent)}
+                    </td>
+                  </tr>
+                ))}
+                {!buyersData?.buyers?.length && (
+                  <tr>
+                    <td colSpan={4} style={{ padding: '16px 4px', fontSize: 13, color: 'var(--ink-3)', textAlign: 'center' }}>No buyer data found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <Card title="Top Regions" subtitle="Revenue by state">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
+            {geoData?.byState?.slice(0, 8).map((s, i) => (
+              <div key={s.state} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span className="mono" style={{ color: 'var(--ink-3)', fontSize: 11 }}>{i+1}.</span>
+                  <span style={{ fontSize: 13, color: 'var(--ink)' }}>{s.state}</span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 13, color: 'var(--ink)' }}>{toCurrency(s.revenue)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>{s.orders} orders</div>
+                </div>
+              </div>
+            ))}
+            {!geoData?.byState?.length && (
+              <p style={{ fontSize: 13, color: 'var(--ink-3)' }}>No geo data found.</p>
+            )}
           </div>
         </Card>
       </div>
