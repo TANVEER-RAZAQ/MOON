@@ -482,7 +482,8 @@ export function HomePage({
                         objectFit: 'cover',
                         transition: 'transform 700ms var(--ease-out)',
                         display: 'block',
-                        opacity: item.inStock === false ? 0.6 : 1,
+                        opacity: item.inStock === false ? 0.4 : 1,
+                        filter: item.inStock === false ? 'grayscale(100%) blur(2px)' : 'none',
                       }}
                     />
                     {/* Bottom gradient in product accent color */}

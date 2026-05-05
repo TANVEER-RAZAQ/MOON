@@ -55,6 +55,7 @@ interface BackendProduct {
   theme?: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
+  inStock?: boolean;
 }
 
 async function fetchProduct(slug: string): Promise<BackendProduct | null> {

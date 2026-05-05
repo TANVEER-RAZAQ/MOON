@@ -18,6 +18,7 @@ export interface BackendProduct {
   category?: string | null;
   theme?: string | null;
   in_stock?: boolean | null;
+  inStock?: boolean;
   inventory?: { quantity: number; reserved: number; sku: string } | null;
 }
 

@@ -64,10 +64,11 @@ export function HomepageClient({ initialProducts }: Props) {
         alt: fallback?.alt ?? product.name,
         featured: fallback?.featured,
         productKey: key,
+        inStock: product.inStock ?? true,
       };
     }
     return productOrder
-      .map((key) => fromBackend[key] ?? fallbackByKey[key])
+      .map((key) => fromBackend[key]) // Do not fallback to static items if omitted by backend (inactive)
       .filter((item): item is CatalogItem => item != null);
   }, [initialProducts]);
 
