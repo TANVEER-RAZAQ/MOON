@@ -332,7 +332,7 @@ export function ProductDetailModal({ item, onClose, onAddToCart }: ProductDetail
             {/* Feature tags */}
             {bullets.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {bullets.map((b) => (
+                {bullets.map((b: string) => (
                   <span key={b} style={{
                     border: '1px solid var(--hairline-strong, rgba(11,8,6,0.22))',
                     padding: '6px 14px',
