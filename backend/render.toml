@@ -1,0 +1,95 @@
+[[services]]
+  type = "web"
+  name = "moon-backend"
+  runtime = "node"
+  rootDir = "."
+  buildCommand = "npm ci --omit=dev"
+  startCommand = "npm start"
+  healthCheckPath = "/api/health"
+  autoDeploy = true
+
+  [[services.envVars]]
+    key = "NODE_ENV"
+    value = "production"
+    
+  [[services.envVars]]
+    key = "PORT"
+    value = "10000"
+    
+  [[services.envVars]]
+    key = "APP_NAME"
+    value = "MOON Backend"
+    
+  [[services.envVars]]
+    key = "API_PREFIX"
+    value = "/api"
+
+  # Frontend Connectivity
+  [[services.envVars]]
+    key = "FRONTEND_URL"
+    sync = false
+    
+  [[services.envVars]]
+    key = "STOREFRONT_URL"
+    sync = false
+    
+  [[services.envVars]]
+    key = "REVALIDATE_SECRET"
+    sync = false
+
+  # Authentication
+  [[services.envVars]]
+    key = "JWT_SECRET"
+    sync = false
+    
+  [[services.envVars]]
+    key = "JWT_EXPIRES_IN"
+    value = "7d"
+
+  # Supabase
+  [[services.envVars]]
+    key = "SUPABASE_URL"
+    sync = false
+    
+  [[services.envVars]]
+    key = "SUPABASE_SERVICE_ROLE_KEY"
+    sync = false
+
+  # Razorpay
+  [[services.envVars]]
+    key = "RAZORPAY_KEY"
+    sync = false
+    
+  [[services.envVars]]
+    key = "RAZORPAY_SECRET"
+    sync = false
+    
+  [[services.envVars]]
+    key = "RAZORPAY_WEBHOOK_SECRET"
+    sync = false
+
+  # Email (SendGrid/Resend)
+  [[services.envVars]]
+    key = "SENDGRID_API_KEY"
+    sync = false
+    
+  [[services.envVars]]
+    key = "EMAIL_FROM"
+    value = "orders@moonbrand.com"
+
+  # Twilio
+  [[services.envVars]]
+    key = "TWILIO_ACCOUNT_SID"
+    sync = false
+    
+  [[services.envVars]]
+    key = "TWILIO_AUTH_TOKEN"
+    sync = false
+    
+  [[services.envVars]]
+    key = "TWILIO_PHONE"
+    sync = false
+    
+  [[services.envVars]]
+    key = "TWILIO_WHATSAPP_NUMBER"
+    sync = false
