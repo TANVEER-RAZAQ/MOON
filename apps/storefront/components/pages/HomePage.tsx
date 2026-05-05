@@ -242,7 +242,7 @@ export function HomePage({
             <div className="moon-hero__meta">
               <span className="t-label">{String(slideIndex + 1).padStart(2, '0')} / 0{TOTAL_SLIDES}</span>
               <span className="moon-hero__dot" />
-              <span className="t-label">Himalayan Origin</span>
+              <span className="t-label">Kashmiri Origin</span>
             </div>
 
             {/* Title — Fraunces bold uppercase, massive */}
