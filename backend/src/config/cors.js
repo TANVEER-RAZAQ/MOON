@@ -3,9 +3,11 @@ const env = require('./env');
 // FRONTEND_URL supports comma-separated values for monorepo multi-origin:
 // e.g. "https://www.moonnaturallyyours.com,https://admin.moonnaturallyyours.com"
 const allowedOrigins = new Set(
-  env.app.frontendUrl
-    .split(',')
-    .map((u) => u.trim())
+  [
+    ...env.app.frontendUrl.split(','),
+    env.app.storefrontUrl
+  ]
+    .map((u) => u?.trim())
     .filter(Boolean)
 );
 
