@@ -18,7 +18,17 @@ async function revalidateStorefront(paths = [], tags = []) {
     ),
   ];
 
-  await Promise.allSettled(calls);
+  const results = await Promise.allSettled(calls);
+  
+  results.forEach((res, i) => {
+    if (res.status === 'rejected') {
+      console.error(`[Revalidate] Failed to revalidate:`, res.reason);
+    } else if (!res.value.ok) {
+      console.error(`[Revalidate] Error response: ${res.value.status} ${res.value.statusText}`);
+    } else {
+      console.log(`[Revalidate] Successfully revalidated tag/path.`);
+    }
+  });
 }
 
 module.exports = { revalidateStorefront };

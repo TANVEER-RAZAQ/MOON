@@ -22,7 +22,7 @@ async function updateInventory(id, { quantity, reserved, sku }) {
     .from('inventory')
     .update(patch)
     .eq('id', id)
-    .select('id, sku, quantity, reserved, updated_at')
+    .select('id, sku, quantity, reserved, updated_at, products(slug)')
     .single();
 
   if (error) throw new ApiError(500, error.message);

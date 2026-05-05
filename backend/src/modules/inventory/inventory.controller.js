@@ -1,6 +1,7 @@
 const asyncHandler = require('../../core/utils/async-handler');
 const sendResponse = require('../../core/utils/send-response');
 const inventoryService = require('./inventory.service');
+const { revalidateStorefront } = require('../../integrations/revalidate');
 
 const listInventory = asyncHandler(async (req, res) => {
   const result = await inventoryService.listInventory(req.query);
@@ -16,6 +17,14 @@ const updateInventory = asyncHandler(async (req, res) => {
     params: req.validated?.params ?? req.params,
     input: req.validated?.body ?? req.body
   });
+
+  if (result?.products?.slug) {
+    const slug = result.products.slug;
+    revalidateStorefront(
+      ['/products/' + slug, '/products', '/'], 
+      ['products', 'product-' + slug]
+    ).catch(() => {});
+  }
 
   return sendResponse(res, {
     message: 'Inventory updated.',
