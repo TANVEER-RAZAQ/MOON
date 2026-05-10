@@ -48,11 +48,11 @@ export function Footer() {
         <div className="moon-footer-new__col">
           <span className="t-eyebrow">Shop</span>
           <ul>
-            <li><Link href="/products">Shop All</Link></li>
+            <li><Link href="/#rituals">Shop All</Link></li>
             <li><Link href="/#rituals">Rituals</Link></li>
             <li><Link href="/#archive">Origins</Link></li>
-            <li><Link href="/products">Dry Fruits &amp; Nuts</Link></li>
-            <li><Link href="/products">Kashmiri Ghee</Link></li>
+            <li><Link href="/#rituals">Dry Fruits &amp; Nuts</Link></li>
+            <li><Link href="/#rituals">Kashmiri Ghee</Link></li>
           </ul>
         </div>
 

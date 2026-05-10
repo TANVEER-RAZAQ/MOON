@@ -16,6 +16,15 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   transpilePackages: ['@moon/shared'],
+  async redirects() {
+    return [
+      {
+        source: '/products',
+        destination: '/#rituals',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
