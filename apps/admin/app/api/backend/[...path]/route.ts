@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 
-const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/+$/, '');
+const BACKEND = (process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/+$/, '');
 const TOKEN_COOKIE = 'moon_admin_token';
 
 const BASE_COOKIE_OPTIONS = {
