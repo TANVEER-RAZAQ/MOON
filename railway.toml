@@ -2,6 +2,10 @@
 builder = "NIXPACKS"
 buildCommand = "cd backend && npm ci --omit=dev"
 
+[build.nixpacksConfig]
+providers = ["node"]
+nodeVersion = "20"
+
 [deploy]
 startCommand = "cd backend && npm start"
 healthcheckPath = "/api/health"

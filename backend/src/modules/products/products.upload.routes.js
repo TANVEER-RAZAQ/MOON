@@ -1,7 +1,7 @@
+const crypto = require('crypto');
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
-const { v4: uuidv4 } = require('uuid');
 
 const ApiError = require('../../core/errors/api-error');
 const { requireAdmin, requireAuth } = require('../../core/middleware/require-auth');
@@ -64,7 +64,7 @@ async function processAndUpload(buffer, productId, index) {
     throw new ApiError(503, 'Supabase storage is not configured. Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
   }
 
-  const filename = `${productId}/${uuidv4()}.webp`;
+  const filename = `${productId}/${crypto.randomUUID()}.webp`;
 
   const [fullBuffer, blurBuffer] = await Promise.all([
     sharp(buffer)
