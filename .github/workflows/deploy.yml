@@ -55,8 +55,7 @@ jobs:
         run: npm install -g vercel
 
       - name: Deploy storefront (production)
-        run: vercel --prod --yes --token ${{ secrets.VERCEL_TOKEN }}
-        working-directory: apps/storefront
+        run: vercel apps/storefront --prod --yes --token ${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STOREFRONT_PROJECT_ID }}
@@ -75,8 +74,7 @@ jobs:
         run: npm install -g vercel
 
       - name: Deploy admin (production)
-        run: vercel --prod --yes --token ${{ secrets.VERCEL_TOKEN }}
-        working-directory: apps/admin
+        run: vercel apps/admin --prod --yes --token ${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_ADMIN_PROJECT_ID }}
