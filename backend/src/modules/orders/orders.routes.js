@@ -27,6 +27,11 @@ router.get(
   validateRequest({ params: orderParamsSchema }),
   ordersController.getOrderInvoice
 );
+router.post(
+  '/:id/cancel',
+  validateRequest({ params: orderParamsSchema }),
+  ordersController.cancelOrder
+);
 router.put(
   '/:id/status',
   requireAuth,

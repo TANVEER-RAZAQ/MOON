@@ -99,4 +99,21 @@ async function sendWhatsApp() {
   return { queued: false, reason: 'WhatsApp not configured.' };
 }
 
-module.exports = { sendEmail, sendOrderConfirmation, sendAdminOrderAlert, sendSms, sendWhatsApp };
+async function sendShippingNotification({ orderNumber, customerEmail, trackingNumber }) {
+  const trackingLine = trackingNumber
+    ? `<p>Your tracking number is: <strong>${trackingNumber}</strong></p>`
+    : '';
+  return sendEmail({
+    to: customerEmail,
+    subject: `Your MOON order ${orderNumber} has shipped!`,
+    html: `
+      <h2>Your order is on the way!</h2>
+      <p>Order <strong>${orderNumber}</strong> has been dispatched.</p>
+      ${trackingLine}
+      <p>Estimated delivery: 3–7 business days.</p>
+      <p>Thank you for choosing MOON.</p>
+    `
+  });
+}
+
+module.exports = { sendEmail, sendOrderConfirmation, sendAdminOrderAlert, sendSms, sendWhatsApp, sendShippingNotification };

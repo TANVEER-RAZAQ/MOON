@@ -132,6 +132,16 @@ export interface AdminOrder {
   updated_at: string;
   order_items: AdminOrderItem[];
   payments: AdminOrderPayment[];
+  shipping_address?: {
+    full_name: string;
+    phone: string;
+    line_1: string;
+    line_2?: string | null;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+  } | null;
 }
 
 export interface AdminOrderDetail extends AdminOrder {

@@ -114,7 +114,7 @@ async function getOrderById({ user, params }) {
     throw new ApiError(403, 'Access denied.');
   }
 
-  return order;
+  return { ...order, items: order.order_items || [] };
 }
 
 async function listOrders({ user }) {
@@ -128,4 +128,35 @@ async function updateStatus({ params, input }) {
   return ordersRepository.updateStatus(params.id, input);
 }
 
-module.exports = { createOrder, getOrderById, listOrders, updateStatus };
+async function cancelOrder({ params }) {
+  const db = require('../../integrations/database/supabase-admin').getSupabaseAdminClient();
+  const { data: order, error } = await db
+    .from('orders')
+    .select('id, status, payments(status)')
+    .eq('id', params.id)
+    .maybeSingle();
+
+  if (error || !order) throw new ApiError(404, 'Order not found.');
+  if (order.status !== 'pending') throw new ApiError(409, 'Only pending orders can be cancelled.');
+
+  const paid = (order.payments || []).some(p => p.status === 'captured');
+  if (paid) throw new ApiError(409, 'Order has been paid and cannot be cancelled.');
+
+  // Update status
+  await db.from('orders').update({ status: 'cancelled' }).eq('id', params.id);
+
+  // Release reserved inventory
+  const { data: items } = await db
+    .from('order_items')
+    .select('product_id, quantity')
+    .eq('order_id', params.id);
+  if (items?.length) {
+    await ordersRepository.releaseInventory(
+      items.map(i => ({ productId: i.product_id, quantity: i.quantity }))
+    );
+  }
+
+  return { cancelled: true };
+}
+
+module.exports = { createOrder, getOrderById, listOrders, updateStatus, cancelOrder };

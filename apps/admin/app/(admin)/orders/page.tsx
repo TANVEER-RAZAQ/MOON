@@ -229,7 +229,7 @@ function OrderRow({ order, isExpanded, paymentStatus, itemCount, onToggle, onSta
       {isExpanded && (
         <tr style={{ borderBottom: '1px solid var(--line)' }}>
           <td colSpan={7} style={{ padding: '0 22px 20px', background: 'var(--bg-sunk)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, paddingTop: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, paddingTop: 16 }}>
               {/* Line Items */}
               <div>
                 <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 10 }}>
@@ -298,6 +298,25 @@ function OrderRow({ order, isExpanded, paymentStatus, itemCount, onToggle, onSta
                     </div>
                     <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>{order.notes}</div>
                   </div>
+                )}
+              </div>
+
+              {/* Shipping Address */}
+              <div>
+                <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 10 }}>
+                  Ship To
+                </div>
+                {order.shipping_address ? (
+                  <address style={{ fontStyle: 'normal', fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.7 }}>
+                    <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{order.shipping_address.full_name}</div>
+                    <div>{order.shipping_address.phone}</div>
+                    <div>{order.shipping_address.line_1}</div>
+                    {order.shipping_address.line_2 && <div>{order.shipping_address.line_2}</div>}
+                    <div>{order.shipping_address.city}, {order.shipping_address.state}</div>
+                    <div>{order.shipping_address.postal_code}</div>
+                  </address>
+                ) : (
+                  <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>No address on file</div>
                 )}
               </div>
             </div>

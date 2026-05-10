@@ -78,7 +78,7 @@ async function getOrderById(id) {
   const { data, error } = await db
     .from('orders')
     .select(
-      '*, order_items(id, product_id, product_name, quantity, unit_price, subtotal), payments(status, method, razorpay_order_id, razorpay_payment_id), shipping_address:addresses!orders_shipping_address_id_fkey(full_name, line_1, line_2, city, state, postal_code, country)'
+      '*, order_items(id, product_id, product_name, quantity, unit_price, subtotal), payments(status, method, razorpay_order_id, razorpay_payment_id), shipping_address:addresses!shipping_address_id(full_name, phone, line_1, line_2, city, state, postal_code, country)'
     )
     .eq('id', id)
     .maybeSingle();
@@ -126,4 +126,22 @@ async function reserveInventory(items) {
   }
 }
 
-module.exports = { createAddress, createOrder, getOrderById, listOrdersByUser, reserveInventory, updateStatus };
+async function releaseInventory(items) {
+  const db = getSupabaseAdminClient();
+  for (const item of items) {
+    const { data: inv } = await db
+      .from('inventory')
+      .select('id, reserved')
+      .eq('product_id', item.productId)
+      .maybeSingle();
+    if (inv) {
+      const { error } = await db
+        .from('inventory')
+        .update({ reserved: Math.max(0, (inv.reserved || 0) - item.quantity) })
+        .eq('id', inv.id);
+      if (error) console.error(`inventory release failed for ${item.productId}:`, error.message);
+    }
+  }
+}
+
+module.exports = { createAddress, createOrder, getOrderById, listOrdersByUser, reserveInventory, releaseInventory, updateStatus };

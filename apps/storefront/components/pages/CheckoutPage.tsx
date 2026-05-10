@@ -250,7 +250,11 @@ export function CheckoutPage({ items, subtotal, onBackToCart, onOrderPlaced }: C
               }
             },
             modal: {
-              ondismiss: () => reject(new Error('Payment was cancelled. You can try again.')),
+              ondismiss: () => {
+                // Cancel order server-side to release reserved inventory (best-effort)
+                fetch(`${(process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/+$/, '')}/orders/${orderId}/cancel`, { method: 'POST' }).catch(() => {});
+                reject(new Error('Payment was cancelled. You can try again.'));
+              },
             },
           });
           rzp.open();

@@ -124,10 +124,18 @@ const getOrderInvoice = asyncHandler(async (req, res) => {
   return res.send(html);
 });
 
+const cancelOrder = asyncHandler(async (req, res) => {
+  const result = await ordersService.cancelOrder({
+    params: req.validated?.params ?? req.params
+  });
+  return sendResponse(res, { message: 'Order cancelled.', data: result });
+});
+
 module.exports = {
   createOrder,
   getOrderById,
   listOrders,
   updateStatus,
-  getOrderInvoice
+  getOrderInvoice,
+  cancelOrder
 };

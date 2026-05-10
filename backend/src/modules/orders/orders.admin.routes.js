@@ -27,7 +27,8 @@ router.get(
         customer_email, customer_phone, tracking_number, notes,
         created_at, updated_at,
         order_items(id, product_id, product_name, quantity, unit_price, subtotal),
-        payments(status, method, razorpay_order_id, razorpay_payment_id)`
+        payments(status, method, razorpay_order_id, razorpay_payment_id),
+        shipping_address:addresses!shipping_address_id(full_name, phone, line_1, line_2, city, state, postal_code, country)`
       )
       .order('created_at', { ascending: false })
       .limit(200);
@@ -103,6 +104,37 @@ router.put(
 
     if (error) throw new ApiError(500, error.message);
     if (!data) throw new ApiError(404, 'Order not found.');
+
+    // Release inventory when order is cancelled
+    if (status === 'cancelled') {
+      const { data: orderItems } = await db
+        .from('order_items')
+        .select('product_id, quantity')
+        .eq('order_id', req.params.id);
+      if (orderItems?.length) {
+        const { releaseInventory } = require('./orders.repository');
+        await releaseInventory(
+          orderItems.map(i => ({ productId: i.product_id, quantity: i.quantity }))
+        );
+      }
+    }
+
+    // Send shipping notification when order is shipped
+    if (status === 'shipped') {
+      const orderFull = await db
+        .from('orders')
+        .select('order_number, customer_email, customer_phone')
+        .eq('id', req.params.id)
+        .maybeSingle();
+      if (orderFull?.data) {
+        const { sendShippingNotification } = require('../notifications/notifications.service');
+        sendShippingNotification({
+          orderNumber: orderFull.data.order_number,
+          customerEmail: orderFull.data.customer_email,
+          trackingNumber: trackingNumber || null
+        }).catch(() => {});
+      }
+    }
 
     return sendResponse(res, {
       message: 'Order status updated.',
