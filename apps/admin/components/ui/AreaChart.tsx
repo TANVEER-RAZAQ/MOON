@@ -9,10 +9,11 @@ interface AreaChartProps {
 
 export function AreaChart({ data, height = 180, accent = 'var(--saffron)', subtle = 'var(--saffron-soft)' }: AreaChartProps) {
   const w = 600;
+  if (!data.length) return <svg viewBox={`0 0 ${w} ${height}`} style={{ width: '100%', height }} />;
   const max = Math.max(...data);
   const min = Math.min(...data);
   const span = max - min || 1;
-  const stepX = w / (data.length - 1);
+  const stepX = data.length > 1 ? w / (data.length - 1) : w;
   const points = data.map((v, i) => [i * stepX, height - ((v - min) / span) * (height - 24) - 12]);
   const path = points.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(' ');
   const fillPath = `${path} L${w},${height} L0,${height} Z`;
