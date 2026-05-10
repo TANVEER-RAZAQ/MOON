@@ -97,7 +97,10 @@ export function ProductDetailModal({ item, onClose, onAddToCart }: ProductDetail
     ? allReviews.reduce((s, r) => s + r.rating, 0) / allReviews.length
     : 0;
 
+  const isOutOfStock = item.inStock === false;
+
   const handleAddToCart = () => {
+    if (isOutOfStock) return;
     onAddToCart(item);
     setAddedFeedback(true);
     setTimeout(() => setAddedFeedback(false), 2000);
@@ -338,27 +341,32 @@ export function ProductDetailModal({ item, onClose, onAddToCart }: ProductDetail
               </div>
               <button
                 type="button"
+                disabled={isOutOfStock}
                 onClick={handleAddToCart}
                 style={{
-                  background: addedFeedback ? 'var(--moss-500, #6B855A)' : 'var(--ink-0, #0B0806)',
-                  color: 'var(--paper-0, #FAF6EF)',
+                  background: isOutOfStock
+                    ? 'rgba(20,16,13,0.12)'
+                    : addedFeedback ? 'var(--moss-500, #6B855A)' : 'var(--ink-0, #0B0806)',
+                  color: isOutOfStock ? 'var(--ink-3, #8A7A66)' : 'var(--paper-0, #FAF6EF)',
                   border: 0, padding: '14px 32px',
                   fontFamily: 'var(--font-mark, Syncopate, sans-serif)',
                   fontSize: '0.5625rem', letterSpacing: '0.18em',
-                  textTransform: 'uppercase', fontWeight: 700, cursor: 'pointer',
+                  textTransform: 'uppercase', fontWeight: 700,
+                  cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                  opacity: isOutOfStock ? 0.6 : 1,
                   transition: 'background 0.3s, transform 0.2s',
                   minWidth: 160,
                 }}
                 onMouseEnter={(e) => {
-                  if (!addedFeedback) (e.currentTarget as HTMLElement).style.filter = 'brightness(1.15)';
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
+                  if (!isOutOfStock && !addedFeedback) (e.currentTarget as HTMLElement).style.filter = 'brightness(1.15)';
+                  if (!isOutOfStock) (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.filter = '';
                   (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
                 }}
               >
-                {addedFeedback ? '✓ Added to Basket' : 'Add to Basket →'}
+                {isOutOfStock ? 'Out of Stock' : addedFeedback ? '✓ Added to Basket' : 'Add to Basket →'}
               </button>
             </div>
 

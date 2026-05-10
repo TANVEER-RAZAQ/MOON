@@ -4,8 +4,9 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { shippingStateOptions } from '@/lib/data/product-statics';
 import {
   useCalculateShippingMutation,
-  useCreateQuickRazorpayOrderMutation,
-  useQuickVerifyPaymentMutation,
+  useCreateOrderMutation,
+  useCreateRazorpayOrderMutation,
+  useVerifyPaymentMutation,
   useValidateDiscountMutation,
 } from '@/lib/store/services/storefront-api';
 import type { ValidatedDiscount } from '@/lib/store/services/storefront-api';
@@ -18,6 +19,7 @@ interface CheckoutPageProps {
   subtotal: number;
   onBackToCart: () => void;
   onOrderPlaced: (meta: {
+    orderId: string;
     orderNumber: string;
     paymentMethod: string;
     total: number;
@@ -55,8 +57,9 @@ export function CheckoutPage({ items, subtotal, onBackToCart, onOrderPlaced }: C
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [calculateShipping, { isLoading: isShippingLoading }] = useCalculateShippingMutation();
-  const [createQuickRazorpayOrder] = useCreateQuickRazorpayOrderMutation();
-  const [quickVerifyPayment] = useQuickVerifyPaymentMutation();
+  const [createOrder] = useCreateOrderMutation();
+  const [createRazorpayOrder] = useCreateRazorpayOrderMutation();
+  const [verifyPayment] = useVerifyPaymentMutation();
   const [validateDiscount, { isLoading: isApplyingDiscount }] = useValidateDiscountMutation();
 
   useEffect(() => {
@@ -153,31 +156,48 @@ export function CheckoutPage({ items, subtotal, onBackToCart, onOrderPlaced }: C
 
     setIsProcessing(true);
     try {
-      const amountInPaise = Math.round(total * 100);
-      const receipt = `moon_${Date.now()}`;
-
-      const rzpOrder = await createQuickRazorpayOrder({
-        amount: amountInPaise,
-        currency: 'INR',
-        receipt,
-        notes: appliedDiscount
-          ? {
-              discount_code: appliedDiscount.code,
-              discount_amount: String(appliedDiscount.discountAmount),
-              original_subtotal: String(subtotal),
-            }
-          : undefined,
+      // Step 1: Create a DB order record
+      const paymentMethodMap: Record<string, 'upi' | 'card' | 'netbanking' | 'wallet'> = {
+        UPI: 'upi',
+        Cards: 'card',
+        'Net Banking': 'netbanking',
+        Wallet: 'wallet',
+      };
+      const createdOrder = await createOrder({
+        customerEmail: email,
+        customerPhone: phone,
+        items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
+        shippingAddress: {
+          fullName: fullName,
+          phone,
+          line1: address,
+          line2: line2 || undefined,
+          city,
+          state,
+          postalCode: pincode,
+          country: 'IN',
+        },
+        paymentMethod: paymentMethodMap[paymentMethod] ?? 'upi',
+        notes: String(formData.get('notes') ?? '').trim() || undefined,
       }).unwrap();
+
+      const orderId = createdOrder.id;
+      const orderNumber = createdOrder.order_number;
+
+      // Step 2: Create a Razorpay order linked to the DB order
+      const rzpOrder = await createRazorpayOrder({ orderId }).unwrap();
 
       if (rzpOrder.keyId === 'dev_key') {
         // Dev payment mode — no real Razorpay modal, simulate success immediately
-        await quickVerifyPayment({
+        await verifyPayment({
+          orderId,
           razorpayOrderId: rzpOrder.razorpayOrderId,
           razorpayPaymentId: `dev_pay_${Date.now()}`,
           razorpaySignature: 'dev_sig',
         }).unwrap();
         await onOrderPlaced({
-          orderNumber: receipt,
+          orderId,
+          orderNumber,
           paymentMethod,
           total,
           shippingZone: shipping.zone,
@@ -202,13 +222,16 @@ export function CheckoutPage({ items, subtotal, onBackToCart, onOrderPlaced }: C
               razorpay_signature: string;
             }) => {
               try {
-                await quickVerifyPayment({
+                // Step 4: Verify payment using proper route
+                await verifyPayment({
+                  orderId,
                   razorpayOrderId: response.razorpay_order_id,
                   razorpayPaymentId: response.razorpay_payment_id,
                   razorpaySignature: response.razorpay_signature,
                 }).unwrap();
                 await onOrderPlaced({
-                  orderNumber: receipt,
+                  orderId,
+                  orderNumber,
                   paymentMethod,
                   total,
                   shippingZone: shipping.zone,

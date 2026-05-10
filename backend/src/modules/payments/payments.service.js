@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const env = require('../../config/env');
 const ApiError = require('../../core/errors/api-error');
 const { getRazorpayClient } = require('../../integrations/payments/razorpay.client');
-const { getOrderById } = require('../orders/orders.repository');
+const { getOrderById, updateStatus: updateOrderStatus } = require('../orders/orders.repository');
 const paymentsRepository = require('./payments.repository');
 
 function mapRazorpayError(error) {
@@ -173,4 +173,47 @@ async function quickVerify({ razorpayOrderId, razorpayPaymentId, razorpaySignatu
   return { verified: true };
 }
 
-module.exports = { createRazorpayOrder, getPaymentStatus, verifyPayment, quickOrder, quickVerify };
+async function handleRazorpayWebhook(rawBody, signature) {
+  const secret = env.razorpay.webhookSecret;
+
+  if (!secret) {
+    throw new ApiError(500, 'RAZORPAY_WEBHOOK_SECRET not configured');
+  }
+
+  const expectedSig = crypto
+    .createHmac('sha256', secret)
+    .update(rawBody)
+    .digest('hex');
+
+  if (expectedSig !== signature) {
+    const err = new ApiError(400, 'Invalid webhook signature');
+    throw err;
+  }
+
+  const event = JSON.parse(rawBody.toString());
+  const eventType = event.event;
+
+  if (eventType === 'payment.captured') {
+    const payment = event.payload.payment.entity;
+    await paymentsRepository.updateByRazorpayOrderId(payment.order_id, {
+      status: 'captured',
+      razorpay_payment_id: payment.id,
+      method: payment.method || 'unknown',
+      raw_response: event
+    });
+    const paymentRecord = await paymentsRepository.findByRazorpayOrderId(payment.order_id);
+    if (paymentRecord?.order_id) {
+      await updateOrderStatus(paymentRecord.order_id, { status: 'confirmed' });
+    }
+  } else if (eventType === 'payment.failed') {
+    const payment = event.payload.payment.entity;
+    await paymentsRepository.updateByRazorpayOrderId(payment.order_id, {
+      status: 'failed',
+      raw_response: event
+    });
+  }
+
+  return { received: true, event: eventType };
+}
+
+module.exports = { createRazorpayOrder, getPaymentStatus, verifyPayment, quickOrder, quickVerify, handleRazorpayWebhook };

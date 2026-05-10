@@ -91,6 +91,35 @@ export interface VerifyPaymentPayload {
 }
 export interface VerifyPaymentResult { verified: boolean }
 
+export interface OrderItem {
+  product_name: string;
+  quantity: number;
+  unit_price: number;
+  subtotal: number;
+}
+
+export interface OrderShippingAddress {
+  full_name: string;
+  line_1: string;
+  line_2?: string;
+  city: string;
+  state: string;
+  postal_code: string;
+}
+
+export interface Order {
+  id: string;
+  order_number: string;
+  status: string;
+  subtotal: number;
+  shipping_cost: number;
+  tax: number;
+  total: number;
+  customer_email: string;
+  shipping_address: OrderShippingAddress;
+  items: OrderItem[];
+}
+
 export interface QuickRazorpayOrderPayload { amount: number; currency?: string; receipt: string; notes?: Record<string, string> }
 export interface QuickRazorpayOrderResult { razorpayOrderId: string; amount: number; currency: string; keyId: string }
 export interface QuickVerifyPayload { razorpayOrderId: string; razorpayPaymentId: string; razorpaySignature: string }
@@ -193,6 +222,11 @@ export const storefrontApi = createApi({
       transformResponse: unwrap,
     }),
 
+    getOrder: builder.query<Order, string>({
+      query: (id) => `/orders/${id}`,
+      transformResponse: unwrap,
+    }),
+
     createOrder: builder.mutation<CreatedOrder, CreateOrderPayload>({
       query: (body) => ({
         url: '/orders',
@@ -226,6 +260,7 @@ export const storefrontApi = createApi({
 
 export const {
   useGetProductsQuery,
+  useGetOrderQuery,
   useGetCartQuery,
   useAddCartItemMutation,
   useUpdateCartItemMutation,

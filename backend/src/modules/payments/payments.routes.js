@@ -14,6 +14,14 @@ const {
 
 const router = express.Router();
 
+// Webhook route — must use raw body parser so HMAC signature verification works.
+// This must be registered BEFORE any express.json() body-parsing routes.
+router.post(
+  '/webhook/razorpay',
+  express.raw({ type: 'application/json' }),
+  paymentsController.razorpayWebhook
+);
+
 // Guest-accessible: create order and verify payment (storefront is unauthenticated)
 router.post(
   '/razorpay',

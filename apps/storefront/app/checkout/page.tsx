@@ -56,14 +56,14 @@ export default function Page() {
       items={cartItems}
       subtotal={cartSubtotal}
       onBackToCart={openShopSection}
-      onOrderPlaced={async () => {
+      onOrderPlaced={async ({ orderId }) => {
         try {
           await clearCartMutation({ sessionId: guestSessionId }).unwrap();
         } catch {
           // ignore backend failure
         }
         dispatch(clearCart());
-        router.push('/');
+        router.push(`/order-success/${orderId}`);
       }}
     />
   );

@@ -22,6 +22,11 @@ router.get(
   validateRequest({ params: orderParamsSchema }),
   ordersController.getOrderById
 );
+router.get(
+  '/:id/invoice',
+  validateRequest({ params: orderParamsSchema }),
+  ordersController.getOrderInvoice
+);
 router.put(
   '/:id/status',
   requireAuth,

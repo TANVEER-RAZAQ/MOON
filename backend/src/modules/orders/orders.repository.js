@@ -78,7 +78,7 @@ async function getOrderById(id) {
   const { data, error } = await db
     .from('orders')
     .select(
-      '*, order_items(id, product_id, product_name, quantity, unit_price, subtotal), payments(status, method, razorpay_order_id, razorpay_payment_id)'
+      '*, order_items(id, product_id, product_name, quantity, unit_price, subtotal), payments(status, method, razorpay_order_id, razorpay_payment_id), shipping_address:addresses!orders_shipping_address_id_fkey(full_name, line_1, line_2, city, state, postal_code, country)'
     )
     .eq('id', id)
     .maybeSingle();

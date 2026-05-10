@@ -56,4 +56,38 @@ async function updatePaymentStatus({
   return data;
 }
 
-module.exports = { createPaymentRecord, getPaymentByOrderId, updatePaymentStatus };
+async function findByRazorpayOrderId(razorpayOrderId) {
+  const db = getSupabaseAdminClient();
+  const { data, error } = await db
+    .from('payments')
+    .select('*')
+    .eq('razorpay_order_id', razorpayOrderId)
+    .maybeSingle();
+  if (error) throw new ApiError(500, error.message);
+  return data;
+}
+
+async function updateByRazorpayOrderId(razorpayOrderId, { status, razorpay_payment_id, method, raw_response }) {
+  const db = getSupabaseAdminClient();
+  const patch = { status };
+  if (razorpay_payment_id) patch.razorpay_payment_id = razorpay_payment_id;
+  if (method) patch.method = method;
+  if (raw_response) patch.raw_response = raw_response;
+
+  const { data, error } = await db
+    .from('payments')
+    .update(patch)
+    .eq('razorpay_order_id', razorpayOrderId)
+    .select('*')
+    .maybeSingle();
+  if (error) throw new ApiError(500, error.message);
+  return data;
+}
+
+module.exports = {
+  createPaymentRecord,
+  getPaymentByOrderId,
+  updatePaymentStatus,
+  findByRazorpayOrderId,
+  updateByRazorpayOrderId
+};
