@@ -19,7 +19,8 @@ const discountWriteSchema = z.object({
   usageLimit: z.number().int().positive().nullable().optional(),
   startsAt: nullableDateSchema,
   endsAt: nullableDateSchema,
-  isActive: z.boolean().default(true)
+  isActive: z.boolean().default(true),
+  freeShipping: z.boolean().default(false)
 });
 
 const discountUpdateSchema = discountWriteSchema.partial();
