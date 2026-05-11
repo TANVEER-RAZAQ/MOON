@@ -19,7 +19,7 @@ const NAV_SECTIONS = [
   { href: '/#contact',  label: 'Contact' },
 ];
 
-export function Navbar({ cartCount, onCartClick, onSearchClick }: NavbarProps) {
+export function Navbar({ cartCount, onCartClick, onSearchClick, heroTheme = 'light' }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -53,7 +53,7 @@ export function Navbar({ cartCount, onCartClick, onSearchClick }: NavbarProps) {
     <nav
       id="navbar"
       aria-label="Primary"
-      className={`moon-nav${scrolled ? ' moon-nav--scrolled' : ''}`}
+      className={`moon-nav moon-nav--hero-${heroTheme}${scrolled ? ' moon-nav--scrolled' : ''}`}
     >
       <div className="moon-nav-inner">
         {/* Brand — leftmost */}

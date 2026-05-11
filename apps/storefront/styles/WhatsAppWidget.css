@@ -1,0 +1,13 @@
+@media (max-width: 880px) {
+  .whatsapp-widget {
+    right: 14px !important;
+    bottom: calc(84px + env(safe-area-inset-bottom)) !important;
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .whatsapp-widget svg {
+    width: 30px;
+    height: 30px;
+  }
+}

@@ -1,4 +1,4 @@
-import { Space_Grotesk, Manrope, Fraunces, Syncopate, Plus_Jakarta_Sans, Inter } from 'next/font/google';
+import { Space_Grotesk, Manrope, Fraunces, Syncopate, Oswald, Plus_Jakarta_Sans, Inter } from 'next/font/google';
 
 export const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -29,11 +29,19 @@ export const syncopate = Syncopate({
   weight: ['400', '700'],
 });
 
+export const oswald = Oswald({
+  subsets: ['latin'],
+  variable: '--font-mobile-hero',
+  display: 'swap',
+  weight: ['500', '600', '700'],
+});
+
 export const allFontVars = [
   spaceGrotesk.variable,
   manrope.variable,
   fraunces.variable,
   syncopate.variable,
+  oswald.variable,
 ].join(' ');
 
 export const plusJakartaSans = Plus_Jakarta_Sans({

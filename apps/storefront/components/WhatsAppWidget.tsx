@@ -1,5 +1,7 @@
 'use client';
 
+import '@/styles/WhatsAppWidget.css';
+
 const WA_URL = process.env.NEXT_PUBLIC_WHATSAPP_URL ?? 'https://wa.me/';
 
 export function WhatsAppWidget() {
@@ -10,6 +12,7 @@ export function WhatsAppWidget() {
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
       title="Chat with us on WhatsApp"
+      className="whatsapp-widget"
       style={{
         position: 'fixed',
         bottom: '24px',

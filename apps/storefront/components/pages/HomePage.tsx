@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MobileHero } from '@/components/MobileHero';
 import { productStories } from '@/lib/data/product-statics';
 import type { CatalogItem, ProductKey } from '@/lib/types';
 import '@/styles/HomePage.css';
@@ -113,7 +114,6 @@ interface HomePageProps {
 export function HomePage({
   catalogItems,
   onSelectProduct,
-  onAddDetailToCart,
   onAddCatalogToCart,
   onBrowseCollection,
   onProductClick,
@@ -142,6 +142,14 @@ export function HomePage({
   );
 
   const activeItem = catalogByKey[activeKey];
+
+  const mobileProductPages = useMemo(() => {
+    const pages: CatalogItem[][] = [];
+    for (let i = 0; i < catalogItems.length; i += 6) {
+      pages.push(catalogItems.slice(i, i + 6));
+    }
+    return pages;
+  }, [catalogItems]);
 
   const fmt = (price: number) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
@@ -175,6 +183,7 @@ export function HomePage({
 
   // Play video for 8s, then pause and hold 1.5s, then advance
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 880px)').matches) return;
     const vid = videoRef.current;
     if (vid) { vid.currentTime = 0; vid.play().catch(() => {}); }
 
@@ -229,6 +238,18 @@ export function HomePage({
           }
         }}
       >
+        <MobileHero
+          activeIndex={slideIndex}
+          onSlideChange={goToSlide}
+          onShop={() => {
+            if (activeItem) {
+              onProductClick(activeItem);
+              return;
+            }
+            onBrowseCollection();
+          }}
+        />
+
         <div className="moon-hero__split">
 
           {/* LEFT — editorial copy */}
@@ -293,11 +314,15 @@ export function HomePage({
               <button
                 type="button"
                 className="btn btn--primary"
-                onClick={onAddDetailToCart}
-                disabled={activeItem?.inStock === false}
-                style={activeItem?.inStock === false ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
+                onClick={() => {
+                  if (activeItem) {
+                    onProductClick(activeItem);
+                    return;
+                  }
+                  onBrowseCollection();
+                }}
               >
-                {activeItem?.inStock === false ? 'Out of Stock' : 'Shop Now'}
+                Shop Now
               </button>
               <button type="button" className="btn btn--ghost" onClick={onBrowseCollection}>
                 Explore
@@ -451,12 +476,13 @@ export function HomePage({
             </button>
           </div>
 
-          <div id="shop" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))',
-            gap: '20px',
-          }}>
-            {catalogItems.map((item) => {
+          <div id="shop" style={{ scrollMarginTop: 96 }}>
+            <div className="moon-products-grid moon-products-grid--desktop" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))',
+              gap: '20px',
+            }}>
+              {catalogItems.map((item) => {
               const ct = item.productKey ? (CARD_THEMES[item.productKey] ?? DEFAULT_CARD) : DEFAULT_CARD;
               return (
                 <article
@@ -573,7 +599,36 @@ export function HomePage({
                   </div>
                 </article>
               );
-            })}
+              })}
+            </div>
+
+            <div className="moon-products-mobile-rail" aria-label="Product carousel">
+              {mobileProductPages.map((page, pageIndex) => (
+                <div className="moon-products-mobile-page" key={`mobile-page-${pageIndex}`}>
+                  {page.map((item) => {
+                    const ct = item.productKey ? (CARD_THEMES[item.productKey] ?? DEFAULT_CARD) : DEFAULT_CARD;
+                    return (
+                      <button
+                        type="button"
+                        key={item.id}
+                        className="moon-mobile-product-card"
+                        onClick={() => onProductClick(item)}
+                        style={{ ['--card-accent' as string]: ct.accentColor }}
+                      >
+                        <span className="moon-mobile-product-card__media" style={{ background: ct.imgBg }}>
+                          <img src={item.image} alt={item.alt} />
+                          {item.inStock === false && (
+                            <span className="moon-mobile-product-card__badge">Out</span>
+                          )}
+                        </span>
+                        <span className="moon-mobile-product-card__title">{item.title}</span>
+                        <span className="moon-mobile-product-card__price">{fmt(item.price)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

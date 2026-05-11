@@ -160,46 +160,21 @@
 }
 .moon-hero__pager-dot.is-active { background: white; width: 40px; }
 @media (max-width: 880px) {
-  /* Mobile: full-bleed video with copy overlaid on top */
-  .moon-hero__split {
+  .moon-hero {
+    min-height: 100svh;
+    border-bottom: 0;
+    background: #130b07;
+  }
+
+  .moon-hero .mobile-hero {
     display: block;
-    position: relative;
-    min-height: 100svh;
   }
-  /* Video fills the entire hero behind copy */
-  .moon-hero__media {
-    position: absolute;
-    inset: 0;
-    min-height: unset;
-    z-index: 0;
+
+  /* The mobile homepage uses the dedicated layered product poster. */
+  .moon-hero__split {
+    display: none;
   }
-  /* Copy floats above video, anchored to bottom */
-  .moon-hero__copy {
-    position: relative;
-    z-index: 2;
-    min-height: 100svh;
-    justify-content: flex-end;
-    padding-bottom: clamp(4rem, 10vw, 6rem);
-    background: transparent;
-    overflow: visible;
-  }
-  /* Dark scrim from bottom so text is readable on video */
-  .moon-hero__media::before {
-    background: linear-gradient(
-      to top,
-      rgba(20, 16, 13, 0.88) 0%,
-      rgba(20, 16, 13, 0.55) 40%,
-      rgba(20, 16, 13, 0.15) 70%,
-      transparent 100%
-    );
-  }
-  /* Mobile text uses light colors on dark scrim */
-  .moon-hero__title { color: #FAF6EF; }
-  .moon-hero__tag { color: rgba(250, 246, 239, 0.85); }
-  .moon-hero__desc { color: rgba(250, 246, 239, 0.72); }
-  .moon-hero__meta .t-label { color: rgba(250, 246, 239, 0.55); }
-  .moon-hero__backdrop { opacity: 0; }
-  .moon-hero__price { color: rgba(250, 246, 239, 0.9); }
+
 }
 
 /* ── Hero Section ───────────────────────────────────────── */
@@ -372,6 +347,108 @@
   border-color: var(--bg-dark, #14100D);
 }
 .btn--small, .btn--sm { padding: 8px 12px; font-size: 10px; letter-spacing: 0.14em; }
+
+/* ── Mobile product carousel ───────────────────────────── */
+.moon-products-mobile-rail {
+  display: none;
+}
+
+.moon-products-mobile-page {
+  scroll-snap-align: start;
+}
+
+.moon-mobile-product-card {
+  border: 1px solid var(--rule, rgba(20,16,13,0.10));
+  background: var(--bg-elevated, #FBF7F0);
+  box-shadow: 0 8px 24px rgba(20,16,13,0.06);
+  color: var(--fg, #1F1814);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+}
+
+.moon-mobile-product-card__media {
+  aspect-ratio: 1 / 1;
+  display: block;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.moon-mobile-product-card__media img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.moon-mobile-product-card__badge {
+  background: rgba(20,16,13,0.78);
+  color: rgba(250,246,239,0.92);
+  font-family: var(--font-body, Manrope, sans-serif);
+  font-size: 9px;
+  font-weight: 800;
+  left: 6px;
+  letter-spacing: 0.08em;
+  padding: 2px 5px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 6px;
+}
+
+.moon-mobile-product-card__title {
+  display: -webkit-box;
+  font-family: var(--font-heading, Fraunces, serif);
+  font-size: clamp(0.72rem, 3vw, 0.88rem);
+  font-weight: 600;
+  line-height: 1.08;
+  min-height: 2.15em;
+  overflow: hidden;
+  padding: 9px 8px 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.moon-mobile-product-card__price {
+  color: var(--card-accent, var(--accent-price, #B8862F));
+  font-family: var(--font-body, Manrope, sans-serif);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 5px 8px 9px;
+}
+
+@media (max-width: 880px) {
+  .moon-products-grid--desktop {
+    display: none !important;
+  }
+
+  .moon-products-mobile-rail {
+    display: grid;
+    grid-auto-columns: 100%;
+    grid-auto-flow: column;
+    gap: 16px;
+    margin: 0 -16px;
+    overflow-x: auto;
+    padding: 0 16px 10px;
+    scroll-padding-inline: 16px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .moon-products-mobile-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .moon-products-mobile-page {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════
    ARCHIVE SECTION — matches design's .moon-archive layout

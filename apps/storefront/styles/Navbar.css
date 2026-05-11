@@ -175,4 +175,39 @@
 @media (max-width: 880px) {
   .moon-nav-links { display: none; }
   .moon-nav-inner { gap: 1rem; }
+
+  .moon-nav--hero-dark {
+    position: fixed;
+    left: 0;
+    right: 0;
+    background: transparent;
+    border-bottom-color: transparent;
+  }
+
+  .moon-nav--hero-dark:not(.moon-nav--scrolled) {
+    color: #fff8ef;
+  }
+
+  .moon-nav--hero-dark:not(.moon-nav--scrolled) .moon-wordmark-text,
+  .moon-nav--hero-dark:not(.moon-nav--scrolled) .moon-wordmark-tagline,
+  .moon-nav--hero-dark:not(.moon-nav--scrolled) .moon-nav-action-btn {
+    color: #fff8ef;
+    filter: drop-shadow(0 2px 10px rgba(0,0,0,0.58));
+  }
+
+  .moon-nav--hero-dark:not(.moon-nav--scrolled) .moon-wordmark-tagline {
+    opacity: 0.76;
+  }
+
+  .moon-nav--hero-dark .moon-nav-hamburger {
+    display: inline-flex;
+    opacity: 1;
+  }
+
+  .moon-nav--hero-dark.moon-nav--scrolled {
+    background: rgba(245, 239, 230, 0.9);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-bottom-color: var(--rule-strong, rgba(20,16,13,0.18));
+  }
 }

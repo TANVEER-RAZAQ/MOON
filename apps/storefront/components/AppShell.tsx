@@ -294,7 +294,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           cartCount={cartCount}
           onCartClick={openCartDrawer}
           onSearchClick={openShopSection}
-          heroTheme="dark"
+          heroTheme={pathname === '/' ? 'dark' : 'light'}
         />
       ) : null}
 
