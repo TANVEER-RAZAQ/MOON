@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Providers } from '@/components/Providers';
 import { AppShell } from '@/components/AppShell';
+import { CookieConsent } from '@/components/CookieConsent';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { allFontVars } from '@moon/shared/fonts';
 import '@/styles/global.css';
 
@@ -43,7 +45,7 @@ const jsonLd = [
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'hello@moonnaturallyyours.com',
+      email: 'admin@moonnaturallyyours.com',
       availableLanguage: ['English', 'Hindi'],
     },
     sameAs: [
@@ -84,6 +86,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <AppShell>{children}</AppShell>
         </Providers>
+        <CookieConsent />
+        <GoogleAnalytics />
       </body>
     </html>
   );

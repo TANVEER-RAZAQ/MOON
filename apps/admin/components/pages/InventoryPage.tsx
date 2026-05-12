@@ -4,13 +4,12 @@ import { useMemo, useState } from 'react';
 import { useGetInventoryQuery, useUpdateInventoryMutation } from '@/lib/store/services/admin-api';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Btn } from '@/components/ui/Btn';
-import { Card, cardStyle } from '@/components/ui/Card';
+import { Card, cardClass } from '@/components/ui/Card';
 import { Pill } from '@/components/ui/Pill';
 import { Icon } from '@/components/ui/Icon';
 import { StatCard } from '@/components/ui/StatCard';
 import { Bars } from '@/components/ui/Bars';
 import { Placeholder } from '@/components/ui/Placeholder';
-import type { CSSProperties } from 'react';
 
 type InventoryStatus = 'In Stock' | 'Low Stock' | 'Out of Stock';
 
@@ -104,7 +103,7 @@ export function InventoryPage() {
   const lowStockRows = rows.filter((r) => r.stock <= 10 && r.stock >= 0);
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px]">
       <PageHeader
         eyebrow="Catalog"
         title="Inventory"
@@ -116,25 +115,19 @@ export function InventoryPage() {
       />
 
       {isError && (
-        <div style={{
-          ...(cardStyle as CSSProperties), padding: '14px 18px',
-          borderColor: 'var(--terracotta)', fontSize: 13, color: 'var(--terracotta)',
-        }}>
+        <div className={`${cardClass} py-[14px] px-[18px] !border-[var(--terracotta)] text-[13px] text-[var(--terracotta)]`}>
           Unable to load inventory from backend.
         </div>
       )}
 
       {rowError && (
-        <div style={{
-          ...(cardStyle as CSSProperties), padding: '14px 18px',
-          borderColor: 'var(--gold)', fontSize: 13, color: 'var(--gold)',
-        }}>
+        <div className={`${cardClass} py-[14px] px-[18px] !border-[var(--gold)] text-[13px] text-[var(--gold)]`}>
           {rowError}
         </div>
       )}
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+      <div className="grid grid-cols-3 gap-[14px]">
         <StatCard label="Total units" value={isLoading ? '...' : stats.totalQty.toLocaleString()} sub={`across ${stats.total} SKUs`} tone="ink" />
         <StatCard label="Low stock" value={isLoading ? '...' : String(stats.lowOrOut)} sub="≤ 10 units left" tone="gold" />
         <StatCard label="Out of stock" value={isLoading ? '...' : String(stats.outOfStock)} sub="reorder needed" tone="terracotta" />
@@ -142,74 +135,44 @@ export function InventoryPage() {
 
       {/* Stock alerts */}
       <Card title="Stock alerts" subtitle="Items at or below their reorder threshold" action={
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setFilter('all')} style={{
-            fontFamily: 'var(--font-mono)', fontSize: 11,
-            padding: '4px 10px', borderRadius: 999,
-            border: '1px solid ' + (filter === 'all' ? 'var(--saffron)' : 'var(--line)'),
-            background: filter === 'all' ? 'var(--saffron-soft)' : 'transparent',
-            color: filter === 'all' ? 'var(--saffron-ink)' : 'var(--ink-3)',
-            cursor: 'pointer',
-          }}>All</button>
-          <button onClick={() => setFilter('critical')} style={{
-            fontFamily: 'var(--font-mono)', fontSize: 11,
-            padding: '4px 10px', borderRadius: 999,
-            border: '1px solid ' + (filter === 'critical' ? 'var(--terracotta)' : 'var(--line)'),
-            background: filter === 'critical' ? 'rgba(181,87,58,0.1)' : 'transparent',
-            color: filter === 'critical' ? 'var(--terracotta)' : 'var(--ink-3)',
-            cursor: 'pointer',
-          }}>Low/Out</button>
+        <div className="flex gap-[6px]">
+          <button 
+            onClick={() => setFilter('all')} 
+            className={`font-mono text-[11px] py-[4px] px-[10px] rounded-full border cursor-pointer ${filter === 'all' ? 'border-[var(--saffron)] bg-[var(--saffron-soft)] text-[var(--saffron-ink)]' : 'border-[var(--line)] bg-transparent text-[var(--ink-3)]'}`}
+          >All</button>
+          <button 
+            onClick={() => setFilter('critical')} 
+            className={`font-mono text-[11px] py-[4px] px-[10px] rounded-full border cursor-pointer ${filter === 'critical' ? 'border-[var(--terracotta)] bg-[rgba(181,87,58,0.1)] text-[var(--terracotta)]' : 'border-[var(--line)] bg-transparent text-[var(--ink-3)]'}`}
+          >Low/Out</button>
         </div>
       }>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="flex flex-col">
           {visibleRows.map((row, i) => (
-            <div key={row.id} style={{
-              display: 'grid', gridTemplateColumns: '50px 1fr 100px 140px 120px',
-              alignItems: 'center', gap: 16,
-              padding: '12px 0',
-              borderTop: i === 0 ? 'none' : '1px solid var(--line)',
-            }}>
+            <div key={row.id} className={`grid grid-cols-[50px_1fr_100px_140px_120px] items-center gap-[16px] py-[12px] ${i === 0 ? 'border-none' : 'border-t border-[var(--line)]'}`}>
               <Placeholder label="" w={42} h={42} />
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500 }}>{row.name}</div>
-                <div className="mono" style={{ fontSize: 11.5, color: 'var(--ink-3)' }}>{row.sku}</div>
+                <div className="text-[14px] font-medium">{row.name}</div>
+                <div className="mono text-[11.5px] text-[var(--ink-3)]">{row.sku}</div>
               </div>
               <Pill tone="neutral">{row.subtitle}</Pill>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="flex items-center gap-[8px]">
                 <button
                   onClick={() => setPendingQty(m => { const n = new Map(m); n.set(row.id, Math.max(0, getPending(row.id, row.stock) - 1)); return n; })}
                   disabled={isUpdating}
-                  style={{
-                    width: 26, height: 26, borderRadius: 6,
-                    border: '1px solid var(--line-strong)', background: 'var(--bg-elev)',
-                    color: 'var(--ink-2)', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14, fontWeight: 500,
-                  }}
+                  className="w-[26px] h-[26px] rounded-[6px] border border-[var(--line-strong)] bg-[var(--bg-elev)] text-[var(--ink-2)] cursor-pointer flex items-center justify-center text-[14px] font-medium"
                 >−</button>
                 <input
                   type="number"
                   min="0"
                   value={getPending(row.id, row.stock)}
                   onChange={e => setPendingQty(m => { const n = new Map(m); n.set(row.id, Math.max(0, Number(e.target.value))); return n; })}
-                  style={{
-                    width: 52, textAlign: 'center',
-                    border: '1px solid var(--line)', borderRadius: 6,
-                    background: 'var(--bg-elev)', padding: '2px 4px',
-                    fontSize: 13, fontFamily: 'var(--font-mono)',
-                    color: row.stock === 0 ? 'var(--terracotta)' : row.stock <= 10 ? 'var(--gold)' : 'var(--ink)',
-                  }}
+                  className="w-[52px] text-center border border-[var(--line)] rounded-[6px] bg-[var(--bg-elev)] py-[2px] px-[4px] text-[13px] font-mono"
+                  style={{ color: row.stock === 0 ? 'var(--terracotta)' : row.stock <= 10 ? 'var(--gold)' : 'var(--ink)' }}
                 />
                 <button
                   onClick={() => setPendingQty(m => { const n = new Map(m); n.set(row.id, getPending(row.id, row.stock) + 1); return n; })}
                   disabled={isUpdating}
-                  style={{
-                    width: 26, height: 26, borderRadius: 6,
-                    border: '1px solid var(--line-strong)', background: 'var(--bg-elev)',
-                    color: 'var(--ink-2)', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14, fontWeight: 500,
-                  }}
+                  className="w-[26px] h-[26px] rounded-[6px] border border-[var(--line-strong)] bg-[var(--bg-elev)] text-[var(--ink-2)] cursor-pointer flex items-center justify-center text-[14px] font-medium"
                 >+</button>
                 {pendingQty.has(row.id) && (
                   <button
@@ -218,11 +181,7 @@ export function InventoryPage() {
                       setPendingQty(m => { const n = new Map(m); n.delete(row.id); return n; });
                     }}
                     disabled={isUpdating}
-                    style={{
-                      marginLeft: 6, padding: '3px 10px', fontSize: 12, borderRadius: 6,
-                      border: '1px solid var(--sage)', background: 'var(--sage-soft)',
-                      color: 'var(--sage)', cursor: 'pointer', fontWeight: 500,
-                    }}
+                    className="ml-[6px] py-[3px] px-[10px] text-[12px] rounded-[6px] border border-[var(--sage)] bg-[var(--sage-soft)] text-[var(--sage)] cursor-pointer font-medium"
                   >Save</button>
                 )}
               </div>
@@ -232,12 +191,12 @@ export function InventoryPage() {
             </div>
           ))}
           {!isLoading && visibleRows.length === 0 && (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+            <div className="py-[32px] text-center text-[var(--ink-3)] text-[13px]">
               No inventory items match this filter.
             </div>
           )}
           {isLoading && (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+            <div className="py-[32px] text-center text-[var(--ink-3)] text-[13px]">
               Loading inventory…
             </div>
           )}

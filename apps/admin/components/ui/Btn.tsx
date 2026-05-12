@@ -1,7 +1,7 @@
 'use client';
 
 import { Icon } from './Icon';
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface BtnProps {
   children?: ReactNode;
@@ -12,43 +12,22 @@ interface BtnProps {
   onClick?: () => void;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
-  style?: CSSProperties;
+  className?: string;
   full?: boolean;
 }
 
-const sizes: Record<string, { padding: string; fontSize: number; borderRadius: number; gap: number }> = {
-  sm: { padding: '6px 12px', fontSize: 12.5, borderRadius: 8, gap: 6 },
-  md: { padding: '9px 16px', fontSize: 13.5, borderRadius: 10, gap: 8 },
-  lg: { padding: '12px 22px', fontSize: 14.5, borderRadius: 12, gap: 8 },
+const sizes: Record<string, { classes: string; iconSize: number }> = {
+  sm: { classes: 'px-[12px] py-[6px] text-[12.5px] rounded-[8px] gap-[6px]', iconSize: 15.5 },
+  md: { classes: 'px-[16px] py-[9px] text-[13.5px] rounded-[10px] gap-[8px]', iconSize: 16.5 },
+  lg: { classes: 'px-[22px] py-[12px] text-[14.5px] rounded-[12px] gap-[8px]', iconSize: 17.5 },
 };
 
-const variants: Record<string, CSSProperties> = {
-  primary: {
-    background: 'var(--saffron)',
-    color: '#FFF8EC',
-    border: '1px solid var(--saffron)',
-    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 1px 0 rgba(70,30,0,0.15)',
-  },
-  secondary: {
-    background: 'var(--bg-elev)',
-    color: 'var(--ink)',
-    border: '1px solid var(--line-strong)',
-  },
-  ghost: {
-    background: 'transparent',
-    color: 'var(--ink-2)',
-    border: '1px solid transparent',
-  },
-  soft: {
-    background: 'var(--saffron-soft)',
-    color: 'var(--saffron-ink)',
-    border: '1px solid transparent',
-  },
-  danger: {
-    background: 'transparent',
-    color: 'var(--terracotta)',
-    border: '1px solid var(--line-strong)',
-  },
+const variants: Record<string, string> = {
+  primary: 'bg-[var(--saffron)] text-[#FFF8EC] border border-[var(--saffron)] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_0_rgba(70,30,0,0.15)] hover:brightness-110',
+  secondary: 'bg-[var(--bg-elev)] text-[var(--ink)] border border-[var(--line-strong)] hover:bg-[var(--bg-hover)]',
+  ghost: 'bg-transparent text-[var(--ink-2)] border border-transparent hover:bg-[var(--bg-hover)]',
+  soft: 'bg-[var(--saffron-soft)] text-[var(--saffron-ink)] border border-transparent hover:brightness-95',
+  danger: 'bg-transparent text-[var(--terracotta)] border border-[var(--line-strong)] hover:bg-[var(--bg-hover)]',
 };
 
 export function Btn({
@@ -60,7 +39,7 @@ export function Btn({
   onClick,
   disabled,
   type = 'button',
-  style,
+  className = '',
   full,
 }: BtnProps) {
   const s = sizes[size];
@@ -70,31 +49,11 @@ export function Btn({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'var(--font-sans)',
-        fontWeight: 500,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.55 : 1,
-        whiteSpace: 'nowrap',
-        transition: 'transform .12s ease, background .15s ease, border-color .15s ease',
-        width: full ? '100%' : 'auto',
-        padding: s.padding,
-        fontSize: s.fontSize,
-        borderRadius: s.borderRadius,
-        gap: s.gap,
-        ...v,
-        ...style,
-      }}
-      onMouseDown={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(1px)'; }}
-      onMouseUp={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
+      className={`inline-flex items-center justify-center font-sans font-medium whitespace-nowrap transition-all duration-150 ease-out active:translate-y-[1px] disabled:opacity-55 disabled:cursor-not-allowed ${full ? 'w-full' : 'w-auto'} ${s.classes} ${v} ${className}`}
     >
-      {icon && <Icon name={icon} size={s.fontSize + 3} />}
+      {icon && <Icon name={icon} size={s.iconSize} />}
       {children}
-      {iconRight && <Icon name={iconRight} size={s.fontSize + 3} />}
+      {iconRight && <Icon name={iconRight} size={s.iconSize} />}
     </button>
   );
 }

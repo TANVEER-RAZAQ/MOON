@@ -10,11 +10,10 @@ import {
 } from '@/lib/store/services/admin-api';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Btn } from '@/components/ui/Btn';
-import { Card, cardStyle } from '@/components/ui/Card';
+import { Card, cardClass } from '@/components/ui/Card';
 import { Pill } from '@/components/ui/Pill';
 import { Icon } from '@/components/ui/Icon';
 import { AreaChart } from '@/components/ui/AreaChart';
-import type { CSSProperties } from 'react';
 
 type Timeframe = 'daily' | 'weekly' | 'monthly';
 
@@ -98,10 +97,10 @@ export function DashboardOverviewPage() {
   };
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px]">
       <PageHeader
         eyebrow={getTodayLabel()}
-        title={<>{getGreeting()}, <em style={{ fontStyle: 'italic', color: 'var(--saffron)' }}>Admin</em>.</>}
+        title={<>{getGreeting()}, <em className="italic text-[var(--saffron)]">Admin</em>.</>}
         subtitle="Here is how Moon is performing today."
         actions={[
           <Btn key="1" variant="secondary" icon="download" size="sm">Export report</Btn>,
@@ -110,85 +109,71 @@ export function DashboardOverviewPage() {
       />
 
       {isDashboardError ? (
-        <div style={{
-          ...(cardStyle as CSSProperties), padding: '14px 18px',
-          borderColor: 'var(--terracotta)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
-          fontSize: 13, color: 'var(--terracotta)',
-        }}>
+        <div className={`${cardClass} py-[14px] px-[18px] border-[var(--terracotta)] flex items-center justify-between gap-[12px] text-[13px] text-[var(--terracotta)]`}>
           <span>Could not load dashboard analytics from backend.</span>
           <Btn variant="danger" size="sm" onClick={() => refetch()}>Retry</Btn>
         </div>
       ) : null}
 
       {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      <div className="grid grid-cols-4 gap-[14px]">
         {stats.map((s, i) => (
-          <div key={i} style={{
-            ...(cardStyle as CSSProperties),
-            padding: 18,
-            display: 'flex', flexDirection: 'column', gap: 10,
-          }}>
-            <div style={{ fontSize: 11.5, color: 'var(--ink-3)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s.label}</div>
-            <div className="display" style={{ fontSize: 34, lineHeight: 1, color: 'var(--ink)' }}>
+          <div key={i} className={`${cardClass} p-[18px] flex flex-col gap-[10px]`}>
+            <div className="text-[11.5px] text-[var(--ink-3)] tracking-[0.05em] uppercase">{s.label}</div>
+            <div className="display text-[34px] leading-none text-[var(--ink)]">
               {isDashboardLoading ? '...' : s.value}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
+            <div className="flex items-center justify-between text-[12px]">
               <Pill tone={s.positive ? 'sage' : 'terracotta'} size="sm">
                 <Icon name={s.positive ? 'arrow_upward' : 'arrow_downward'} size={12} weight={500} /> {s.delta}
               </Pill>
-              <span style={{ color: 'var(--ink-3)' }}>{s.sub}</span>
+              <span className="text-[var(--ink-3)]">{s.sub}</span>
             </div>
           </div>
         ))}
       </div>
 
       {/* Chart + breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 14 }}>
+      <div className="grid grid-cols-[1.7fr_1fr] gap-[14px]">
         <Card title="Revenue" subtitle={`${timeframe === 'daily' ? 'Last 24h' : timeframe === 'weekly' ? 'Last 7 days' : 'Last 30 days'}`} action={
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div className="flex gap-[6px]">
             {[
               { id: 'daily' as Timeframe, label: '1d' },
               { id: 'weekly' as Timeframe, label: '7d' },
               { id: 'monthly' as Timeframe, label: '30d' },
             ].map((t) => (
-              <button key={t.id} onClick={() => setTimeframe(t.id)} style={{
-                fontFamily: 'var(--font-mono)', fontSize: 11,
-                padding: '4px 10px', borderRadius: 999,
-                border: '1px solid ' + (timeframe === t.id ? 'var(--saffron)' : 'var(--line)'),
-                background: timeframe === t.id ? 'var(--saffron-soft)' : 'transparent',
-                color: timeframe === t.id ? 'var(--saffron-ink)' : 'var(--ink-3)',
-                cursor: 'pointer',
-              }}>{t.label}</button>
+              <button key={t.id} onClick={() => setTimeframe(t.id)} className={`font-mono text-[11px] py-[4px] px-[10px] rounded-full border cursor-pointer ${timeframe === t.id ? 'border-[var(--saffron)] bg-[var(--saffron-soft)] text-[var(--saffron-ink)]' : 'border-[var(--line)] bg-transparent text-[var(--ink-3)]'}`}>
+                {t.label}
+              </button>
             ))}
           </div>
         }>
           <AreaChart data={revenueSeries.length > 1 ? revenueSeries : [0, 0]} height={220} />
-          <div style={{ display: 'flex', gap: 24, marginTop: 14, fontSize: 12, color: 'var(--ink-3)' }}>
-            <div><span className="mono" style={{ color: 'var(--ink)' }}>{currency(totalRevenue)}</span> total</div>
-            <div><span className="mono" style={{ color: 'var(--saffron)' }}>{currency(avgOrder)}</span> avg. order</div>
-            <div><span className="mono" style={{ color: 'var(--ink)' }}>{totalOrders}</span> orders</div>
+          <div className="flex gap-[24px] mt-[14px] text-[12px] text-[var(--ink-3)]">
+            <div><span className="mono text-[var(--ink)]">{currency(totalRevenue)}</span> total</div>
+            <div><span className="mono text-[var(--saffron)]">{currency(avgOrder)}</span> avg. order</div>
+            <div><span className="mono text-[var(--ink)]">{totalOrders}</span> orders</div>
           </div>
         </Card>
 
         <Card title="Order status" subtitle="Distribution by status">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+          <div className="flex flex-col gap-[13px]">
             {statusRows.length > 0 ? statusRows.map(([status, count]) => {
               const total = orderMetrics?.total ?? 1;
               const pct = Math.round((count / total) * 100);
               return (
                 <div key={status}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 5 }}>
-                    <span style={{ color: 'var(--ink)', fontWeight: 500 }}>{status}</span>
-                    <span className="mono" style={{ color: 'var(--ink-3)', fontSize: 12 }}>{count} ({pct}%)</span>
+                  <div className="flex justify-between text-[13px] mb-[5px]">
+                    <span className="text-[var(--ink)] font-medium">{status}</span>
+                    <span className="mono text-[var(--ink-3)] text-[12px]">{count} ({pct}%)</span>
                   </div>
-                  <div style={{ height: 6, background: 'var(--bg-sunk)', borderRadius: 4, overflow: 'hidden' }}>
-                    <div style={{ width: `${Math.min(pct * 2.5, 100)}%`, height: '100%', background: 'var(--saffron)', borderRadius: 4 }} />
+                  <div className="h-[6px] bg-[var(--bg-sunk)] rounded-[4px] overflow-hidden">
+                    <div className="h-full bg-[var(--saffron)] rounded-[4px]" style={{ width: `${Math.min(pct * 2.5, 100)}%` }} />
                   </div>
                 </div>
               );
             }) : (
-              <p style={{ fontSize: 13, color: 'var(--ink-3)' }}>No order data yet.</p>
+              <p className="text-[13px] text-[var(--ink-3)]">No order data yet.</p>
             )}
           </div>
         </Card>
@@ -198,25 +183,25 @@ export function DashboardOverviewPage() {
       <Card title="Top products" subtitle="By units sold" action={
         <Btn variant="ghost" size="sm" iconRight="arrow_forward" onClick={() => router.push('/inventory')}>All inventory</Btn>
       }>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)' }}>
-              <th style={{ textAlign: 'left', padding: '0 0 10px', fontWeight: 500 }}>Product</th>
-              <th style={{ textAlign: 'right', padding: '0 0 10px', fontWeight: 500 }}>Units Sold</th>
-              <th style={{ textAlign: 'right', padding: '0 0 10px', fontWeight: 500 }}>Revenue</th>
+            <tr className="text-[11px] tracking-[0.06em] uppercase text-[var(--ink-3)]">
+              <th className="text-left pb-[10px] font-medium">Product</th>
+              <th className="text-right pb-[10px] font-medium">Units Sold</th>
+              <th className="text-right pb-[10px] font-medium">Revenue</th>
             </tr>
           </thead>
           <tbody>
             {(productMetrics ?? []).map((p) => (
-              <tr key={p.productId} style={{ borderTop: '1px solid var(--line)', fontSize: 13 }}>
-                <td style={{ padding: '12px 0', color: 'var(--ink)', fontWeight: 500 }}>{p.productName}</td>
-                <td style={{ padding: '12px 0', textAlign: 'right', color: 'var(--ink-2)' }} className="mono">{p.unitsSold}</td>
-                <td style={{ padding: '12px 0', textAlign: 'right', color: 'var(--ink)' }} className="mono">{currency(p.revenue)}</td>
+              <tr key={p.productId} className="border-t border-[var(--line)] text-[13px]">
+                <td className="py-[12px] text-[var(--ink)] font-medium">{p.productName}</td>
+                <td className="py-[12px] text-right text-[var(--ink-2)] mono">{p.unitsSold}</td>
+                <td className="py-[12px] text-right text-[var(--ink)] mono">{currency(p.revenue)}</td>
               </tr>
             ))}
             {!productMetrics?.length ? (
               <tr>
-                <td style={{ padding: '12px 0', color: 'var(--ink-3)' }} colSpan={3}>No product data available yet.</td>
+                <td className="py-[12px] text-[var(--ink-3)]" colSpan={3}>No product data available yet.</td>
               </tr>
             ) : null}
           </tbody>

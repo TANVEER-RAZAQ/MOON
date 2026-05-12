@@ -11,13 +11,13 @@ export default function CategoriesPage() {
   const { data: categories, isLoading, isError } = useGetAdminCategoriesQuery();
 
   if (isError) {
-    return <div style={{ padding: 40, color: 'var(--terracotta)' }}>Failed to load categories.</div>;
+    return <div className="p-[40px] text-[var(--terracotta)]">Failed to load categories.</div>;
   }
 
   const totalProducts = (categories || []).reduce((sum, c) => sum + c.productCount, 0);
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="anim-fade-in flex flex-col gap-6">
       <PageHeader
         eyebrow="Catalog"
         title="Categories"
@@ -28,49 +28,45 @@ export default function CategoriesPage() {
       />
 
       {/* Stats Strip */}
-      <div style={{ display: 'flex', gap: 16 }}>
-        <Card style={{ flex: 1 }}>
-          <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 4 }}>
+      <div className="flex gap-4">
+        <Card className="flex-1">
+          <div className="mono text-[10px] tracking-widest uppercase text-[var(--ink-4)] mb-1">
             Categories
           </div>
-          <div className="display" style={{ fontSize: 32, fontWeight: 400, color: 'var(--ink)' }}>
+          <div className="display text-3xl font-normal text-[var(--ink)]">
             {isLoading ? '—' : categories?.length ?? 0}
           </div>
         </Card>
-        <Card style={{ flex: 1 }}>
-          <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 4 }}>
+        <Card className="flex-1">
+          <div className="mono text-[10px] tracking-widest uppercase text-[var(--ink-4)] mb-1">
             Total Products
           </div>
-          <div className="display" style={{ fontSize: 32, fontWeight: 400, color: 'var(--ink)' }}>
+          <div className="display text-3xl font-normal text-[var(--ink)]">
             {isLoading ? '—' : totalProducts}
           </div>
         </Card>
       </div>
 
       {/* Category Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
         {isLoading ? (
           <Card>
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--ink-3)' }}>Loading categories...</div>
+            <div className="p-5 text-center text-[var(--ink-3)]">Loading categories...</div>
           </Card>
         ) : (categories || []).length === 0 ? (
           <Card>
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--ink-3)' }}>No categories found. Add products with category fields.</div>
+            <div className="p-5 text-center text-[var(--ink-3)]">No categories found. Add products with category fields.</div>
           </Card>
         ) : (categories || []).map((cat) => (
           <Card key={cat.name}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: 10,
-                  background: 'var(--saffron-soft)', color: 'var(--saffron-ink)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
+            <div className="flex items-start justify-between mb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-[10px] bg-[var(--saffron-soft)] text-[var(--saffron-ink)] flex items-center justify-center">
                   <Icon name="category" size={20} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ink)' }}>{cat.name}</div>
-                  <div className="mono" style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2 }}>
+                  <div className="text-[15px] font-medium text-[var(--ink)]">{cat.name}</div>
+                  <div className="mono text-[11px] text-[var(--ink-3)] mt-0.5">
                     {cat.productCount} product{cat.productCount !== 1 ? 's' : ''}
                   </div>
                 </div>
@@ -81,7 +77,7 @@ export default function CategoriesPage() {
             </div>
 
             {cat.themes.length > 0 && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <div className="flex gap-1.5 flex-wrap">
                 {cat.themes.map((theme) => (
                   <Pill key={theme} tone="plum" size="sm">{theme}</Pill>
                 ))}
@@ -89,18 +85,13 @@ export default function CategoriesPage() {
             )}
 
             {/* Usage bar */}
-            <div style={{ marginTop: 14 }}>
-              <div style={{
-                height: 4, borderRadius: 2, background: 'var(--bg-sunk)', overflow: 'hidden',
-              }}>
-                <div style={{
-                  height: '100%', borderRadius: 2,
+            <div className="mt-3.5">
+              <div className="h-1 rounded-sm bg-[var(--bg-sunk)] overflow-hidden">
+                <div className="h-full rounded-sm transition-all duration-300 ease-in-out bg-gradient-to-r from-[var(--saffron)] to-[var(--terracotta)]" style={{
                   width: `${totalProducts > 0 ? (cat.productCount / totalProducts * 100) : 0}%`,
-                  background: 'linear-gradient(90deg, var(--saffron), var(--terracotta))',
-                  transition: 'width .3s ease',
                 }} />
               </div>
-              <div className="mono" style={{ fontSize: 10, color: 'var(--ink-4)', marginTop: 4 }}>
+              <div className="mono text-[10px] text-[var(--ink-4)] mt-1">
                 {totalProducts > 0 ? Math.round(cat.productCount / totalProducts * 100) : 0}% of catalog
               </div>
             </div>

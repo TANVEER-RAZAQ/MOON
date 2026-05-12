@@ -2,9 +2,8 @@
 
 import { Icon } from '@/components/ui/Icon';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { Card, cardStyle } from '@/components/ui/Card';
+import { Card, cardClass } from '@/components/ui/Card';
 import { Pill } from '@/components/ui/Pill';
-import type { CSSProperties } from 'react';
 
 export default function TeamPage() {
   // Current admin (from context) — shown as the only team member
@@ -13,7 +12,7 @@ export default function TeamPage() {
   ];
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px]">
       <PageHeader
         eyebrow="System"
         title="Team"
@@ -21,59 +20,44 @@ export default function TeamPage() {
       />
 
       <Card padding={0}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{
-              fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
-              color: 'var(--ink-3)', borderBottom: '1px solid var(--line)',
-            }}>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Member</th>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Email</th>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Role</th>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Status</th>
+            <tr className="text-[11px] tracking-[0.06em] uppercase text-[var(--ink-3)] border-b border-[var(--line)]">
+              <th className="py-[14px] px-[22px] text-left font-medium">Member</th>
+              <th className="py-[14px] px-[22px] text-left font-medium">Email</th>
+              <th className="py-[14px] px-[22px] text-left font-medium">Role</th>
+              <th className="py-[14px] px-[22px] text-left font-medium">Status</th>
             </tr>
           </thead>
           <tbody>
             {members.map((m) => (
-              <tr key={m.email} style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '14px 22px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{
-                      width: 34, height: 34, borderRadius: 8,
-                      background: 'linear-gradient(135deg, var(--saffron), var(--terracotta))',
-                      color: '#FFF8EC',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'var(--font-display)', fontSize: 14,
-                    }}>{m.name[0]}</div>
-                    <div style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--ink)' }}>{m.name}</div>
+              <tr key={m.email} className="border-b border-[var(--line)]">
+                <td className="py-[14px] px-[22px]">
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-[34px] h-[34px] rounded-[8px] bg-gradient-to-br from-[var(--saffron)] to-[var(--terracotta)] text-[#FFF8EC] flex items-center justify-center font-display text-[14px]">
+                      {m.name[0]}
+                    </div>
+                    <div className="text-[13.5px] font-medium text-[var(--ink)]">{m.name}</div>
                   </div>
                 </td>
-                <td style={{ padding: '14px 22px', fontSize: 13, color: 'var(--ink)' }}>{m.email}</td>
-                <td style={{ padding: '14px 22px' }}><Pill tone="saffron">{m.role}</Pill></td>
-                <td style={{ padding: '14px 22px' }}><Pill tone="sage">{m.status}</Pill></td>
+                <td className="py-[14px] px-[22px] text-[13px] text-[var(--ink)]">{m.email}</td>
+                <td className="py-[14px] px-[22px]"><Pill tone="saffron">{m.role}</Pill></td>
+                <td className="py-[14px] px-[22px]"><Pill tone="sage">{m.status}</Pill></td>
               </tr>
             ))}
           </tbody>
         </table>
       </Card>
 
-      <div style={{
-        ...(cardStyle as CSSProperties),
-        padding: 48, textAlign: 'center',
-      }}>
-        <div style={{
-          width: 56, height: 56, borderRadius: 14,
-          background: 'var(--saffron-soft)', color: 'var(--saffron-ink)',
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: 16,
-        }}>
+      <div className={`${cardClass} p-[48px] text-center`}>
+        <div className="w-[56px] h-[56px] rounded-[14px] bg-[var(--saffron-soft)] text-[var(--saffron-ink)] inline-flex items-center justify-center mb-[16px]">
           <Icon name="person_add" size={26} />
         </div>
-        <h3 className="display" style={{ margin: 0, fontSize: 22, fontWeight: 400 }}>Invite team members</h3>
-        <p style={{ marginTop: 10, color: 'var(--ink-2)', fontSize: 14, maxWidth: 440, marginInline: 'auto' }}>
+        <h3 className="display m-0 text-[22px] font-normal">Invite team members</h3>
+        <p className="mt-[10px] text-[var(--ink-2)] text-[14px] max-w-[440px] mx-auto">
           Multi-user access with role-based permissions (Admin, Editor, Viewer) is planned for a future release.
         </p>
-        <div style={{ marginTop: 14 }}><Pill tone="saffron" size="md">Planned</Pill></div>
+        <div className="mt-[14px]"><Pill tone="saffron" size="md">Planned</Pill></div>
       </div>
     </div>
   );

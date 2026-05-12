@@ -41,11 +41,11 @@ export default function ProductsPage() {
   });
 
   if (isError) {
-    return <div style={{ padding: 40, color: 'var(--terracotta)' }}>Failed to load products.</div>;
+    return <div className="p-[40px] text-[var(--terracotta)]">Failed to load products.</div>;
   }
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px]">
       <PageHeader
         eyebrow="Catalog"
         title="Products"
@@ -66,51 +66,42 @@ export default function ProductsPage() {
 
       <Card padding={0}>
         {/* Toolbar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 22px', borderBottom: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', gap: 6 }}>
+        <div className="flex items-center justify-between py-[16px] px-[22px] border-b border-[var(--line)]">
+          <div className="flex gap-[6px]">
             {(['all', 'active', 'archived'] as const).map((f) => (
-              <button key={f} onClick={() => setFilter(f)} style={{
-                fontFamily: 'var(--font-mono)', fontSize: 11, textTransform: 'capitalize',
-                padding: '6px 14px', borderRadius: 999,
-                border: '1px solid ' + (filter === f ? 'var(--ink)' : 'transparent'),
-                background: filter === f ? 'var(--ink)' : 'transparent',
-                color: filter === f ? 'var(--bg)' : 'var(--ink-2)',
-                cursor: 'pointer',
-              }}>{f}</button>
+              <button key={f} onClick={() => setFilter(f)} className={`font-mono text-[11px] capitalize py-[6px] px-[14px] rounded-full border transition-colors ${filter === f ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]' : 'border-transparent bg-transparent text-[var(--ink-2)]'}`}>
+                {f}
+              </button>
             ))}
           </div>
-          <div style={{ position: 'relative', width: 240 }}>
-            <span className="material-symbols-outlined" style={{ position: 'absolute', left: 10, top: 8, fontSize: 16, color: 'var(--ink-3)' }}>search</span>
+          <div className="relative w-[240px]">
+            <span className="material-symbols-outlined absolute left-[10px] top-[8px] text-[16px] text-[var(--ink-3)]">search</span>
             <input
               type="text"
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{
-                width: '100%', padding: '6px 12px 6px 32px',
-                background: 'var(--bg-sunk)', border: '1px solid var(--line)', borderRadius: 8,
-                fontSize: 13, color: 'var(--ink)', outline: 'none',
-              }}
+              className="w-full py-[6px] pr-[12px] pl-[32px] bg-[var(--bg-sunk)] border border-[var(--line)] rounded-[8px] text-[13px] text-[var(--ink)] outline-none"
             />
           </div>
         </div>
 
         {/* Table */}
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)', borderBottom: '1px solid var(--line)' }}>
-              <th style={{ padding: '16px 22px', textAlign: 'left', fontWeight: 500, width: 40 }} />
-              <th style={{ padding: '16px 22px', textAlign: 'left', fontWeight: 500 }}>Product</th>
-              <th style={{ padding: '16px 22px', textAlign: 'left', fontWeight: 500 }}>Status</th>
-              <th style={{ padding: '16px 22px', textAlign: 'left', fontWeight: 500 }}>Category</th>
-              <th style={{ padding: '16px 22px', textAlign: 'right', fontWeight: 500 }}>Price</th>
+            <tr className="text-[11px] tracking-[0.06em] uppercase text-[var(--ink-3)] border-b border-[var(--line)]">
+              <th className="py-[16px] px-[22px] text-left font-medium w-[40px]" />
+              <th className="py-[16px] px-[22px] text-left font-medium">Product</th>
+              <th className="py-[16px] px-[22px] text-left font-medium">Status</th>
+              <th className="py-[16px] px-[22px] text-left font-medium">Category</th>
+              <th className="py-[16px] px-[22px] text-right font-medium">Price</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: 'var(--ink-3)' }}>Loading products...</td></tr>
+              <tr><td colSpan={5} className="p-[40px] text-center text-[var(--ink-3)]">Loading products...</td></tr>
             ) : visibleProducts.length === 0 ? (
-              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: 'var(--ink-3)' }}>No products found.</td></tr>
+              <tr><td colSpan={5} className="p-[40px] text-center text-[var(--ink-3)]">No products found.</td></tr>
             ) : visibleProducts.map((p) => {
               const rawThumb = p.images?.[0]?.url || p.image_url;
               const isFallback = p.images?.[0]?.isFallback === true;
@@ -119,45 +110,43 @@ export default function ProductsPage() {
               return (
                 <tr
                   key={p.id}
-                  style={{ borderBottom: '1px solid var(--line)', transition: 'background .15s', cursor: 'pointer' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  className="border-b border-[var(--line)] transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-hover)]"
                   onClick={(e) => {
                     // Don't navigate if clicking the toggle
                     if ((e.target as HTMLElement).closest('button[role="switch"]')) return;
                     router.push(`/products/${p.id}`);
                   }}
                 >
-                  <td style={{ padding: '14px 22px' }}>
+                  <td className="py-[14px] px-[22px]">
                     {thumb ? (
-                      <div style={{ position: 'relative', width: 44, height: 44, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--line)' }}>
-                        <Image src={thumb} alt={p.name} width={44} height={44} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div className="relative w-[44px] h-[44px] rounded-[8px] overflow-hidden border border-[var(--line)]">
+                        <Image src={thumb} alt={p.name} width={44} height={44} className="w-full h-full object-cover" />
                         {isFallback && (
-                          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: 7, textAlign: 'center', padding: '1px 0', letterSpacing: '0.05em', fontWeight: 600 }}>STOCK</div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/55 text-white text-[7px] text-center py-[1px] tracking-[0.05em] font-semibold">STOCK</div>
                         )}
                       </div>
                     ) : (
                       <Placeholder label="IMG" w={44} h={44} />
                     )}
                   </td>
-                  <td style={{ padding: '14px 22px' }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>{p.name}</div>
-                    <div className="mono" style={{ fontSize: 11.5, color: 'var(--ink-3)', marginTop: 2 }}>{p.slug}</div>
+                  <td className="py-[14px] px-[22px]">
+                    <div className="text-[14px] font-medium text-[var(--ink)]">{p.name}</div>
+                    <div className="mono text-[11.5px] text-[var(--ink-3)] mt-[2px]">{p.slug}</div>
                   </td>
-                  <td style={{ padding: '14px 22px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <td className="py-[14px] px-[22px]">
+                    <div className="flex items-center gap-[8px]">
                       <Toggle checked={!!p.is_active} onChange={() => toggleActive(p.id, !!p.is_active)} />
-                      <span style={{ fontSize: 13, color: p.is_active ? 'var(--ink)' : 'var(--ink-3)' }}>
+                      <span className={`text-[13px] ${p.is_active ? 'text-[var(--ink)]' : 'text-[var(--ink-3)]'}`}>
                         {p.is_active ? 'Active' : 'Draft'}
                       </span>
                     </div>
                   </td>
-                  <td style={{ padding: '14px 22px' }}>
-                    {p.category ? <Pill tone="neutral">{p.category}</Pill> : <span style={{ color: 'var(--ink-4)' }}>—</span>}
+                  <td className="py-[14px] px-[22px]">
+                    {p.category ? <Pill tone="neutral">{p.category}</Pill> : <span className="text-[var(--ink-4)]">—</span>}
                   </td>
-                  <td style={{ padding: '14px 22px', textAlign: 'right' }}>
-                    <div className="mono" style={{ fontSize: 13, color: 'var(--ink)' }}>{currency(p.discount_price ?? p.price)}</div>
-                    {p.discount_price && <div className="mono" style={{ fontSize: 11, color: 'var(--ink-4)', textDecoration: 'line-through' }}>{currency(p.price)}</div>}
+                  <td className="py-[14px] px-[22px] text-right">
+                    <div className="mono text-[13px] text-[var(--ink)]">{currency(p.discount_price ?? p.price)}</div>
+                    {p.discount_price && <div className="mono text-[11px] text-[var(--ink-4)] line-through">{currency(p.price)}</div>}
                   </td>
                 </tr>
               );

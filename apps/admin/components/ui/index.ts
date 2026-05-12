@@ -1,6 +1,6 @@
 export { Icon } from './Icon';
 export { Btn } from './Btn';
-export { Card, cardStyle } from './Card';
+export { Card, cardClass } from './Card';
 export { Pill } from './Pill';
 export { Field } from './Field';
 export { MoonInput, inputBase } from './Input';

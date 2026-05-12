@@ -32,18 +32,11 @@ export function AdminLoginPage({ session, onLogin, isLoading }: AdminLoginPagePr
   };
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg)' }}>
+    <main className="min-h-screen flex bg-[var(--bg)]">
       {/* Decorative left panel */}
-      <div style={{
-        flex: 1,
-        background: 'linear-gradient(135deg, var(--bg-elev) 0%, var(--bg) 100%)',
-        borderRight: '1px solid var(--line)',
-        position: 'relative',
-        display: 'none',
-        overflow: 'hidden',
-      }} className="lg-flex">
+      <div className="flex-1 bg-gradient-to-br from-[var(--bg-elev)] to-[var(--bg)] border-r border-[var(--line)] relative hidden overflow-hidden lg:flex">
         {/* Giant decorative crescent */}
-        <svg style={{ position: 'absolute', top: '10%', left: '-15%', width: '120%', height: '120%', opacity: 0.05, color: 'var(--saffron)' }} viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+        <svg className="absolute top-[10%] -left-[15%] w-[120%] h-[120%] opacity-5 text-[var(--saffron)]" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
           <defs>
             <mask id="giant-crescent">
               <rect width="100" height="100" fill="white" />
@@ -53,32 +46,32 @@ export function AdminLoginPage({ session, onLogin, isLoading }: AdminLoginPagePr
           <circle cx="50" cy="50" r="45" fill="currentColor" mask="url(#giant-crescent)" />
         </svg>
 
-        <div style={{ position: 'absolute', top: 48, left: 48 }}>
+        <div className="absolute top-12 left-12">
           <Brand size="lg" />
         </div>
-        <div style={{ position: 'absolute', bottom: 64, left: 48, maxWidth: 400 }}>
-          <h2 className="display" style={{ fontSize: 48, lineHeight: 1, margin: 0, color: 'var(--ink)' }}>Command center.</h2>
-          <p style={{ fontSize: 15, color: 'var(--ink-2)', marginTop: 16 }}>Manage inventory, process orders, and track your store's performance from one beautiful interface.</p>
+        <div className="absolute bottom-16 left-12 max-w-[400px]">
+          <h2 className="display text-[48px] leading-none m-0 text-[var(--ink)]">Command center.</h2>
+          <p className="text-[15px] text-[var(--ink-2)] mt-4">Manage inventory, process orders, and track your store's performance from one beautiful interface.</p>
         </div>
       </div>
 
       {/* Login form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative' }}>
-        <div style={{ position: 'absolute', top: 32, right: 32 }} className="mono text-xs text-[#8B949E]">
+      <div className="flex-1 flex items-center justify-center p-6 relative">
+        <div className="absolute top-8 right-8 mono text-xs text-[#8B949E]">
           {pathname}
         </div>
 
-        <div style={{ width: '100%', maxWidth: 380 }} className="anim-fade-in">
-          <div className="lg-hidden" style={{ marginBottom: 48, textAlign: 'center' }}>
+        <div className="w-full max-w-[380px] anim-fade-in">
+          <div className="lg:hidden mb-12 text-center">
             <Brand size="lg" />
           </div>
 
-          <div style={{ marginBottom: 40 }}>
-            <h1 className="display" style={{ fontSize: 36, margin: 0, color: 'var(--ink)' }}>Welcome back</h1>
-            <p style={{ fontSize: 14, color: 'var(--ink-3)', marginTop: 6 }}>Enter your credentials to access the console.</p>
+          <div className="mb-10">
+            <h1 className="display text-[36px] m-0 text-[var(--ink)]">Welcome back</h1>
+            <p className="text-[14px] text-[var(--ink-3)] mt-[6px]">Enter your credentials to access the console.</p>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <Field label="Email Address">
               <MoonInput
                 type="email"
@@ -100,28 +93,23 @@ export function AdminLoginPage({ session, onLogin, isLoading }: AdminLoginPagePr
             </Field>
 
             {error && (
-              <div style={{ padding: 12, borderRadius: 8, background: 'rgba(181,87,58,0.1)', color: 'var(--terracotta)', fontSize: 13, border: '1px solid var(--terracotta)' }}>
+              <div className="p-3 rounded-lg bg-[rgba(181,87,58,0.1)] text-[var(--terracotta)] text-[13px] border border-[var(--terracotta)]">
                 {error}
               </div>
             )}
 
-            <div style={{ marginTop: 8 }}>
+            <div className="mt-2">
               <Btn type="submit" disabled={isLoading} full size="lg">
                 {isLoading ? 'Signing in...' : 'Sign in'}
               </Btn>
             </div>
           </form>
 
-          <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--ink-4)', marginTop: 32 }}>
-            Having trouble logging in? <a href="#" style={{ color: 'var(--ink)', textDecoration: 'underline' }}>Contact support</a>
+          <p className="text-center text-[13px] text-[var(--ink-4)] mt-8">
+            Having trouble logging in? <a href="#" className="text-[var(--ink)] underline">Contact support</a>
           </p>
         </div>
       </div>
-      
-      {/* Hide graphic on small screens */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media (min-width: 1024px) { .lg-flex { display: flex !important; } .lg-hidden { display: none !important; } }
-      `}} />
     </main>
   );
 }

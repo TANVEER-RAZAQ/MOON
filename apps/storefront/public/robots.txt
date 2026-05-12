@@ -4,6 +4,8 @@ Allow: /
 # Disallow transactional pages (not useful for search results)
 Disallow: /cart
 Disallow: /checkout
+Disallow: /api
+Disallow: /order-success
 
 # AI search crawlers — allow indexing and product discovery
 User-agent: GPTBot

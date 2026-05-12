@@ -134,35 +134,36 @@ export default function DiscountsPage() {
   };
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1120 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px] max-w-[1120px]">
       <PageHeader
         eyebrow="Commerce"
         title="Discounts"
         subtitle={`${activeCount} active code${activeCount === 1 ? '' : 's'} available at checkout.`}
       />
 
-      {error ? <div style={{ padding: 12, border: '1px solid var(--terracotta)', color: 'var(--terracotta)', borderRadius: 10 }}>{error}</div> : null}
-      {message ? <div style={{ padding: 12, border: '1px solid var(--sage)', color: 'var(--sage)', borderRadius: 10 }}>{message}</div> : null}
+      {error ? <div className="p-[12px] border border-[var(--terracotta)] text-[var(--terracotta)] rounded-[10px]">{error}</div> : null}
+      {message ? <div className="p-[12px] border border-[var(--sage)] text-[var(--sage)] rounded-[10px]">{message}</div> : null}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 420px) 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="grid grid-cols-[minmax(320px,420px)_1fr] gap-[24px] items-start">
         <Card title={editingId ? 'Edit discount' : 'Create discount'} subtitle="Use these codes in checkout to test exact Razorpay payment amounts.">
-          <form onSubmit={submit} style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <form onSubmit={submit} className="mt-[16px] flex flex-col gap-[16px]">
             <Field label="Code">
               <MoonInput value={form.code} onChange={(event) => updateForm('code', event.target.value)} placeholder="PAYTEST" required />
             </Field>
 
             <Field label="Type">
               <select
+                aria-label="Discount Type"
                 value={form.type}
                 onChange={(event) => updateForm('type', event.target.value as DiscountWritePayload['type'])}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid var(--line)', background: 'var(--bg-sunk)' }}
+                className="w-full py-[10px] px-[12px] rounded-[10px] border border-[var(--line)] bg-[var(--bg-sunk)]"
               >
                 <option value="percent">Percentage off</option>
                 <option value="fixed">Fixed amount off</option>
               </select>
             </Field>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="grid grid-cols-2 gap-[12px]">
               <Field label={form.type === 'percent' ? 'Percent' : 'Amount'}>
                 <MoonInput type="number" min={0} step="0.01" value={form.value} onChange={(event) => updateForm('value', Number(event.target.value))} required />
               </Field>
@@ -171,7 +172,7 @@ export default function DiscountsPage() {
               </Field>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="grid grid-cols-2 gap-[12px]">
               <Field label="Max discount">
                 <MoonInput type="number" min={0} step="0.01" value={form.maxDiscount ?? ''} onChange={(event) => updateForm('maxDiscount', event.target.value ? Number(event.target.value) : null)} placeholder="Optional" />
               </Field>
@@ -187,17 +188,17 @@ export default function DiscountsPage() {
               <MoonInput type="datetime-local" value={toDateTimeLocal(form.endsAt ?? null)} onChange={(event) => updateForm('endsAt', event.target.value || null)} />
             </Field>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="flex items-center gap-[12px]">
               <Toggle checked={Boolean(form.isActive)} onChange={(value) => updateForm('isActive', value)} />
-              <span style={{ fontSize: 13, color: 'var(--ink)' }}>Active at checkout</span>
+              <span className="text-[13px] text-[var(--ink)]">Active at checkout</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="flex items-center gap-[12px]">
               <Toggle checked={Boolean(form.freeShipping)} onChange={(value) => updateForm('freeShipping', value)} />
-              <span style={{ fontSize: 13, color: 'var(--ink)' }}>Free shipping (waives shipping charges)</span>
+              <span className="text-[13px] text-[var(--ink)]">Free shipping (waives shipping charges)</span>
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div className="flex gap-[10px]">
               <Btn type="submit" disabled={isBusy} icon="sell">{isBusy ? 'Saving...' : editingId ? 'Update code' : 'Create code'}</Btn>
               {editingId ? <Btn variant="secondary" onClick={resetForm}>Cancel</Btn> : null}
             </div>
@@ -205,9 +206,9 @@ export default function DiscountsPage() {
         </Card>
 
         <Card title="Codes" subtitle={isLoading ? 'Loading discounts...' : `${discounts.length} total`}>
-          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="mt-[12px] flex flex-col gap-[10px]">
             {discounts.length === 0 && !isLoading ? (
-              <div style={{ padding: 24, color: 'var(--ink-2)', textAlign: 'center' }}>No discount codes yet.</div>
+              <div className="p-[24px] text-[var(--ink-2)] text-center">No discount codes yet.</div>
             ) : null}
             {discounts.map((discount) => {
               const valueLabel = discount.type === 'percent'
@@ -216,34 +217,26 @@ export default function DiscountsPage() {
               return (
                 <div
                   key={discount.id}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr auto',
-                    gap: 16,
-                    padding: 14,
-                    border: '1px solid var(--line)',
-                    borderRadius: 10,
-                    background: 'var(--bg-sunk)'
-                  }}
+                  className="grid grid-cols-[1fr_auto] gap-[16px] p-[14px] border border-[var(--line)] rounded-[10px] bg-[var(--bg-sunk)]"
                 >
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'var(--ink)' }}>{discount.code}</span>
-                      <span style={{ fontSize: 11, color: discount.is_active ? 'var(--sage)' : 'var(--ink-3)' }}>
+                    <div className="flex items-center gap-[8px] flex-wrap">
+                      <span className="font-mono text-[14px] text-[var(--ink)]">{discount.code}</span>
+                      <span className={`text-[11px] ${discount.is_active ? 'text-[var(--sage)]' : 'text-[var(--ink-3)]'}`}>
                         {discount.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    <div style={{ marginTop: 6, fontSize: 13, color: 'var(--ink-2)' }}>
+                    <div className="mt-[6px] text-[13px] text-[var(--ink-2)]">
                       {valueLabel}
                       {Number(discount.minimum_subtotal) > 0 ? ` · min ${currency(Number(discount.minimum_subtotal))}` : ''}
                       {discount.max_discount != null ? ` · cap ${currency(Number(discount.max_discount))}` : ''}
                       {discount.free_shipping ? ' · Free shipping' : ''}
                     </div>
-                    <div style={{ marginTop: 4, fontSize: 12, color: 'var(--ink-3)' }}>
+                    <div className="mt-[4px] text-[12px] text-[var(--ink-3)]">
                       Used {discount.usage_count}{discount.usage_limit ? ` / ${discount.usage_limit}` : ''}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div className="flex items-center gap-[8px]">
                     <Btn variant="secondary" size="sm" onClick={() => edit(discount)}>Edit</Btn>
                     <Btn variant="danger" size="sm" onClick={() => remove(discount)}>Delete</Btn>
                   </div>

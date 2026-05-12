@@ -67,7 +67,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1120 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px] max-w-[1120px]">
       <PageHeader
         eyebrow="System"
         title="Settings"
@@ -78,12 +78,12 @@ export default function SettingsPage() {
       />
 
       {saved ? (
-        <div style={{ padding: 12, borderRadius: 10, border: '1px solid var(--sage)', color: 'var(--sage)' }}>
+        <div className="p-[12px] rounded-[10px] border border-[var(--sage)] text-[var(--sage)]">
           Settings saved locally and applied to this admin browser.
         </div>
       ) : null}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-[16px]">
         {sections.map((section) => {
           const selected = section.id === activeSection;
           return (
@@ -91,42 +91,33 @@ export default function SettingsPage() {
               key={section.id}
               type="button"
               onClick={() => setActiveSection(section.id)}
-              style={{
-                textAlign: 'left',
-                border: selected ? '1px solid var(--saffron)' : '1px solid var(--line)',
-                borderRadius: 16,
-                padding: 0,
-                background: 'transparent',
-                cursor: 'pointer',
-                boxShadow: selected ? '0 0 0 3px color-mix(in oklab, var(--saffron) 18%, transparent)' : 'none',
-              }}
+              className={`text-left rounded-[16px] p-0 bg-transparent cursor-pointer transition-shadow ${
+                selected ? 'border border-[var(--saffron)] shadow-[0_0_0_3px_color-mix(in_oklab,var(--saffron)_18%,transparent)]' : 'border border-[var(--line)]'
+              }`}
             >
-              <Card style={{ height: '100%', border: 'none' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{
-                    width: 44, height: 44, borderRadius: 11,
-                    background: selected ? 'var(--saffron-soft)' : 'var(--sage-soft)',
-                    color: selected ? 'var(--saffron-ink)' : 'var(--sage)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
+              <div className="h-full border-none p-[20px] rounded-[16px] bg-[var(--bg-elev)]">
+                <div className="flex items-start justify-between mb-[14px]">
+                  <div className={`w-[44px] h-[44px] rounded-[11px] flex items-center justify-center ${
+                    selected ? 'bg-[var(--saffron-soft)] text-[var(--saffron-ink)]' : 'bg-[var(--sage-soft)] text-[var(--sage)]'
+                  }`}>
                     <Icon name={section.icon} size={22} />
                   </div>
                   <Pill tone={section.status === 'Configurable' ? 'sage' : 'neutral'} size="sm">{section.status}</Pill>
                 </div>
-                <div style={{ fontSize: 14.5, fontWeight: 500, color: 'var(--ink)', marginBottom: 6 }}>{section.label}</div>
-                <p style={{ margin: 0, fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>{section.desc}</p>
-              </Card>
+                <div className="text-[14.5px] font-medium text-[var(--ink)] mb-[6px]">{section.label}</div>
+                <p className="m-0 text-[13px] text-[var(--ink-2)] leading-relaxed">{section.desc}</p>
+              </div>
             </button>
           );
         })}
       </div>
 
       <Card title={activeMeta.label} subtitle={activeMeta.desc}>
-        <div style={{ marginTop: 18, display: 'grid', gap: 18, maxWidth: 720 }}>
+        <div className="mt-[18px] grid gap-[18px] max-w-[720px]">
           {activeSection === 'store' ? (
             <>
               <Field label="Store name"><MoonInput value={settings.storeName} onChange={(event) => setValue('storeName', event.target.value)} /></Field>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div className="grid grid-cols-2 gap-[14px]">
                 <Field label="Support email"><MoonInput type="email" value={settings.supportEmail} onChange={(event) => setValue('supportEmail', event.target.value)} /></Field>
                 <Field label="Support phone"><MoonInput value={settings.supportPhone} onChange={(event) => setValue('supportPhone', event.target.value)} /></Field>
               </div>
@@ -135,20 +126,20 @@ export default function SettingsPage() {
           ) : null}
 
           {activeSection === 'shipping' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div style={{ color: 'var(--ink-2)', fontSize: 13, lineHeight: 1.5 }}>
+            <div className="flex flex-col gap-[20px]">
+              <div className="text-[var(--ink-2)] text-[13px] leading-relaxed">
                 These are your live shipping zones. Changes are saved directly to the database.
               </div>
               {shippingZones.length === 0 ? (
-                <p style={{ color: 'var(--ink-2)', fontSize: 13 }}>No shipping zones found.</p>
+                <p className="text-[var(--ink-2)] text-[13px]">No shipping zones found.</p>
               ) : (
                 shippingZones.map((zone) => {
                   const edit = getZoneEdit(zone);
                   return (
-                    <div key={zone.id} style={{ border: '1px solid var(--line)', borderRadius: 10, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>{zone.zone_name}</div>
-                      <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>{zone.states.join(', ')}</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 10, alignItems: 'end' }}>
+                    <div key={zone.id} className="border border-[var(--line)] rounded-[10px] p-[16px] flex flex-col gap-[12px]">
+                      <div className="font-semibold text-[14px] text-[var(--ink)]">{zone.zone_name}</div>
+                      <div className="text-[12px] text-[var(--ink-2)]">{zone.states.join(', ')}</div>
+                      <div className="grid grid-cols-[1fr_1fr_auto] gap-[10px] items-end">
                         <Field label="Cost (₹)">
                           <MoonInput
                             type="number"
@@ -184,9 +175,9 @@ export default function SettingsPage() {
 
           {activeSection === 'taxes' ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="flex items-center gap-[12px]">
                 <Toggle checked={settings.gstEnabled} onChange={(value) => setValue('gstEnabled', value)} />
-                <span style={{ fontSize: 13, color: 'var(--ink)' }}>Collect GST in checkout calculations</span>
+                <span className="text-[13px] text-[var(--ink)]">Collect GST in checkout calculations</span>
               </div>
               <Field label="GST rate"><MoonInput type="number" min={0} max={100} value={settings.gstRate} onChange={(event) => setValue('gstRate', Number(event.target.value))} /></Field>
             </>
@@ -198,14 +189,14 @@ export default function SettingsPage() {
                 <select
                   value={settings.razorpayMode}
                   onChange={(event) => setValue('razorpayMode', event.target.value as AdminSettings['razorpayMode'])}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid var(--line)', background: 'var(--bg-sunk)', color: 'var(--ink)' }}
+                  className="w-full py-[10px] px-[12px] rounded-[10px] border border-[var(--line)] bg-[var(--bg-sunk)] text-[var(--ink)]"
                 >
                   <option value="live">Live</option>
                   <option value="test">Test</option>
                 </select>
               </Field>
               <Field label="Payment test amount"><MoonInput type="number" min={1} value={settings.paymentTestAmount} onChange={(event) => setValue('paymentTestAmount', Number(event.target.value))} /></Field>
-              <div style={{ color: 'var(--ink-2)', fontSize: 13, lineHeight: 1.6 }}>
+              <div className="text-[var(--ink-2)] text-[13px] leading-relaxed">
                 Razorpay keys still come from backend environment variables. These local settings do not switch the backend gateway mode.
               </div>
             </>
@@ -213,22 +204,22 @@ export default function SettingsPage() {
 
           {activeSection === 'notifications' ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="flex items-center gap-[12px]">
                 <Toggle checked={settings.orderEmails} onChange={(value) => setValue('orderEmails', value)} />
-                <span style={{ fontSize: 13, color: 'var(--ink)' }}>Send order confirmation emails</span>
+                <span className="text-[13px] text-[var(--ink)]">Send order confirmation emails</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="flex items-center gap-[12px]">
                 <Toggle checked={settings.lowStockAlerts} onChange={(value) => setValue('lowStockAlerts', value)} />
-                <span style={{ fontSize: 13, color: 'var(--ink)' }}>Show low stock alerts</span>
+                <span className="text-[13px] text-[var(--ink)]">Show low stock alerts</span>
               </div>
             </>
           ) : null}
 
           {activeSection === 'appearance' ? (
             <>
-              <Field label="Accent color"><MoonInput type="color" value={settings.accentColor} onChange={(event) => setValue('accentColor', event.target.value)} style={{ height: 44, padding: 6 }} /></Field>
+              <Field label="Accent color"><MoonInput type="color" value={settings.accentColor} onChange={(event) => setValue('accentColor', event.target.value)} className="h-[44px] p-[6px]" /></Field>
               <Field label="Announcement text"><MoonInput value={settings.announcementText} onChange={(event) => setValue('announcementText', event.target.value)} placeholder="Optional storefront announcement" /></Field>
-              <div style={{ color: 'var(--ink-2)', fontSize: 13, lineHeight: 1.6 }}>
+              <div className="text-[var(--ink-2)] text-[13px] leading-relaxed">
                 Accent color is applied to the admin console after saving. Storefront announcement text is stored locally until backend settings are added.
               </div>
             </>

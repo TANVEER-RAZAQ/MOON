@@ -11,20 +11,15 @@ interface FieldProps {
 
 export function Field({ label, hint, children, suffix }: FieldProps) {
   return (
-    <label style={{ display: 'block' }}>
+    <label className="block">
       {label && (
-        <div style={{
-          fontSize: 11.5, fontWeight: 500, letterSpacing: '0.04em',
-          textTransform: 'uppercase', color: 'var(--ink-3)',
-          marginBottom: 7,
-          display: 'flex', justifyContent: 'space-between',
-        }}>
+        <div className="text-[11.5px] font-medium tracking-[0.04em] uppercase text-[var(--ink-3)] mb-[7px] flex justify-between">
           <span>{label}</span>
-          {suffix && <span style={{ textTransform: 'none', letterSpacing: 0, color: 'var(--ink-4)' }}>{suffix}</span>}
+          {suffix && <span className="normal-case tracking-normal text-[var(--ink-4)]">{suffix}</span>}
         </div>
       )}
       {children}
-      {hint && <div style={{ marginTop: 6, fontSize: 12, color: 'var(--ink-3)' }}>{hint}</div>}
+      {hint && <div className="mt-[6px] text-[12px] text-[var(--ink-3)]">{hint}</div>}
     </label>
   );
 }

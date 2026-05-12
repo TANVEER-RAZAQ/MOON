@@ -2,9 +2,8 @@
 
 import { Icon } from '@/components/ui/Icon';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { Card, cardStyle } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { Pill } from '@/components/ui/Pill';
-import type { CSSProperties } from 'react';
 
 export default function SEOPage() {
   const tools = [
@@ -17,7 +16,7 @@ export default function SEOPage() {
   ];
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px]">
       <PageHeader
         eyebrow="Storefront"
         title="SEO"
@@ -26,52 +25,42 @@ export default function SEOPage() {
 
       {/* Current Setup Info */}
       <Card>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 11,
-            background: 'var(--sage-soft)', color: 'var(--sage)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-          }}>
+        <div className="flex items-start gap-[16px]">
+          <div className="w-[44px] h-[44px] rounded-[11px] bg-[var(--sage-soft)] text-[var(--sage)] flex items-center justify-center shrink-0">
             <Icon name="check_circle" size={22} />
           </div>
           <div>
-            <div style={{ fontSize: 14.5, fontWeight: 500, color: 'var(--ink)', marginBottom: 6 }}>Next.js SEO Active</div>
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
+            <div className="text-[14.5px] font-medium text-[var(--ink)] mb-[6px]">Next.js SEO Active</div>
+            <p className="m-0 text-[13px] text-[var(--ink-2)] leading-[1.6]">
               Your storefront uses the <strong>Next.js Metadata API</strong> for SEO management. Meta titles, descriptions, and OG tags are configured directly in your page components and layouts.
-              The admin panel is excluded from search indexing via <code style={{ fontSize: 12, padding: '1px 5px', background: 'var(--bg-sunk)', borderRadius: 4, fontFamily: 'var(--font-mono)' }}>X-Robots-Tag: noindex</code> headers.
+              The admin panel is excluded from search indexing via <code className="text-[12px] py-[1px] px-[5px] bg-[var(--bg-sunk)] rounded-[4px] font-mono">X-Robots-Tag: noindex</code> headers.
             </p>
           </div>
         </div>
       </Card>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[16px]">
         {tools.map((t) => (
           <Card key={t.label}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 11,
-                background: t.status === 'Active' ? 'var(--sage-soft)' : 'var(--saffron-soft)',
-                color: t.status === 'Active' ? 'var(--sage)' : 'var(--saffron-ink)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
+            <div className="flex items-start justify-between mb-[14px]">
+              <div className={`w-[44px] h-[44px] rounded-[11px] flex items-center justify-center ${t.status === 'Active' ? 'bg-[var(--sage-soft)] text-[var(--sage)]' : 'bg-[var(--saffron-soft)] text-[var(--saffron-ink)]'}`}>
                 <Icon name={t.icon} size={22} />
               </div>
               <Pill tone={t.status === 'Active' ? 'sage' : 'saffron'} size="sm">{t.status}</Pill>
             </div>
-            <div style={{ fontSize: 14.5, fontWeight: 500, color: 'var(--ink)', marginBottom: 6 }}>{t.label}</div>
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>{t.desc}</p>
+            <div className="text-[14.5px] font-medium text-[var(--ink)] mb-[6px]">{t.label}</div>
+            <p className="m-0 text-[13px] text-[var(--ink-2)] leading-[1.5]">{t.desc}</p>
           </Card>
         ))}
       </div>
 
       {/* Product SEO reminder */}
       <Card>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-          <Icon name="lightbulb" size={20} style={{ color: 'var(--saffron)' }} />
-          <div style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--ink)' }}>Per-product SEO</div>
+        <div className="flex items-center gap-[12px] mb-[12px]">
+          <Icon name="lightbulb" size={20} className="text-[var(--saffron)]" />
+          <div className="text-[13.5px] font-medium text-[var(--ink)]">Per-product SEO</div>
         </div>
-        <p style={{ margin: 0, fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
+        <p className="m-0 text-[13px] text-[var(--ink-2)] leading-[1.6]">
           Each product has its own <strong>Meta Title</strong> and <strong>Meta Description</strong> fields on the product edit page.
           Navigate to <strong>Products → Edit</strong> to configure SEO metadata for individual products.
           A visual admin UI for global SEO settings will ship in a future release.

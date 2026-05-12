@@ -62,11 +62,11 @@ export default function OrdersPage() {
   };
 
   if (isError) {
-    return <div style={{ padding: 40, color: 'var(--terracotta)' }}>Failed to load orders.</div>;
+    return <div className="p-[40px] text-[var(--terracotta)]">Failed to load orders.</div>;
   }
 
   return (
-    <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="anim-fade-in flex flex-col gap-[24px]">
       <PageHeader
         eyebrow="Commerce"
         title="Orders"
@@ -78,65 +78,47 @@ export default function OrdersPage() {
 
       <Card padding={0}>
         {/* Toolbar */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 22px', borderBottom: '1px solid var(--line)',
-          flexWrap: 'wrap', gap: 12,
-        }}>
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        <div className="flex items-center justify-between py-[16px] px-[22px] border-b border-[var(--line)] flex-wrap gap-[12px]">
+          <div className="flex gap-[4px] flex-wrap">
             {STATUS_OPTIONS.map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 11, textTransform: 'capitalize',
-                  padding: '5px 12px', borderRadius: 999,
-                  border: '1px solid ' + (filter === f ? 'var(--ink)' : 'transparent'),
-                  background: filter === f ? 'var(--ink)' : 'transparent',
-                  color: filter === f ? 'var(--bg)' : 'var(--ink-2)',
-                  cursor: 'pointer', transition: 'all .15s',
-                }}
+                className={`font-mono text-[11px] capitalize py-[5px] px-[12px] rounded-full border transition-all duration-150 cursor-pointer ${filter === f ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]' : 'border-transparent bg-transparent text-[var(--ink-2)]'}`}
               >{f}</button>
             ))}
           </div>
-          <div style={{ position: 'relative', width: 240 }}>
-            <span className="material-symbols-outlined" style={{ position: 'absolute', left: 10, top: 8, fontSize: 16, color: 'var(--ink-3)' }}>search</span>
+          <div className="relative w-[240px]">
+            <span className="material-symbols-outlined absolute left-[10px] top-[8px] text-[16px] text-[var(--ink-3)]">search</span>
             <input
               type="text"
               placeholder="Search orders..."
               aria-label="Search orders"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{
-                width: '100%', padding: '6px 12px 6px 32px',
-                background: 'var(--bg-sunk)', border: '1px solid var(--line)', borderRadius: 8,
-                fontSize: 13, color: 'var(--ink)', outline: 'none',
-              }}
+              className="w-full py-[6px] pr-[12px] pl-[32px] bg-[var(--bg-sunk)] border border-[var(--line)] rounded-[8px] text-[13px] text-[var(--ink)] outline-none"
             />
           </div>
         </div>
 
         {/* Table */}
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{
-              fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
-              color: 'var(--ink-3)', borderBottom: '1px solid var(--line)',
-            }}>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Order</th>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Customer</th>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Date</th>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Status</th>
-              <th style={{ padding: '14px 22px', textAlign: 'left', fontWeight: 500 }}>Payment</th>
-              <th style={{ padding: '14px 22px', textAlign: 'right', fontWeight: 500 }}>Total</th>
-              <th style={{ padding: '14px 22px', textAlign: 'center', fontWeight: 500, width: 40 }} />
+            <tr className="text-[11px] tracking-[0.06em] uppercase text-[var(--ink-3)] border-b border-[var(--line)]">
+              <th className="py-[14px] px-[22px] text-left font-medium">Order</th>
+              <th className="py-[14px] px-[22px] text-left font-medium">Customer</th>
+              <th className="py-[14px] px-[22px] text-left font-medium">Date</th>
+              <th className="py-[14px] px-[22px] text-left font-medium">Status</th>
+              <th className="py-[14px] px-[22px] text-left font-medium">Payment</th>
+              <th className="py-[14px] px-[22px] text-right font-medium">Total</th>
+              <th className="py-[14px] px-[22px] text-center font-medium w-[40px]" />
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--ink-3)' }}>Loading orders...</td></tr>
+              <tr><td colSpan={7} className="p-[40px] text-center text-[var(--ink-3)]">Loading orders...</td></tr>
             ) : visibleOrders.length === 0 ? (
-              <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--ink-3)' }}>No orders found.</td></tr>
+              <tr><td colSpan={7} className="p-[40px] text-center text-[var(--ink-3)]">No orders found.</td></tr>
             ) : visibleOrders.map((order) => {
               const isExpanded = expandedId === order.id;
               const paymentStatus = order.payments?.[0]?.status ?? 'pending';
@@ -159,10 +141,7 @@ export default function OrdersPage() {
       </Card>
 
       {/* Summary bar */}
-      <div style={{
-        display: 'flex', gap: 24, fontSize: 12.5, color: 'var(--ink-3)',
-        padding: '0 4px',
-      }}>
+      <div className="flex gap-[24px] text-[12.5px] text-[var(--ink-3)] px-[4px]">
         <span>{orders?.length ?? 0} total orders</span>
         <span>·</span>
         <span>
@@ -187,128 +166,111 @@ function OrderRow({ order, isExpanded, paymentStatus, itemCount, onToggle, onSta
   return (
     <>
       <tr
-        style={{
-          borderBottom: isExpanded ? 'none' : '1px solid var(--line)',
-          transition: 'background .15s', cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+        className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-hover)] ${isExpanded ? 'border-none' : 'border-b border-[var(--line)]'}`}
         onClick={onToggle}
       >
-        <td style={{ padding: '14px 22px' }}>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{order.order_number}</div>
-          <div className="mono" style={{ fontSize: 11, color: 'var(--ink-4)', marginTop: 2 }}>
+        <td className="py-[14px] px-[22px]">
+          <div className="text-[13px] font-medium text-[var(--ink)]">{order.order_number}</div>
+          <div className="mono text-[11px] text-[var(--ink-4)] mt-[2px]">
             {itemCount} item{itemCount !== 1 ? 's' : ''}
           </div>
         </td>
-        <td style={{ padding: '14px 22px' }}>
-          <div style={{ fontSize: 13, color: 'var(--ink)' }}>{order.customer_email}</div>
-          <div className="mono" style={{ fontSize: 11, color: 'var(--ink-4)', marginTop: 1 }}>{order.customer_phone}</div>
+        <td className="py-[14px] px-[22px]">
+          <div className="text-[13px] text-[var(--ink)]">{order.customer_email}</div>
+          <div className="mono text-[11px] text-[var(--ink-4)] mt-[1px]">{order.customer_phone}</div>
         </td>
-        <td style={{ padding: '14px 22px' }}>
-          <div style={{ fontSize: 13, color: 'var(--ink)' }}>{formatDate(order.created_at)}</div>
-          <div className="mono" style={{ fontSize: 11, color: 'var(--ink-4)', marginTop: 1 }}>{formatTime(order.created_at)}</div>
+        <td className="py-[14px] px-[22px]">
+          <div className="text-[13px] text-[var(--ink)]">{formatDate(order.created_at)}</div>
+          <div className="mono text-[11px] text-[var(--ink-4)] mt-[1px]">{formatTime(order.created_at)}</div>
         </td>
-        <td style={{ padding: '14px 22px' }}>
+        <td className="py-[14px] px-[22px]">
           <Pill tone={STATUS_TONES[order.status] ?? 'neutral'}>{order.status}</Pill>
         </td>
-        <td style={{ padding: '14px 22px' }}>
+        <td className="py-[14px] px-[22px]">
           <Pill tone={paymentStatus === 'captured' ? 'sage' : paymentStatus === 'failed' ? 'terracotta' : 'neutral'}>
             {paymentStatus}
           </Pill>
         </td>
-        <td style={{ padding: '14px 22px', textAlign: 'right' }}>
-          <div className="mono" style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{currency(order.total)}</div>
+        <td className="py-[14px] px-[22px] text-right">
+          <div className="mono text-[13px] font-medium text-[var(--ink)]">{currency(order.total)}</div>
         </td>
-        <td style={{ padding: '14px 22px', textAlign: 'center' }}>
-          <Icon name={isExpanded ? 'expand_less' : 'expand_more'} size={18} style={{ color: 'var(--ink-3)' }} />
+        <td className="py-[14px] px-[22px] text-center">
+          <Icon name={isExpanded ? 'expand_less' : 'expand_more'} size={18} className="text-[var(--ink-3)]" />
         </td>
       </tr>
 
       {/* Expanded Detail */}
       {isExpanded && (
-        <tr style={{ borderBottom: '1px solid var(--line)' }}>
-          <td colSpan={7} style={{ padding: '0 22px 20px', background: 'var(--bg-sunk)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, paddingTop: 16 }}>
+        <tr className="border-b border-[var(--line)]">
+          <td colSpan={7} className="px-[22px] pb-[20px] bg-[var(--bg-sunk)]">
+            <div className="grid grid-cols-3 gap-[24px] pt-[16px]">
               {/* Line Items */}
               <div>
-                <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 10 }}>
+                <div className="mono text-[10px] tracking-[0.1em] uppercase text-[var(--ink-4)] mb-[10px]">
                   Line Items
                 </div>
                 {order.order_items.map((item) => (
-                  <div key={item.id} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '8px 0', borderBottom: '1px solid var(--line)',
-                    fontSize: 13,
-                  }}>
-                    <span style={{ color: 'var(--ink)' }}>{item.product_name} <span className="mono" style={{ color: 'var(--ink-3)' }}>×{item.quantity}</span></span>
-                    <span className="mono" style={{ color: 'var(--ink)', fontWeight: 500 }}>{currency(item.subtotal)}</span>
+                  <div key={item.id} className="flex justify-between items-center py-[8px] border-b border-[var(--line)] text-[13px]">
+                    <span className="text-[var(--ink)]">{item.product_name} <span className="mono text-[var(--ink-3)]">×{item.quantity}</span></span>
+                    <span className="mono text-[var(--ink)] font-medium">{currency(item.subtotal)}</span>
                   </div>
                 ))}
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0 0', fontSize: 13 }}>
-                  <span style={{ color: 'var(--ink-3)' }}>Subtotal</span>
-                  <span className="mono" style={{ color: 'var(--ink)' }}>{currency(order.subtotal)}</span>
+                <div className="flex justify-between pt-[10px] text-[13px]">
+                  <span className="text-[var(--ink-3)]">Subtotal</span>
+                  <span className="mono text-[var(--ink)]">{currency(order.subtotal)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 13 }}>
-                  <span style={{ color: 'var(--ink-3)' }}>Shipping</span>
-                  <span className="mono" style={{ color: 'var(--ink)' }}>{currency(order.shipping_cost)}</span>
+                <div className="flex justify-between py-[4px] text-[13px]">
+                  <span className="text-[var(--ink-3)]">Shipping</span>
+                  <span className="mono text-[var(--ink)]">{currency(order.shipping_cost)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0 0', fontSize: 14, fontWeight: 500, borderTop: '1px solid var(--line)' }}>
-                  <span style={{ color: 'var(--ink)' }}>Total</span>
-                  <span className="mono" style={{ color: 'var(--ink)' }}>{currency(order.total)}</span>
+                <div className="flex justify-between pt-[8px] text-[14px] font-medium border-t border-[var(--line)]">
+                  <span className="text-[var(--ink)]">Total</span>
+                  <span className="mono text-[var(--ink)]">{currency(order.total)}</span>
                 </div>
               </div>
 
               {/* Status Update + Notes */}
               <div>
-                <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 10 }}>
+                <div className="mono text-[10px] tracking-[0.1em] uppercase text-[var(--ink-4)] mb-[10px]">
                   Update Status
                 </div>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <div className="flex gap-[6px] flex-wrap">
                   {(['pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'] as const).map((s) => (
                     <button
                       key={s}
                       onClick={(e) => { e.stopPropagation(); onStatusChange(order.id, s); }}
-                      style={{
-                        fontFamily: 'var(--font-mono)', fontSize: 11, textTransform: 'capitalize',
-                        padding: '5px 12px', borderRadius: 6,
-                        border: '1px solid ' + (order.status === s ? 'var(--saffron)' : 'var(--line)'),
-                        background: order.status === s ? 'var(--saffron-soft)' : 'var(--bg-elev)',
-                        color: order.status === s ? 'var(--saffron-ink)' : 'var(--ink-2)',
-                        cursor: order.status === s ? 'default' : 'pointer',
-                        transition: 'all .15s',
-                      }}
+                      className={`font-mono text-[11px] capitalize py-[5px] px-[12px] rounded-[6px] border transition-all duration-150 ${order.status === s ? 'border-[var(--saffron)] bg-[var(--saffron-soft)] text-[var(--saffron-ink)] cursor-default' : 'border-[var(--line)] bg-[var(--bg-elev)] text-[var(--ink-2)] cursor-pointer'}`}
                     >{s}</button>
                   ))}
                 </div>
 
                 {order.tracking_number && (
-                  <div style={{ marginTop: 16 }}>
-                    <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 4 }}>
+                  <div className="mt-[16px]">
+                    <div className="mono text-[10px] tracking-[0.1em] uppercase text-[var(--ink-4)] mb-[4px]">
                       Tracking
                     </div>
-                    <div className="mono" style={{ fontSize: 12.5, color: 'var(--ink)' }}>{order.tracking_number}</div>
+                    <div className="mono text-[12.5px] text-[var(--ink)]">{order.tracking_number}</div>
                   </div>
                 )}
 
                 {order.notes && (
-                  <div style={{ marginTop: 16 }}>
-                    <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 4 }}>
+                  <div className="mt-[16px]">
+                    <div className="mono text-[10px] tracking-[0.1em] uppercase text-[var(--ink-4)] mb-[4px]">
                       Notes
                     </div>
-                    <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>{order.notes}</div>
+                    <div className="text-[13px] text-[var(--ink-2)] leading-[1.5]">{order.notes}</div>
                   </div>
                 )}
               </div>
 
               {/* Shipping Address */}
               <div>
-                <div className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-4)', marginBottom: 10 }}>
+                <div className="mono text-[10px] tracking-[0.1em] uppercase text-[var(--ink-4)] mb-[10px]">
                   Ship To
                 </div>
                 {order.shipping_address ? (
-                  <address style={{ fontStyle: 'normal', fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.7 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{order.shipping_address.full_name}</div>
+                  <address className="not-italic text-[13px] text-[var(--ink-2)] leading-[1.7]">
+                    <div className="font-semibold text-[var(--ink)]">{order.shipping_address.full_name}</div>
                     <div>{order.shipping_address.phone}</div>
                     <div>{order.shipping_address.line_1}</div>
                     {order.shipping_address.line_2 && <div>{order.shipping_address.line_2}</div>}
@@ -316,7 +278,7 @@ function OrderRow({ order, isExpanded, paymentStatus, itemCount, onToggle, onSta
                     <div>{order.shipping_address.postal_code}</div>
                   </address>
                 ) : (
-                  <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>No address on file</div>
+                  <div className="text-[12px] text-[var(--ink-4)]">No address on file</div>
                 )}
               </div>
             </div>

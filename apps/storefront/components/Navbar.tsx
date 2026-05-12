@@ -19,6 +19,17 @@ const NAV_SECTIONS = [
   { href: '/#contact',  label: 'Contact' },
 ];
 
+function scrollToSection(href: string) {
+  if (!href.startsWith('/#')) return false;
+  const id = href.slice(2);
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return true;
+  }
+  return false;
+}
+
 export function Navbar({ cartCount, onCartClick, onSearchClick, heroTheme = 'light' }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,7 +77,11 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, heroTheme = 'lig
         <ul className="moon-nav-links">
           {NAV_SECTIONS.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} className="moon-nav-link">
+              <Link
+                href={item.href}
+                className="moon-nav-link"
+                onClick={(e) => { if (scrollToSection(item.href)) e.preventDefault(); }}
+              >
                 {item.label}
               </Link>
             </li>
@@ -105,7 +120,10 @@ export function Navbar({ cartCount, onCartClick, onSearchClick, heroTheme = 'lig
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={(e) => {
+                      if (scrollToSection(item.href)) e.preventDefault();
+                      setMenuOpen(false);
+                    }}
                   >
                     {item.label}
                   </Link>

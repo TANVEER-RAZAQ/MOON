@@ -435,7 +435,7 @@ export function HomePage({
       </section>
 
       {/* ── PRODUCT COLLECTION ──────────────────────────────────────── */}
-      <section id="rituals" style={{
+      <section style={{
         background: 'var(--bg, #F5EFE6)',
         padding: '16px clamp(16px,4vw,64px) clamp(48px,8vw,96px)',
       }}>
@@ -768,10 +768,11 @@ export function HomePage({
       </section>
 
       {/* ── THE MOON PROMISE ────────────────────────────────────────── */}
-      <section style={{
+      <section id="rituals" style={{
         background: '#1A0E07',
         overflow: 'hidden',
         position: 'relative',
+        scrollMarginTop: '96px',
       }}>
         {/* Ambient radial glows */}
         <div style={{
