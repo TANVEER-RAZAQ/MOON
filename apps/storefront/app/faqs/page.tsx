@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: FAQS.filter(f => f.category !== 'All').map(faq => ({
+  mainEntity: FAQS.map(faq => ({
     '@type': 'Question',
     name: faq.question,
     acceptedAnswer: {
